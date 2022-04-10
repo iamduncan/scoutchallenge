@@ -15,11 +15,103 @@ model User {
   updatedAt DateTime @updatedAt
 
   password Password?
-  notes    Note[]
+
+  groups   Group[]
+  sections Section[]
+
+  answers Answer[]
+  notes   Note[]
 }
 
 model Password {
   hash String
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+}
+
+model Group {
+  id   String @id @default(cuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  Section Section[]
+}
+
+model Section {
+  id   String @id @default(cuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  group   Group  @relation(fields: [groupId], references: [id])
+  groupId String
+
+  users User[]
+
+  challenges Challenge[]
+}
+
+model Challenge {
+  id   String @id @default(cuid())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sections Section[]
+
+  challengeSections ChallengeSection[]
+}
+
+model ChallengeSection {
+  id          String @id @default(cuid())
+  title       String @unique
+  description String
+
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  challenge   Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  challengeId String
+
+  questions Question[]
+}
+
+model Question {
+  id          String       @id @default(cuid())
+  title       String       @unique
+  description String
+  hint        String
+  type        QuestionType
+
+  order Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  challengeSection   ChallengeSection @relation(fields: [challengeSectionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  challengeSectionId String
+
+  answers Answer[]
+}
+
+model Answer {
+  id        String  @id @default(cuid())
+  response  String  @unique
+  isCorrect Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
@@ -35,4 +127,19 @@ model Note {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
+}
+
+enum RoleType {
+  ADMIN
+  GROUPADMIN
+  SECTIONADMIN
+  USER
+}
+
+enum QuestionType {
+  TEXT
+  MULTIPLECHOICE
+  TRUEFALSE
+  FILLINTHEBLANK
+  IMAGEUPLOAD
 }
