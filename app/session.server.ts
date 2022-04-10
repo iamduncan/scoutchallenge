@@ -61,6 +61,15 @@ export async function requireUser(request: Request) {
   throw await logout(request);
 }
 
+export async function requireAdmin(request: Request) {
+  const user = await requireUser(request);
+  if (user.role === "ADMIN") return user;
+
+  const deniedParams = new URLSearchParams([["denied", "admin"]]);
+
+  throw redirect(`/?${deniedParams}`);
+}
+
 export async function createUserSession({
   request,
   userId,

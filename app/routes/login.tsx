@@ -185,6 +185,11 @@ export default function LoginPage() {
           </div>
         </Form>
       </div>
+      <div className="absolute top-4 left-4">
+        <Link to="/" className="hover:text-blue-500 hover:underline">
+          &larr; Go Home
+        </Link>
+      </div>
     </div>
   );
 }

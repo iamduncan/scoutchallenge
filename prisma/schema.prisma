@@ -16,6 +16,11 @@ model User {
 
   password Password?
 
+  firstName String
+  lastName  String
+
+  role RoleType @default(USER)
+
   groups   Group[]
   sections Section[]
 

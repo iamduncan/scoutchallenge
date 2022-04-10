@@ -1,11 +1,23 @@
-import { Link } from "@remix-run/react";
+import { Link, useSearchParams } from "@remix-run/react";
 
 import { useOptionalUser } from "~/utils";
 
 export default function Index() {
+  const [searchParams] = useSearchParams();
+  const denied = searchParams.get("denied");
   const user = useOptionalUser();
   return (
     <main className="relative min-h-screen bg-white sm:flex sm:items-center sm:justify-center">
+      {denied && (
+        <div className="absolute top-0 right-0 z-50 mt-4 mr-4 rounded border border-red-400 bg-red-100 px-4 py-3 text-red-700 shadow">
+          <p className="font-bold">Access denied</p>
+          <p>
+            {denied === "admin" &&
+              "You need to be an admin to access this page."}
+            <Link to="/login">Log in</Link>
+          </p>
+        </div>
+      )}
       <div className="relative sm:pb-16 sm:pt-8">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div className="relative shadow-xl sm:overflow-hidden sm:rounded-2xl">
