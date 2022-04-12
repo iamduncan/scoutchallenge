@@ -9,6 +9,8 @@ describe("smoke tests", () => {
     const loginForm = {
       email: `${faker.internet.userName()}@example.com`,
       password: faker.internet.password(),
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
     };
     cy.then(() => ({ email: loginForm.email })).as("user");
 
@@ -16,7 +18,10 @@ describe("smoke tests", () => {
     cy.findByRole("link", { name: /sign up/i }).click();
 
     cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
-    cy.findByLabelText(/password/i).type(loginForm.password);
+    cy.findByLabelText("Password").type(loginForm.password);
+    cy.findByLabelText(/confirm password/i).type(loginForm.password);
+    cy.findByRole("textbox", { name: /first name/i }).type(loginForm.firstName);
+    cy.findByRole("textbox", { name: /last name/i }).type(loginForm.lastName);
     cy.findByRole("button", { name: /create account/i }).click();
 
     cy.findByRole("link", { name: /notes/i }).click();

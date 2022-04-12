@@ -12,7 +12,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireAdmin(request);
+  // await requireAdmin(request);
   const userId = await requireUserId(request);
   const noteListItems = await getNoteListItems({ userId });
   return json<LoaderData>({ noteListItems });
