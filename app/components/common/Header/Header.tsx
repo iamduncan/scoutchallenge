@@ -3,16 +3,12 @@ import { Form, Link } from "@remix-run/react";
 
 type Props = {
   user: User & { groups: Group[] };
-  title: string;
 };
 
 export default function Header(props: Props) {
-  const { user, title } = props;
+  const { user } = props;
   return (
     <header className="flex items-center justify-between bg-slate-800 p-4 text-white">
-      <h1 className="text-3xl font-bold">
-        <Link to=".">{title}</Link>
-      </h1>
       <p>
         {user.firstName} {user.lastName} ({user.groups[0]?.name})
       </p>

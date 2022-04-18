@@ -1,10 +1,8 @@
 import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Header } from "~/components/common";
 import { getSectionListItems } from "~/models/section.server";
 import { requireUserId } from "~/session.server";
-import { useUser } from "~/utils";
 
 type LoaderData = {
   sectionListItems: Awaited<ReturnType<typeof getSectionListItems>>;
@@ -18,11 +16,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function SectionsPage() {
   const data = useLoaderData() as LoaderData;
-  const user = useUser();
   return (
     <div className="flex h-full min-h-screen flex-col">
-      <Header user={user} title="Sections" />
-
       <main className="flex h-full bg-white">
         <div className="h-full w-80 border-r bg-gray-50">
           <Link to="new" className="block p-4 text-xl text-blue-500">
@@ -35,15 +30,15 @@ export default function SectionsPage() {
             <p className="p-4">No sections yet</p>
           ) : (
             <ol>
-              {data.sectionListItems.map((note) => (
-                <li key={note.id}>
+              {data.sectionListItems.map((section) => (
+                <li key={section.id}>
                   <NavLink
                     className={({ isActive }) =>
                       `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
                     }
-                    to={note.id}
+                    to={section.id}
                   >
-                    📝 {note.name}
+                    📝 {section.name}
                   </NavLink>
                 </li>
               ))}

@@ -1,5 +1,19 @@
-import { Form, useActionData } from "@remix-run/react";
+import type { Group } from "@prisma/client";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
 import * as React from "react";
+import { getGroupListItems } from "~/models/group.server";
+import { useUser } from "~/utils";
+
+type LoaderData = {
+  groups: { id: string; name: string }[];
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const groups = await getGroupListItems();
+  return json<LoaderData>({ groups });
+};
 
 type ActionData = {
   errors?: {
@@ -9,6 +23,10 @@ type ActionData = {
 };
 
 export default function NewSectionPage() {
+  const user = useUser();
+
+  const { groups } = useLoaderData<LoaderData>();
+
   const actionData = useActionData() as ActionData;
   const nameRef = React.useRef<HTMLInputElement>(null);
   const bodyRef = React.useRef<HTMLTextAreaElement>(null);
@@ -51,26 +69,30 @@ export default function NewSectionPage() {
         )}
       </div>
 
-      <div>
-        <label className="flex w-full flex-col gap-1">
-          <span>Body: </span>
-          <textarea
-            ref={bodyRef}
-            name="body"
-            rows={8}
-            className="w-full flex-1 rounded-md border-2 border-blue-500 py-2 px-3 text-lg leading-6"
-            aria-invalid={actionData?.errors?.body ? true : undefined}
-            aria-errormessage={
-              actionData?.errors?.body ? "body-error" : undefined
-            }
-          />
-        </label>
-        {actionData?.errors?.body && (
-          <div className="pt-1 text-red-700" id="body-error">
-            {actionData.errors.body}
-          </div>
-        )}
-      </div>
+      {user?.role === "ADMIN" && (
+        <div>
+          <label className="flex w-full flex-col gap-1">
+            <span>Group: </span>
+            <select
+              name="group"
+              id="group"
+              className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
+            >
+              <option value="">None</option>
+              {groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {actionData?.errors?.name && (
+            <div className="pt-1 text-red-700" id="name-error">
+              {actionData.errors.name}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="text-right">
         <button
