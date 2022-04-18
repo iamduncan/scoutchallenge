@@ -24,7 +24,7 @@ export default function NotesPage() {
 
   return (
     <div className="flex h-full min-h-screen flex-col">
-      <Header user={user} title="Notes" />
+      <Header user={user} />
 
       <main className="flex h-full bg-white">
         <div className="h-full w-80 border-r bg-gray-50">
