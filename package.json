@@ -26,7 +26,9 @@
     "pretest:e2e:run": "npm run build",
     "test:e2e:run": "cross-env PORT=8811 start-server-and-test start:mocks http://localhost:8811 \"cypress run\"",
     "typecheck": "tsc -b && tsc -b cypress",
-    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run"
+    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run",
+    "prepare": "husky install",
+    "commit": "cz"
   },
   "prettier": {},
   "eslintIgnore": [
@@ -71,11 +73,14 @@
     "autoprefixer": "^10.4.4",
     "c8": "^7.11.0",
     "cypress": "^9.5.3",
+    "cz-conventional-changelog": "3.3.0",
+    "cz-customizable": "^6.3.0",
     "dotenv": "^16.0.0",
     "esbuild": "^0.14.29",
     "eslint": "^8.12.0",
     "eslint-config-prettier": "^8.5.0",
     "happy-dom": "^2.55.0",
+    "husky": "^7.0.4",
     "msw": "^0.39.2",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.12",
@@ -96,5 +101,10 @@
   },
   "prisma": {
     "seed": "ts-node --require tsconfig-paths/register prisma/seed.ts"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-customizable"
+    }
   }
 }
