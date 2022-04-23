@@ -2,7 +2,7 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
-import { requireAdmin, requireUserId } from "~/session.server";
+import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
 import { getNoteListItems } from "~/models/note.server";
 import { Header } from "~/components/common";
@@ -12,7 +12,6 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  // await requireAdmin(request);
   const userId = await requireUserId(request);
   const noteListItems = await getNoteListItems({ userId });
   return json<LoaderData>({ noteListItems });

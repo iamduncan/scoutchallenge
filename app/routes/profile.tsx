@@ -84,6 +84,41 @@ export default function ProfilePage() {
                 </span>
               </li>
             </ul>
+            {adminSecret && (
+              <div className="mt-3">
+                <Form
+                  action="/profile/update"
+                  method="post"
+                  className="flex flex-col"
+                >
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="role"
+                      className="block text-sm font-medium leading-5 text-gray-700"
+                    >
+                      Role
+                    </label>
+                    <select
+                      id="role"
+                      name="role"
+                      className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      defaultValue={user.role}
+                    >
+                      <option value="">Select a role</option>
+                      {roleOptions}
+                    </select>
+                  </div>
+                  <div className="mt-3 flex flex-col">
+                    <button
+                      type="submit"
+                      className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-500 focus:outline-none focus:border-purple-700 focus:shadow-outline-purple active:bg-purple-700 transition duration-150 ease-in-out"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </Form>
+              </div>
+            )}
           </div>
         </div>
         <div className="mx-2 h-64 w-full md:w-9/12">

@@ -1,8 +1,7 @@
-import { ArrowRightIcon, MapIcon } from "@heroicons/react/outline";
+import { MapIcon } from "@heroicons/react/outline";
 import type { Group, User } from "@prisma/client";
-import { Form, Link } from "@remix-run/react";
-import { Compass } from "~/components/icons";
-import UserMenu from '~/components/ui/UserMenu';
+import { Link } from "@remix-run/react";
+import { UserMenu } from "~/components/ui";
 
 type Props = {
   user: User & { groups: Group[] };
@@ -10,7 +9,6 @@ type Props = {
 };
 
 export default function Header(props: Props) {
-  const { user } = props;
   return (
     <header className="body-font text-gray-600">
       <div className="container mx-auto flex flex-col flex-wrap items-center p-5 md:flex-row">
@@ -25,9 +23,6 @@ export default function Header(props: Props) {
           <Link to="/challenges" className="mr-5 hover:text-gray-900">
             Challenges
           </Link>
-          <a className="mr-5 hover:text-gray-900">Second Link</a>
-          <a className="mr-5 hover:text-gray-900">Third Link</a>
-          <a className="mr-5 hover:text-gray-900">Fourth Link</a>
         </nav>
         <UserMenu />
       </div>
