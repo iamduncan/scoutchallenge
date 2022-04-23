@@ -17,7 +17,7 @@ const AdminLayout: FC = ({ children }) => {
     <div className="flex h-screen flex-row-reverse">
       <div className="flex flex-grow flex-col">
         <div className="text-center">
-          <Header user={user} />
+          <Header user={user} admin />
         </div>
         <main className="flex-grow">{children}</main>
         <div className="text-center">Footer</div>

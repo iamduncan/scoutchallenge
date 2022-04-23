@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Link, Form } from "@remix-run/react";
 import { useClickOutside } from "~/hooks/useClickOutside";
-import { useUser } from '~/utils';
+import { useUser } from "~/utils";
 
 import avatarPlaceholder from "~/assets/images/avatar-placeholder.gif";
 
@@ -20,6 +20,7 @@ const showUserImg = (picture?: string) => {
 const UserMenu = () => {
   const [open, setOpen] = useState(false);
   const userData = useUser();
+  const userRole = userData.role;
   const userMenuRef = useRef<HTMLDivElement>(null);
   useClickOutside(userMenuRef, () => setOpen(false));
   return userData !== null ? (
@@ -29,14 +30,16 @@ const UserMenu = () => {
         onClick={() => setOpen(!open)}
       >
         <div className="user-menu__avatar px-3">{showUserImg()}</div>
-        <div className="user-menu__info md:flex hidden flex-col justify-center">
+        <div className="user-menu__info hidden flex-col justify-center text-gray-50 md:flex">
           <div className="user-menu__info-name text-base font-semibold">
-            <span>{userData.firstName} {userData.lastName}</span>
+            <span>
+              {userData.firstName} {userData.lastName}
+            </span>
           </div>
         </div>
       </button>
       <div
-        className={`absolute z-20 mt-2 w-48 rounded-md bg-white py-2 shadow-xl text-left ${
+        className={`absolute z-20 mt-2 w-48 rounded-md bg-white py-2 text-left shadow-xl ${
           open ? "" : "hidden"
         }`}
       >
@@ -64,6 +67,16 @@ const UserMenu = () => {
         >
           Settings
         </Link>
+        {(userRole === "ADMIN" ||
+          userRole === "GROUPADMIN" ||
+          userRole === "SECTIONADMIN") && (
+          <Link
+            to="/admin"
+            className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"
+          >
+            Admin
+          </Link>
+        )}
         <Form action="/logout" method="post" className="w-full">
           <button
             type="submit"

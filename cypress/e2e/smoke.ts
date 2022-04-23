@@ -24,8 +24,10 @@ describe("smoke tests", () => {
     cy.findByRole("textbox", { name: /last name/i }).type(loginForm.lastName);
     cy.findByRole("button", { name: /create account/i }).click();
 
-    cy.findByRole("link", { name: /notes/i }).click();
-    cy.findByRole("button", { name: `avatar ${loginForm.firstName} ${loginForm.lastName}` }).click();
+    cy.findByRole("link", { name: /challenges/i }).click();
+    cy.findByRole("button", {
+      name: `avatar ${loginForm.firstName} ${loginForm.lastName}`,
+    }).click();
     cy.findByRole("button", { name: /logout/i }).click();
     cy.findByRole("link", { name: /log in/i });
   });
@@ -36,9 +38,9 @@ describe("smoke tests", () => {
       body: faker.lorem.sentences(1),
     };
     cy.login();
-    cy.visit("/");
+    cy.visit("/notes");
 
-    cy.findByRole("link", { name: /notes/i }).click();
+    // cy.findByRole("link", { name: /notes/i }).click();
     cy.findByText("No notes yet");
 
     cy.findByRole("link", { name: /\+ new note/i }).click();

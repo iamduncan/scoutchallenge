@@ -1,8 +1,12 @@
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
+import { userInfo } from "os";
 import * as React from "react";
 import { getGroupListItems } from "~/models/group.server";
+import { createSection } from "~/models/section.server";
+import { getUser } from "~/session.server";
 import { useUser } from "~/utils";
 
 type LoaderData = {
@@ -14,11 +18,55 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json<LoaderData>({ groups });
 };
 
+function validateName(content: string) {
+  if (content.length < 5) {
+    return `That name is too short`;
+  }
+}
+
 type ActionData = {
   errors?: {
     name?: string;
-    body?: string;
+    group?: string;
   };
+  formError?: string;
+  fields?: {
+    name?: string;
+    group?: string;
+  };
+};
+
+const badRequest = (data: ActionData) => json(data, { status: 400 });
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const name = formData.get("name");
+  const group = formData.get("group");
+  const user = await getUser(request);
+  if (typeof name !== "string" || typeof group !== "string") {
+    return badRequest({ formError: "Form not submitted correctly" });
+  }
+
+  if (!user) {
+    return badRequest({
+      formError: "You must be logged in to create a section",
+    });
+  }
+
+  const errors = {
+    name: validateName(name),
+  };
+  const fields = { name, group: group || user?.groups[0]?.id };
+  if (Object.values(errors).some(Boolean)) {
+    return badRequest({ errors, fields });
+  }
+  const section = await createSection({
+    name,
+    group: group || user?.groups[0]?.id,
+    userId: user.id,
+  });
+
+  return redirect(`/admin/sections/${section.id}`);
 };
 
 export default function NewSectionPage() {
@@ -28,13 +76,10 @@ export default function NewSectionPage() {
 
   const actionData = useActionData() as ActionData;
   const nameRef = React.useRef<HTMLInputElement>(null);
-  const bodyRef = React.useRef<HTMLTextAreaElement>(null);
 
   React.useEffect(() => {
     if (actionData?.errors?.name) {
       nameRef.current?.focus();
-    } else if (actionData?.errors?.body) {
-      bodyRef.current?.focus();
     }
   }, [actionData]);
 

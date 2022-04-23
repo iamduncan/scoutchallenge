@@ -1,6 +1,6 @@
 import { RoleType } from "@prisma/client";
-import { Form, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
+import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { useUser } from "~/utils";
 
@@ -12,6 +12,8 @@ import {
   UserIcon,
 } from "@heroicons/react/outline";
 import { AppLayout } from "~/layouts";
+import { updateUser } from "~/models/user.server";
+import { getUserId } from "~/session.server";
 
 type LoaderData = {
   adminSecret: boolean;
@@ -24,6 +26,34 @@ export const loader: LoaderFunction = async ({ request }) => {
     process.env.ADMIN_SECRET !== undefined &&
     adminSecretQuery === process.env.ADMIN_SECRET;
   return json<LoaderData>({ adminSecret });
+};
+
+export const action: ActionFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const adminSecretQuery = url.searchParams.get("adminSecret");
+  const adminSecret =
+    process.env.ADMIN_SECRET !== undefined &&
+    adminSecretQuery === process.env.ADMIN_SECRET;
+  if (!adminSecret) {
+    return json(
+      {
+        status: "error",
+        message: "You are not authorized to view this page.",
+      },
+      403
+    );
+  }
+  const formData = await request.formData();
+  const role = formData.get("role") as RoleType;
+  if (!Object.values(RoleType).includes(role)) {
+    return json({ status: "error", message: "Invalid role" }, 400);
+  }
+  const userId = await getUserId(request);
+  if (!userId) {
+    return json({ status: "error", message: "No user id" }, 400);
+  }
+  await updateUser(userId, { role });
+  return json({ status: "success" });
 };
 
 export default function ProfilePage() {
@@ -40,12 +70,13 @@ export default function ProfilePage() {
       );
     }
   }
+  const [searchParams] = useSearchParams();
 
   return (
     <AppLayout>
       <div className="no-wrap md:-mx-2 md:flex ">
         <div className="w-full md:mx-2 md:w-3/12">
-          <div className="border-t-4 border-purple-400 bg-white p-3">
+          <div className="bg-white p-3">
             <div className="image overflow-hidden">
               <img
                 className="mx-auto h-auto w-full"
@@ -56,14 +87,14 @@ export default function ProfilePage() {
             <h1 className="my-1 text-xl font-bold leading-8 text-gray-900">
               {user.firstName} {user.lastName}
             </h1>
-            <h3 className="font-lg text-semibold leading-6 text-gray-600">
+            {/* <h3 className="font-lg text-semibold leading-6 text-gray-600">
               Owner at Her Company Inc.
             </h3>
             <p className="text-sm leading-6 text-gray-500 hover:text-gray-600">
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
               Reprehenderit, eligendi dolorum sequi illum qui unde aspernatur
               non deserunt
-            </p>
+            </p> */}
             <ul className="mt-3 divide-y rounded bg-gray-100 py-2 px-3 text-gray-600 shadow-sm hover:text-gray-700 hover:shadow">
               <li className="flex items-center py-3">
                 <span>Status</span>
@@ -84,10 +115,12 @@ export default function ProfilePage() {
                 </span>
               </li>
             </ul>
-            {adminSecret && (
+            {adminSecret && searchParams.get("adminSecret") && (
               <div className="mt-3">
                 <Form
-                  action="/profile/update"
+                  action={`/profile?adminSecret=${searchParams.get(
+                    "adminSecret"
+                  )}`}
                   method="post"
                   className="flex flex-col"
                 >
@@ -101,7 +134,7 @@ export default function ProfilePage() {
                     <select
                       id="role"
                       name="role"
-                      className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:shadow-outline-blue focus:border-blue-300 transition duration-150 ease-in-out sm:text-sm sm:leading-5"
+                      className="focus:shadow-outline-blue mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
                       defaultValue={user.role}
                     >
                       <option value="">Select a role</option>
@@ -111,7 +144,7 @@ export default function ProfilePage() {
                   <div className="mt-3 flex flex-col">
                     <button
                       type="submit"
-                      className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-500 focus:outline-none focus:border-purple-700 focus:shadow-outline-purple active:bg-purple-700 transition duration-150 ease-in-out"
+                      className="focus:shadow-outline-purple flex w-full justify-center rounded-md border border-transparent bg-purple-600 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-purple-500 focus:border-purple-700 focus:outline-none active:bg-purple-700"
                     >
                       Update
                     </button>
@@ -124,7 +157,7 @@ export default function ProfilePage() {
         <div className="mx-2 h-64 w-full md:w-9/12">
           <div className="rounded-sm bg-white p-3 shadow-sm">
             <div className="flex items-center space-x-2 font-semibold leading-8 text-gray-900">
-              <span className="text-green-500">
+              <span className="text-purple-600">
                 <UserIcon className="h-5" />
               </span>
               <span className="tracking-wide">About</span>
@@ -150,7 +183,7 @@ export default function ProfilePage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 font-semibold leading-8 text-gray-900">
-              <span className="text-green-500">
+              <span className="text-purple-600">
                 <CollectionIcon className="h-5" />
               </span>
               <span className="tracking-wide">Groups</span>
@@ -162,7 +195,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="flex items-center space-x-2 font-semibold leading-8 text-gray-900">
-              <span className="text-green-500">
+              <span className="text-purple-600">
                 <UserGroupIcon className="h-5" />
               </span>
               <span className="tracking-wide">Sections</span>
@@ -173,9 +206,9 @@ export default function ProfilePage() {
               ))}
             </div>
 
-            <button className="focus:shadow-outline hover:shadow-xs my-4 block w-full rounded-lg p-3 text-sm font-semibold text-blue-800 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">
+            {/* <button className="focus:shadow-outline hover:shadow-xs my-4 block w-full rounded-lg p-3 text-sm font-semibold text-blue-800 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none">
               Show Full Information
-            </button>
+            </button> */}
           </div>
 
           <div className="my-4"></div>
@@ -184,14 +217,19 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2">
               <div>
                 <div className="mb-3 flex items-center space-x-2 font-semibold leading-8 text-gray-900">
-                  <span className="text-green-500">
+                  <span className="text-purple-600">
                     <PuzzleIcon className="h-5" />
                   </span>
                   <span className="tracking-wide">Challenges</span>
                 </div>
                 <ul className="list-inside space-y-2">
                   <li>
-                    <div className="text-teal-600">
+                    <div>
+                      You don't have any challenges available at the moment.
+                    </div>
+                  </li>
+                  {/* <li>
+                    <div className="text-indigo-600">
                       Owner at Her Company Inc.
                     </div>
                     <div className="text-xs text-gray-500">
@@ -199,7 +237,7 @@ export default function ProfilePage() {
                     </div>
                   </li>
                   <li>
-                    <div className="text-teal-600">
+                    <div className="text-indigo-600">
                       Owner at Her Company Inc.
                     </div>
                     <div className="text-xs text-gray-500">
@@ -207,7 +245,7 @@ export default function ProfilePage() {
                     </div>
                   </li>
                   <li>
-                    <div className="text-teal-600">
+                    <div className="text-indigo-600">
                       Owner at Her Company Inc.
                     </div>
                     <div className="text-xs text-gray-500">
@@ -215,18 +253,18 @@ export default function ProfilePage() {
                     </div>
                   </li>
                   <li>
-                    <div className="text-teal-600">
+                    <div className="text-indigo-600">
                       Owner at Her Company Inc.
                     </div>
                     <div className="text-xs text-gray-500">
                       March 2020 - Now
                     </div>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
-              <div>
+              {/* <div>
                 <div className="mb-3 flex items-center space-x-2 font-semibold leading-8 text-gray-900">
-                  <span className="text-green-500">
+                  <span className="text-purple-600">
                     <svg
                       className="h-5"
                       xmlns="http://www.w3.org/2000/svg"
@@ -251,7 +289,7 @@ export default function ProfilePage() {
                 </div>
                 <ul className="list-inside space-y-2">
                   <li>
-                    <div className="text-teal-600">
+                    <div className="text-indigo-600">
                       Masters Degree in Oxford
                     </div>
                     <div className="text-xs text-gray-500">
@@ -259,7 +297,7 @@ export default function ProfilePage() {
                     </div>
                   </li>
                   <li>
-                    <div className="text-teal-600">
+                    <div className="text-indigo-600">
                       Bachelors Degreen in LPU
                     </div>
                     <div className="text-xs text-gray-500">
@@ -267,7 +305,7 @@ export default function ProfilePage() {
                     </div>
                   </li>
                 </ul>
-              </div>
+              </div> */}
             </div>
           </div>
 

@@ -70,6 +70,29 @@ export async function requireAdmin(request: Request) {
   throw redirect(`/?${deniedParams}`);
 }
 
+export async function requireGroupAdmin(request: Request) {
+  const user = await requireUser(request);
+  if (user.role === "ADMIN" || user.role === "GROUPADMIN") return user;
+
+  const deniedParams = new URLSearchParams([["denied", "admin"]]);
+
+  throw redirect(`/?${deniedParams}`);
+}
+
+export async function requireSectionAdmin(request: Request) {
+  const user = await requireUser(request);
+  if (
+    user.role === "ADMIN" ||
+    user.role === "GROUPADMIN" ||
+    user.role === "SECTIONADMIN"
+  )
+    return user;
+
+  const deniedParams = new URLSearchParams([["denied", "admin"]]);
+
+  throw redirect(`/?${deniedParams}`);
+}
+
 export async function createUserSession({
   request,
   userId,

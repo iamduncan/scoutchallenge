@@ -1,4 +1,4 @@
-import type { Group, Password, User } from "@prisma/client";
+import type { Group, Password, Prisma, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 import { prisma } from "~/db.server";
@@ -35,6 +35,31 @@ export async function createUser(
       lastName,
       groups: group ? { create: { name: group } } : undefined,
       role,
+    },
+  });
+}
+
+export async function updateUser(
+  id: User["id"],
+  data: Prisma.UserUpdateWithoutPasswordInput
+) {
+  return prisma.user.update({
+    where: { id },
+    data,
+  });
+}
+
+export async function updateUserPassword(id: User["id"], password: string) {
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  return prisma.user.update({
+    where: { id },
+    data: {
+      password: {
+        update: {
+          hash: hashedPassword,
+        },
+      },
     },
   });
 }
