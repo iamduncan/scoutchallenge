@@ -43,7 +43,7 @@ export const action: ActionFunction = async ({ request }) => {
   const name = formData.get("name");
   const group = formData.get("group");
   const user = await getUser(request);
-  if (typeof name !== "string" || typeof group !== "string") {
+  if (typeof name !== "string") {
     return badRequest({ formError: "Form not submitted correctly" });
   }
 
@@ -56,13 +56,14 @@ export const action: ActionFunction = async ({ request }) => {
   const errors = {
     name: validateName(name),
   };
-  const fields = { name, group: group || user?.groups[0]?.id };
+  const groupId = group !== "" ? (group as string) : user?.groups[0]?.id;
+  const fields = { name, group: groupId };
   if (Object.values(errors).some(Boolean)) {
     return badRequest({ errors, fields });
   }
   const section = await createSection({
     name,
-    group: group || user?.groups[0]?.id,
+    group: groupId,
     userId: user.id,
   });
 
