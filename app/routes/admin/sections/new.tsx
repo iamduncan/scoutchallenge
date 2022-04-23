@@ -55,8 +55,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   const errors = {
     name: validateName(name),
+    group: group === "" ? "You must select a group" : undefined,
   };
-  const groupId = group !== "" ? (group as string) : user?.groups[0]?.id;
+  const groupId = group !== null ? (group as string) : user?.groups[0]?.id;
   const fields = { name, group: groupId };
   if (Object.values(errors).some(Boolean)) {
     return badRequest({ errors, fields });
@@ -131,9 +132,9 @@ export default function NewSectionPage() {
               ))}
             </select>
           </label>
-          {actionData?.errors?.name && (
-            <div className="pt-1 text-red-700" id="name-error">
-              {actionData.errors.name}
+          {actionData?.errors?.group && (
+            <div className="pt-1 text-red-700" id="group-error">
+              {actionData.errors.group}
             </div>
           )}
         </div>

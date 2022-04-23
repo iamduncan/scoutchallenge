@@ -48,7 +48,7 @@ model Group {
 
 model Section {
   id   String @id @default(cuid())
-  name String @unique
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -63,7 +63,7 @@ model Section {
 
 model Challenge {
   id   String @id @default(cuid())
-  name String @unique
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,7 +75,7 @@ model Challenge {
 
 model ChallengeSection {
   id          String @id @default(cuid())
-  title       String @unique
+  title       String
   description String
 
   order Int
@@ -91,7 +91,7 @@ model ChallengeSection {
 
 model Question {
   id          String       @id @default(cuid())
-  title       String       @unique
+  title       String
   description String
   hint        String
   type        QuestionType
@@ -109,7 +109,7 @@ model Question {
 
 model Answer {
   id        String  @id @default(cuid())
-  response  String  @unique
+  response  String
   isCorrect Boolean
 
   createdAt DateTime @default(now())

@@ -5,7 +5,7 @@ import { useUser } from "~/utils";
 const AppLayout: FC = ({ children }) => {
   const user = useUser();
   return (
-    <div className="flex h-screen flex-row-reverse">
+    <div className="flex h-full flex-row-reverse">
       <div className="flex flex-grow flex-col">
         <Header user={user} />
         <main className="container mx-auto -mt-10 mb-5 h-full flex-grow rounded-t-xl bg-white pt-6">

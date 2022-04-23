@@ -14,7 +14,7 @@ const AdminLayout: FC = ({ children }) => {
   const user = useUser();
 
   return (
-    <div className="flex h-screen flex-row-reverse">
+    <div className="flex h-full flex-row-reverse">
       <div className="flex flex-grow flex-col">
         <div className="text-center">
           <Header user={user} admin />

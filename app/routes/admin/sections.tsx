@@ -2,22 +2,24 @@ import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { getSectionListItems } from "~/models/section.server";
-import { requireUserId } from "~/session.server";
+import { requireUser } from "~/session.server";
 
 type LoaderData = {
   sectionListItems: Awaited<ReturnType<typeof getSectionListItems>>;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await requireUserId(request);
-  const sectionListItems = await getSectionListItems({ userId: userId });
+  const user = await requireUser(request);
+  const sectionListItems = await getSectionListItems({
+    groupId: user.groups[0]?.id || undefined,
+  });
   return json<LoaderData>({ sectionListItems });
 };
 
 export default function SectionsPage() {
   const data = useLoaderData() as LoaderData;
   return (
-    <div className="flex h-full min-h-screen flex-col">
+    <div className="flex h-full flex-col">
       <main className="flex h-full bg-white">
         <div className="h-full w-80 border-r bg-gray-50">
           <Link to="new" className="block p-4 text-xl text-blue-500">

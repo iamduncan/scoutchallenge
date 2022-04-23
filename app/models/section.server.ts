@@ -1,4 +1,4 @@
-import type { User, Section } from "@prisma/client";
+import type { User, Section, Group } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
@@ -13,9 +13,9 @@ export function getSection({ id }: Pick<Section, "id">) {
   });
 }
 
-export function getSectionListItems({ userId }: { userId: User["id"] }) {
+export function getSectionListItems({ groupId }: { groupId?: Group["id"] }) {
   return prisma.section.findMany({
-    where: { users: { some: { id: userId } } },
+    where: groupId ? { group: { id: groupId } } : undefined,
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
