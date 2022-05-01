@@ -1,12 +1,81 @@
-import { Link, useSearchParams } from "@remix-run/react";
-import { useOptionalUser } from "~/utils";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { useOptionalUser, validateEmail } from "~/utils";
+import * as React from "react";
 
 import ExploringNewPlacesImg from "~/assets/images/exploring-new-places.jpg";
+import type { ActionFunction } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
+import { addSubscriber } from "~/models/user.server";
+import { SuccessAlert } from "~/components/ui";
+
+interface ActionData {
+  errors: {
+    firstName?: string;
+    email?: string;
+  };
+  message?: string;
+}
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const firstName = formData.get("firstName");
+  const email = formData.get("email");
+
+  if (typeof firstName !== "string" || firstName.length < 2) {
+    return json({
+      errors: {
+        firstName: "First name is required",
+      },
+    });
+  }
+
+  if (!validateEmail(email)) {
+    return json<ActionData>(
+      {
+        errors: { email: "Please enter a valid email address" },
+      },
+      { status: 400 }
+    );
+  }
+
+  const subscriber = await addSubscriber(firstName, email);
+  if (!subscriber) {
+    return json<ActionData>(
+      {
+        errors: {
+          email: "Subscriber already registered",
+        },
+      },
+      { status: 400 }
+    );
+  }
+
+  return json<ActionData>({
+    message: "You have been subscribed to updates",
+    errors: {},
+  });
+};
 
 export default function Index() {
   const [searchParams] = useSearchParams();
   const denied = searchParams.get("denied");
   const user = useOptionalUser();
+  const actionData = useActionData<ActionData>();
+  const nameRef = React.useRef<HTMLInputElement>(null);
+  const emailRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    if (actionData?.errors?.firstName) {
+      nameRef.current?.focus();
+    } else if (actionData?.errors?.email) {
+      emailRef.current?.focus();
+    }
+    if (actionData?.message && nameRef.current && emailRef.current) {
+      nameRef.current.value = "";
+      emailRef.current.value = "";
+    }
+  }, [actionData]);
+
   return (
     <main className="relative min-h-screen bg-white sm:items-center sm:justify-center">
       {denied && (
@@ -41,30 +110,73 @@ export default function Index() {
               Using our platform, you can create and share your own adventure.
               Encourage your young people to continue the adventure.
             </p>
+            {actionData?.message && (
+              <SuccessAlert>{actionData.message}</SuccessAlert>
+            )}
             <div className="mb-4 leading-relaxed">
               Sign up now to find out when when are ready to launch.
             </div>
-            <div className="flex w-full items-end justify-center md:justify-start">
-              <div className="relative mr-4 w-2/4 lg:w-full xl:w-1/2">
-                <label htmlFor="hero-field" className="hidden">
-                  Email Address
-                </label>
-                <input
-                  placeholder="Email"
-                  type="email"
-                  id="hero-field"
-                  name="hero-field"
-                  className="w-full rounded border border-gray-300 bg-gray-100 bg-opacity-50 py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200"
-                />
+            <Form method="post" className="w-full">
+              <div className="flex w-full flex-col items-center justify-center gap-2 md:flex-row md:justify-start">
+                <div className="relative w-4/5 lg:w-full xl:w-1/3">
+                  <label htmlFor="hero-field" className="hidden">
+                    First Name
+                  </label>
+                  <input
+                    placeholder="First Name"
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    required
+                    autoComplete="given-name"
+                    ref={nameRef}
+                    aria-invalid={
+                      actionData?.errors?.firstName ? true : undefined
+                    }
+                    aria-describedby="firstName-error"
+                    className="w-full rounded border border-gray-300 bg-gray-100 bg-opacity-50 py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200"
+                  />
+                </div>
+                <div className="relative w-4/5 lg:w-full xl:w-1/3">
+                  <label htmlFor="hero-field" className="hidden">
+                    Email Address
+                  </label>
+                  <input
+                    placeholder="Email"
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    autoComplete="email"
+                    ref={emailRef}
+                    aria-invalid={actionData?.errors?.email ? true : undefined}
+                    aria-describedby="email-error"
+                    className="w-full rounded border border-gray-300 bg-gray-100 bg-opacity-50 py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="inline-flex rounded border-0 bg-indigo-500 py-2 px-6 text-lg text-white hover:bg-indigo-600 focus:outline-none"
+                >
+                  Sign Up
+                </button>
               </div>
-              <button className="inline-flex rounded border-0 bg-indigo-500 py-2 px-6 text-lg text-white hover:bg-indigo-600 focus:outline-none">
-                Sign Up
-              </button>
-            </div>
+              {actionData?.errors?.firstName && (
+                <div className="pt-1 text-red-700" id="firstName-error">
+                  {actionData.errors.firstName}
+                </div>
+              )}
+              {actionData?.errors?.email && (
+                <div className="pt-1 text-red-700" id="email-error">
+                  {actionData.errors.email}
+                </div>
+              )}
+            </Form>
+
             <p className="mt-2 mb-8 w-full text-sm text-gray-500">
               We won't send you spam and we'll never share your email address.
             </p>
-            <div className="flex md:flex-col lg:flex-row">
+            {/* <div className="flex md:flex-col lg:flex-row">
               <button className="inline-flex items-center rounded-lg bg-gray-100 py-3 px-5 hover:bg-gray-200 focus:outline-none">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -96,11 +208,11 @@ export default function Index() {
                   <span className="title-font font-medium">App Store</span>
                 </span>
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>
-      <div className="mx-auto mt-10 max-w-sm sm:flex sm:max-w-none sm:justify-center">
+      {/* <div className="mx-auto mt-10 max-w-sm sm:flex sm:max-w-none sm:justify-center">
         {user ? (
           <Link
             to="/challenges"
@@ -124,7 +236,7 @@ export default function Index() {
             </Link>
           </div>
         )}
-      </div>
+      </div> */}
     </main>
   );
 }

@@ -13,6 +13,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     // and make a HEAD request to ourselves, then we're good.
     await Promise.all([
       prisma.user.count(),
+      // use the health check to clear old tokens
+      prisma.token.deleteMany({ where: { expiresAt: { lte: new Date() } } }),
       fetch(url.toString(), { method: "HEAD" }).then((r) => {
         if (!r.ok) return Promise.reject(r);
       }),

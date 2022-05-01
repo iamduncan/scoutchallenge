@@ -26,6 +26,7 @@ model User {
 
   answers Answer[]
   notes   Note[]
+  tokens  Token[]
 }
 
 model Password {
@@ -132,6 +133,15 @@ model Note {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String
+}
+
+model Token {
+  id        String    @id @default(uuid())
+  token     String    @unique @default(cuid())
+  user      User      @relation(fields: [userId], references: [id], onUpdate: NoAction)
+  userId    String
+  createdAt DateTime? @default(now())
+  expiresAt DateTime?
 }
 
 enum RoleType {
