@@ -1,6 +1,5 @@
 import type { Group, Password, Prisma, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import mailgun from "mailgun-js";
 
 import { prisma } from "~/db.server";
 import { mg } from "~/libs/email/config";
@@ -130,26 +129,22 @@ export const sendPasswordReset = async (email: User["email"]) => {
     },
   });
 
-  await mg()
-    .messages()
-    .send(
-      {
-        from: "Scout Challenge Auth <auth@scoutchallenge.app>",
-        to: email,
-        subject: "Reset your Scout Challenge password",
-        text: `You have requested to reset your Scout Challenge password.
+  try {
+    const mailGunDomain = process.env.MAILGUN_DOMAIN || "";
+    const msg = await mg().messages.create(mailGunDomain, {
+      from: "Scout Challenge Auth <auth@scoutchallenge.app>",
+      to: email,
+      subject: "Reset your Scout Challenge password",
+      text: `You have requested to reset your Scout Challenge password.
 
         Please click the following link to reset your password:
         https://scoutchallenge.app/reset-password/${token.token}
 
         If you did not request to reset your password, please ignore this email.`,
-      },
-      (err, body) => {
-        if (err) {
-          console.error(err);
-        }
-      }
-    );
+    });
+  } catch (err) {
+    console.error(err);
+  }
 
   return user;
 };
@@ -182,7 +177,7 @@ export const addSubscriber = async (name: string, address: string) => {
     return;
   }
   try {
-    const subscriber = await mg().lists(subscriberList).members().create({
+    const subscriber = await mg().lists.members.createMember(subscriberList, {
       name,
       address,
       subscribed: true,
