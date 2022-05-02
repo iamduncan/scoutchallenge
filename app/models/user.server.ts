@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "~/db.server";
 import { mg } from "~/libs/email/config";
 
-export type { User } from "@prisma/client";
+export type { User, Token } from "@prisma/client";
 
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({ where: { id }, include: { groups: true } });
@@ -12,6 +12,35 @@ export async function getUserById(id: User["id"]) {
 
 export async function getUserByEmail(email: User["email"]) {
   return prisma.user.findUnique({ where: { email } });
+}
+
+export async function listUsers({
+  limit = 10,
+  offset = 0,
+  orderBy = { createdAt: "desc" },
+  where = {},
+}: {
+  limit?: number;
+  offset?: number;
+  orderBy?: Prisma.UserOrderByWithRelationInput;
+  where?: Prisma.UserWhereInput;
+} = {}) {
+  return prisma.user.findMany({
+    take: limit,
+    skip: offset,
+    orderBy,
+    where,
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      groups: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 }
 
 export async function createUser(
@@ -126,12 +155,13 @@ export const sendPasswordReset = async (email: User["email"]) => {
           email,
         },
       },
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
     },
   });
 
   try {
     const mailGunDomain = process.env.MAILGUN_DOMAIN || "";
-    const msg = await mg().messages.create(mailGunDomain, {
+    await mg().messages.create(mailGunDomain, {
       from: "Scout Challenge Auth <auth@scoutchallenge.app>",
       to: email,
       subject: "Reset your Scout Challenge password",
@@ -149,6 +179,24 @@ export const sendPasswordReset = async (email: User["email"]) => {
   return user;
 };
 
+export const listTokens = async () => {
+  return prisma.token.findMany({
+    select: {
+      id: true,
+      token: true,
+      createdAt: true,
+      expiresAt: true,
+      user: {
+        select: {
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    },
+  });
+};
+
 export const tokenIsValid = async (token: string) => {
   const tokenRecord = await prisma.token.findUnique({
     where: { token },
@@ -157,7 +205,12 @@ export const tokenIsValid = async (token: string) => {
     },
   });
 
-  if (!tokenRecord) {
+  if (!tokenRecord || !tokenRecord.expiresAt) {
+    return false;
+  }
+
+  const expireAt = new Date(tokenRecord.expiresAt);
+  if (expireAt < new Date()) {
     return false;
   }
 
@@ -182,6 +235,23 @@ export const addSubscriber = async (name: string, address: string) => {
       address,
       subscribed: true,
     });
+    return subscriber;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const removeSubscriber = async (address: string) => {
+  const subscriberList = process.env.MAILGUN_SUBSCRIBER_LIST;
+  if (!subscriberList) {
+    console.error("MAILGUN_SUBSCRIBER_LIST is not set");
+    return;
+  }
+  try {
+    const subscriber = await mg().lists.members.destroyMember(
+      subscriberList,
+      address
+    );
     return subscriber;
   } catch (error) {
     console.error(error);

@@ -1,14 +1,73 @@
-import type { FC } from "react";
+import type { FC, SVGProps } from "react";
 import { NavLink } from "@remix-run/react";
 import {
   ChatIcon,
   CogIcon,
+  CollectionIcon,
   InboxInIcon,
   PuzzleIcon,
+  TicketIcon,
   UserGroupIcon,
+  UserIcon,
 } from "@heroicons/react/outline";
 import { Header } from "~/components/common";
 import { useUser } from "~/utils";
+
+const menuItems: {
+  icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+  label: string;
+  to: string;
+  level?: "super" | "group" | "section";
+}[] = [
+  {
+    icon: UserGroupIcon,
+    label: "Sections",
+    to: "/admin/sections",
+    level: "group",
+  },
+  {
+    icon: PuzzleIcon,
+    label: "Challenges",
+    to: "/admin/challenges",
+    level: "section",
+  },
+  {
+    icon: InboxInIcon,
+    label: "Responses",
+    to: "/admin/responses",
+    level: "section",
+  },
+  {
+    icon: ChatIcon,
+    label: "Messages",
+    to: "/admin/messages",
+    level: "section",
+  },
+  {
+    icon: CogIcon,
+    label: "Group Settings",
+    to: "/admin/settings",
+    level: "group",
+  },
+  {
+    icon: UserIcon,
+    label: "Users",
+    to: "/admin/users",
+    level: "super",
+  },
+  {
+    icon: CollectionIcon,
+    label: "Mailing List",
+    to: "/admin/mailing-list",
+    level: "super",
+  },
+  {
+    icon: TicketIcon,
+    label: "Tokens",
+    to: "/admin/tokens",
+    level: "super",
+  },
+];
 
 const AdminLayout: FC = ({ children }) => {
   const user = useUser();
@@ -27,66 +86,43 @@ const AdminLayout: FC = ({ children }) => {
           <h2>Sidebar</h2>
         </div>
         <ul className="md:text-lg">
-          <li>
-            <NavLink
-              to="/admin/sections"
-              className={({ isActive }) =>
-                `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                  isActive && "bg-indigo-100"
-                }`
+          {menuItems
+            .filter(({ level }) => {
+              if (!level) {
+                return true;
               }
-            >
-              <UserGroupIcon className="mr-3 h-6 w-6" /> Sections
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/admin/challenges"
-              className={({ isActive }) =>
-                `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                  isActive && "bg-indigo-100"
-                }`
+              const userLevel = user?.role;
+              if (
+                userLevel === "ADMIN" &&
+                (level === "super" || level === "group" || level === "section")
+              ) {
+                return true;
               }
-            >
-              <PuzzleIcon className="mr-3 h-6 w-6" /> Challenges
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/admin/responses"
-              className={({ isActive }) =>
-                `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                  isActive && "bg-indigo-100"
-                }`
+              if (
+                userLevel === "GROUPADMIN" &&
+                (level === "group" || level === "section")
+              ) {
+                return true;
               }
-            >
-              <InboxInIcon className="mr-3 h-6 w-6" /> Responses
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/admin/messages"
-              className={({ isActive }) =>
-                `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                  isActive && "bg-indigo-100"
-                }`
+              if (userLevel === "SECTIONADMIN" && level === "section") {
+                return true;
               }
-            >
-              <ChatIcon className="mr-3 h-6 w-6" /> Messages
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/admin/settings"
-              className={({ isActive }) =>
-                `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                  isActive && "bg-indigo-100"
-                }`
-              }
-            >
-              <CogIcon className="mr-3 h-6 w-6" /> Group Settings
-            </NavLink>
-          </li>
+              return false;
+            })
+            .map(({ icon: Icon, label, to }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
+                      isActive && "bg-indigo-100"
+                    }`
+                  }
+                >
+                  <Icon className="mr-3 h-6 w-6" /> {label}
+                </NavLink>
+              </li>
+            ))}
         </ul>
       </aside>
     </div>
