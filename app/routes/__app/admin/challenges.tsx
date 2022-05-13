@@ -1,6 +1,17 @@
-import { Link, NavLink, Outlet } from "@remix-run/react";
+import type { Challenge } from "@prisma/client";
+import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
+import { listChallenges } from "~/models/challenge.server";
+
+export const loader: LoaderFunction = async () => {
+  const challenges = await listChallenges();
+  return json({ challenges });
+};
 
 export default function ChallengesPage() {
+  const { challenges } = useLoaderData<{ challenges: Challenge[] }>();
+
   return (
     <div className="flex h-full flex-col">
       <main className="flex h-full bg-white">
@@ -12,16 +23,18 @@ export default function ChallengesPage() {
           <hr />
 
           <ol>
-            <li>
-              <NavLink
-                className={({ isActive }) =>
-                  `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
-                }
-                to="/admin/challenges/1"
-              >
-                📝 Challenge 1
-              </NavLink>
-            </li>
+            {challenges.map((challenge) => (
+              <li key={challenge.id}>
+                <NavLink
+                  className={({ isActive }) =>
+                    `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                  }
+                  to={`/admin/challenges/${challenge.id}`}
+                >
+                  {challenge.name}
+                </NavLink>
+              </li>
+            ))}
           </ol>
         </div>
 

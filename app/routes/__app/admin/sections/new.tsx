@@ -2,7 +2,6 @@ import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
-import { userInfo } from "os";
 import * as React from "react";
 import { getGroupListItems } from "~/models/group.server";
 import { createSection } from "~/models/section.server";
