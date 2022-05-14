@@ -2,10 +2,10 @@ import type { Challenge } from "@prisma/client";
 import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
-import { listChallenges } from "~/models/challenge.server";
+import { getChallengeListItems } from "~/models/challenge.server";
 
 export const loader: LoaderFunction = async () => {
-  const challenges = await listChallenges();
+  const challenges = await getChallengeListItems();
   return json({ challenges });
 };
 

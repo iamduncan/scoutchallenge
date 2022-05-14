@@ -38,16 +38,9 @@ export default function ViewChallengePage() {
   const { challenge, sections } = useLoaderData<LoaderData>();
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <div className="text-xl font-bold">{challenge?.name}</div>
+      <div className="flex justify-between">
+        <div>{challenge?.name}</div>
         <div className="flex items-center">
-          <strong className="relative mr-4 inline-flex items-center rounded border border-gray-600 px-2.5 py-1.5 text-sm font-medium">
-            <span className="text-gray-700"> Status: </span>
-
-            <span className="ml-1 capitalize text-green-700">
-              {challenge.status.toLowerCase()}
-            </span>
-          </strong>
           {challenge?.openDate && (
             <>
               <div className="flex flex-col text-center">
@@ -72,12 +65,12 @@ export default function ViewChallengePage() {
       <Form method="post" className="flex w-full flex-col gap-8">
         <div>
           <label htmlFor="section" className="flex w-full flex-col gap-1">
-            <span>Allow Section to access Challenge</span>
+            <span>Add Challenge to Section</span>
             <select
               name="section"
               id="section"
               defaultValue=""
-              className="flex-1 rounded-md border-2 border-slate-700 px-3 text-lg leading-loose focus:border-blue-500 active:border-blue-500"
+              className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
             >
               <option value="">Select Section</option>
               {sections.map((section) => (

@@ -1,11 +1,13 @@
 import { Form } from "@remix-run/react";
 import { useRef } from "react";
+
 import type { Prisma } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import { createChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
+import Editor from "~/components/ui/Editor/Editor";
 
 function validateName(content: string) {
   if (content.length < 5) {
@@ -65,6 +67,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewChallenge() {
   const nameRef = useRef<HTMLInputElement>(null);
+
   return (
     <Form method="post" className="flex w-full flex-col gap-8">
       <div>
@@ -101,6 +104,13 @@ export default function NewChallenge() {
             id="closeDate"
             className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
           />
+        </label>
+      </div>
+
+      <div>
+        <label htmlFor="introduction" className="flex w-full flex-col gap-1">
+          <span>Introduction: </span>
+          <Editor />
         </label>
       </div>
 
