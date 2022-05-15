@@ -1,5 +1,6 @@
 import { $getListDepth, $isListItemNode, $isListNode } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import type { RangeSelection, NodeSelection, GridSelection } from "lexical";
 import {
   $getSelection,
   $isElementNode,
@@ -9,13 +10,17 @@ import {
 } from "lexical";
 import { useEffect } from "react";
 
-function getElementNodesInSelection(selection: any) {
+function getElementNodesInSelection(
+  selection: RangeSelection | NodeSelection | GridSelection
+) {
   const nodesInSelection = selection.getNodes();
+
+  // anchor exists on selection
 
   if (nodesInSelection.length === 0) {
     return new Set([
-      selection.anchor.getNode().getParentOrThrow(),
-      selection.focus.getNode().getParentOrThrow(),
+      "anchor" in selection && selection.anchor.getNode().getParentOrThrow(),
+      "focus" in selection && selection.focus.getNode().getParentOrThrow(),
     ]);
   }
 
