@@ -45,8 +45,9 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users   User[]
-  Section Section[]
+  users     User[]
+  Section   Section[]
+  Challenge Challenge[]
 }
 
 model Section {
@@ -80,6 +81,8 @@ model Challenge {
   updatedBy   User   @relation("updatedChallenges", fields: [updatedById], references: [id])
   updatedById String
 
+  group    Group     @relation(fields: [groupId], references: [id])
+  groupId  String
   sections Section[]
 
   challengeSections ChallengeSection[]

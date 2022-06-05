@@ -81,7 +81,7 @@ const AdminLayout: FC = ({ children }) => {
         <main className="flex-grow">{children}</main>
         <div className="text-center">Footer</div>
       </div>
-      <aside className="min-w-[225px] basis-1/5 border-r bg-slate-100">
+      <aside className="min-w-[225px] flex-none basis-1/5 border-r bg-slate-100">
         <div className="p-6 text-center">
           <h2>Sidebar</h2>
         </div>

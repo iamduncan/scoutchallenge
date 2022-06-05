@@ -1,9 +1,9 @@
+import { JSDOM } from "jsdom";
 import ExampleTheme from "./themes/ExampleTheme";
 import LexicalComposer from "@lexical/react/LexicalComposer";
 import RichTextPlugin from "@lexical/react/LexicalRichTextPlugin";
 import ContentEditable from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import AutoFocusPlugin from "@lexical/react/LexicalAutoFocusPlugin";
 import TreeViewPlugin from "./plugins/TreeViewPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
@@ -15,10 +15,14 @@ import LinkPlugin from "@lexical/react/LexicalLinkPlugin";
 import ListPlugin from "@lexical/react/LexicalListPlugin";
 import LexicalMarkdownShortcutPlugin from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { TRANSFORMERS } from "@lexical/markdown";
-
+import LexicalOnChangePlugin from "@lexical/react/LexicalOnChangePlugin";
 import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
+import type { EditorState, LexicalEditor } from "lexical";
+import { createEditor } from "lexical";
+import { $getRoot, $getSelection } from "lexical";
+import { $generateNodesFromDOM } from "@lexical/html";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -47,19 +51,23 @@ const editorConfig = {
   ],
 };
 
-export default function Editor() {
+type Props = {
+  onChange: (editorState: EditorState, editor: LexicalEditor) => void;
+};
+
+export default function Editor({ onChange }: Props) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-container">
+      <div className="editor-container max-w-[1000px]">
         <ToolbarPlugin />
         <div className="editor-inner">
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
             placeholder={<Placeholder />}
           />
+          <LexicalOnChangePlugin onChange={onChange} />
           <HistoryPlugin />
-          {process.env.NODE_ENV !== "production" && <TreeViewPlugin />}
-          <AutoFocusPlugin />
+          {process.env.NODE_ENV === "production" && <TreeViewPlugin />}
           <CodeHighlightPlugin />
           <ListPlugin />
           <LinkPlugin />

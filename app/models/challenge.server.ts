@@ -48,3 +48,25 @@ export async function addSectionToChallenge(
     },
   });
 }
+
+export async function removeSectionFromChallenge(
+  challengeId: string,
+  sectionId: string
+) {
+  return prisma.challenge.update({
+    where: { id: challengeId },
+    data: {
+      sections: {
+        disconnect: {
+          id: sectionId,
+        },
+      },
+    },
+  });
+}
+
+export async function deleteChallenge({ id }: Pick<Challenge, "id">) {
+  return prisma.challenge.delete({
+    where: { id },
+  });
+}

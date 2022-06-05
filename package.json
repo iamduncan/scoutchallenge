@@ -1,5 +1,5 @@
 {
-  "name": "blues-stack-template",
+  "name": "scout-challenge",
   "private": true,
   "description": "",
   "license": "",
@@ -39,6 +39,8 @@
   "dependencies": {
     "@heroicons/react": "^1.0.6",
     "@lexical/code": "^0.2.9",
+    "@lexical/hashtag": "^0.3.1",
+    "@lexical/html": "^0.3.1",
     "@lexical/link": "^0.2.9",
     "@lexical/list": "^0.2.9",
     "@lexical/markdown": "^0.2.9",
@@ -57,6 +59,7 @@
     "cross-env": "^7.0.3",
     "express": "^4.17.3",
     "form-data": "^4.0.0",
+    "jsdom": "^19.0.0",
     "lexical": "^0.2.9",
     "mailgun.js": "^5.2.2",
     "morgan": "^1.10.0",
@@ -77,6 +80,7 @@
     "@types/compression": "^1.7.2",
     "@types/eslint": "^8.4.1",
     "@types/express": "^4.17.13",
+    "@types/jsdom": "^16.2.14",
     "@types/morgan": "^1.9.3",
     "@types/node": "^17.0.23",
     "@types/react": "^17.0.43",
