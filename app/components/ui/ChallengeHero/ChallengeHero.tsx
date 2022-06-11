@@ -4,16 +4,21 @@ import ProgressCircular from "../ProgressCircular";
 type ChallengeHeroProps = {
   title: string;
   userProgress?: number;
-  startDate?: string;
-  endDate?: string;
+  startDate?: Date | null;
+  endDate?: Date | null;
 };
 
-const ChallengeHero = ({ title, userProgress }: ChallengeHeroProps) => {
-  const startDate = new Date(2020, 0, 1);
-  const endDate = new Date(2022, 8, 31);
+const ChallengeHero = ({
+  title,
+  userProgress,
+  startDate,
+  endDate,
+}: ChallengeHeroProps) => {
+  const startDateObj = new Date(startDate || "");
+  const endDateObj = new Date(endDate || "");
   const currentDate = new Date();
   const daysLeft = Math.ceil(
-    (endDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+    (endDateObj.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
   );
   const daysLeftText = daysLeft === 1 ? "day" : "days";
 

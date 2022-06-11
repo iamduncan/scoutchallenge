@@ -74,11 +74,6 @@ export default function ViewChallengePage() {
 
   const introductionHtml = challenge?.introduction || "";
 
-  if (window) {
-    const parser = new DOMParser();
-    const dom = parser.parseFromString(introductionHtml, "text/html");
-  }
-
   return (
     <div>
       <div className="flex justify-between">

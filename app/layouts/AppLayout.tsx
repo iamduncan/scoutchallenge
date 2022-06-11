@@ -7,7 +7,7 @@ const AppLayout: FC = ({ children }) => {
   return (
     <div className="layout flex flex-col">
       <Header user={user} />
-      <main className="layout-main container flex-grow overflow-y-auto bg-zinc-100 md:mx-auto md:-mt-10 md:rounded-t-xl">
+      <main className="layout-main container box-content flex-grow overflow-y-auto bg-zinc-100 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400 md:mx-auto md:-mt-10 md:rounded-t-xl">
         {children}
       </main>
       <footer className="flex-none border-t border-gray-300 bg-white text-center text-xs text-stone-500 shadow-lg">

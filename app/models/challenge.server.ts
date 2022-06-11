@@ -14,10 +14,19 @@ export async function listChallenges(): Promise<Challenge[]> {
   return prisma.challenge.findMany();
 }
 
-export async function getChallengeListItems() {
+/**
+ * Get a list of challenges for a given user.
+ *
+ * @param published true to return only published challenges
+ * @returns list of challenges
+ */
+export async function getChallengeListItems(
+  published?: boolean
+): Promise<Pick<Challenge, "id" | "name">[]> {
   return prisma.challenge.findMany({
     select: { id: true, name: true },
     orderBy: { name: "asc" },
+    where: published ? { status: "PUBLISHED" } : undefined,
   });
 }
 

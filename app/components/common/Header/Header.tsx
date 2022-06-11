@@ -15,7 +15,7 @@ export default function Header(props: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <header
-      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 md:container ${
+      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
         !props.admin && "md:pb-16"
       }`}
     >
@@ -51,7 +51,7 @@ export default function Header(props: Props) {
         } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3 md:hidden`}
       >
         <div className="flex- flex items-center justify-between px-3 py-2">
-          <Logo className="h-10 w-10 rounded-full bg-purple-600 p-2 text-gray-100" />
+          <Logo className="h-12 w-12 rounded-full bg-purple-600 p-2 text-gray-100" />
           <h1 className="text-xl font-semibold text-gray-800">
             Scout Challenge
           </h1>
@@ -63,14 +63,17 @@ export default function Header(props: Props) {
           </div>
         </div>
         <ul className="mt-2 flex w-full flex-col pt-2 text-center">
-          <li className="active w-full">
-            <Link
-              className="block w-full border-t border-gray-200 py-3 text-lg font-bold"
-              to="/"
-            >
-              Home
-            </Link>
-          </li>
+          {menuItems.map((item) => (
+            <li key={item.id} className="w-full">
+              <NavLink
+                className="block w-full border-t border-gray-200 py-3 text-lg font-bold"
+                to={item.path}
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </NavLink>
+            </li>
+          ))}
           <li className="w-full">
             <Link
               className="block w-full border-t border-gray-200 py-3 text-lg"

@@ -39,17 +39,18 @@ const SectionOverview = (props: SectionOverviewProps) => {
 
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border-2 bg-white">
-      <div className="flex w-full items-center justify-between px-3 py-2">
-        <h1 className="rounded-lg bg-gray-50/60 text-center text-2xl font-semibold text-gray-800 md:text-6xl">
+      <div
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full cursor-pointer items-center justify-between px-3 py-2"
+      >
+        <h1 className="rounded-lg bg-gray-50/60 text-center text-2xl font-semibold text-gray-800 md:text-3xl">
           {title}
         </h1>
-        <span onClick={() => setExpanded(!expanded)}>
-          {expanded ? (
-            <ChevronUpIcon className="h-8 w-8 text-gray-600" />
-          ) : (
-            <ChevronDownIcon className="h-8 w-8 text-gray-600" />
-          )}
-        </span>
+        {expanded ? (
+          <ChevronUpIcon className="h-8 w-8 text-gray-600" />
+        ) : (
+          <ChevronDownIcon className="h-8 w-8 text-gray-600" />
+        )}
       </div>
       <ul className={`${expanded ? "block" : "hidden"} w-full`}>
         {questions.map((question) => (
@@ -57,7 +58,7 @@ const SectionOverview = (props: SectionOverviewProps) => {
             className="flex w-full items-center justify-between border-t"
             key={question.id}
           >
-            <h3 className="rounded-lg bg-gray-50/60 py-2 pl-3 text-center text-lg font-normal text-gray-800 md:text-4xl">
+            <h3 className="rounded-lg bg-gray-50/60 py-2 pl-3 text-center text-lg font-normal text-gray-800 md:text-2xl">
               {question.title}
             </h3>
             <div className="flex flex-col items-center justify-between pr-3">
