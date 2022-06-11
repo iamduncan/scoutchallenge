@@ -77,7 +77,9 @@ const ChallengeView = () => {
           ]}
         />
       </div>
-      <pre>{JSON.stringify(challenge, null, 2)}</pre>
+      <div className="container hidden overflow-x-auto">
+        <pre>{JSON.stringify(challenge, null, 2)}</pre>
+      </div>
     </div>
   );
 };

@@ -48,7 +48,7 @@ export default function Header(props: Props) {
       <nav
         className={`${
           !isOpen && "hidden"
-        } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3 md:hidden`}
+        } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
       >
         <div className="flex- flex items-center justify-between px-3 py-2">
           <Logo className="h-12 w-12 rounded-full bg-purple-600 p-2 text-gray-100" />
