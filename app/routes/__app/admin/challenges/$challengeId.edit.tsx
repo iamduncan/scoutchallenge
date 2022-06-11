@@ -72,6 +72,13 @@ export default function ViewChallengePage() {
       ? new Date(challenge?.closeDate).toISOString().split("T")[0]
       : undefined;
 
+  const introductionHtml = challenge?.introduction || "";
+
+  if (window) {
+    const parser = new DOMParser();
+    const dom = parser.parseFromString(introductionHtml, "text/html");
+  }
+
   return (
     <div>
       <div className="flex justify-between">
@@ -147,7 +154,7 @@ export default function ViewChallengePage() {
         <div>
           <label htmlFor="introduction" className="flex w-full flex-col gap-1">
             <span>Introduction: </span>
-            <Editor onChange={onChange} />
+            <Editor initialContent={introduction} onChange={onChange} />
             <input
               type="hidden"
               name="introduction"

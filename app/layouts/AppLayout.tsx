@@ -5,28 +5,26 @@ import { useUser } from "~/utils";
 const AppLayout: FC = ({ children }) => {
   const user = useUser();
   return (
-    <div className="flex h-full flex-row-reverse">
-      <div className="flex flex-grow flex-col">
-        <Header user={user} />
-        <main className="container mx-auto -mt-10 mb-5 h-full flex-grow rounded-t-xl bg-white pt-6">
-          {children}
-        </main>
-        <footer className="border-t text-center text-sm text-gray-600">
-          <p>
-            Made with{" "}
-            <span role="img" aria-label="heart">
-              ❤️
-            </span>{" "}
-            by{" "}
-            <a
-              href="https://www.wessexdigitalsolutions.co.uk"
-              className="text-blue-500 hover:text-blue-700"
-            >
-              Wessex Digital Solutions
-            </a>
-          </p>
-        </footer>
-      </div>
+    <div className="layout flex flex-col">
+      <Header user={user} />
+      <main className="layout-main container flex-grow overflow-y-auto bg-zinc-100 md:mx-auto md:-mt-10 md:rounded-t-xl">
+        {children}
+      </main>
+      <footer className="flex-none border-t border-gray-300 bg-white text-center text-xs text-stone-500 shadow-lg">
+        <p>
+          Made with{" "}
+          <span role="img" aria-label="heart">
+            ❤️
+          </span>{" "}
+          by{" "}
+          <a
+            href="https://www.wessexdigitalsolutions.co.uk"
+            className="text-blue-500 hover:text-blue-700"
+          >
+            Wessex Digital Solutions
+          </a>
+        </p>
+      </footer>
     </div>
   );
 };

@@ -20,12 +20,9 @@ import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin";
 import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import type { EditorState, LexicalEditor } from "lexical";
-import { createEditor } from "lexical";
-import { $getRoot, $getSelection } from "lexical";
-import { $generateNodesFromDOM } from "@lexical/html";
 
 function Placeholder() {
-  return <div className="editor-placeholder">Enter some rich text...</div>;
+  return <div className="editor-placeholder">Enter some text...</div>;
 }
 
 const editorConfig = {
@@ -52,10 +49,11 @@ const editorConfig = {
 };
 
 type Props = {
+  initialContent?: string;
   onChange: (editorState: EditorState, editor: LexicalEditor) => void;
 };
 
-export default function Editor({ onChange }: Props) {
+export default function Editor({ initialContent, onChange }: Props) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
       <div className="editor-container max-w-[1000px]">
@@ -64,6 +62,7 @@ export default function Editor({ onChange }: Props) {
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
             placeholder={<Placeholder />}
+            initialEditorState={initialContent}
           />
           <LexicalOnChangePlugin onChange={onChange} />
           <HistoryPlugin />

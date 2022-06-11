@@ -1,7 +1,14 @@
 module.exports = {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
   theme: {
-    extend: {},
+    fontFamily: {
+      sans: ["Nunito", "sans-serif"],
+    },
+    extend: {
+      colors: {
+        "scout-purple": "#7413DC",
+      },
+    },
   },
   plugins: [],
 };
