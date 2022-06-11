@@ -1,6 +1,6 @@
 import { MenuIcon } from "@heroicons/react/outline";
 import type { Group, User } from "@prisma/client";
-import { Link, NavLink } from "@remix-run/react";
+import { Form, Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
 import { Logo } from "~/components/icons";
 import { UserMenu } from "~/components/ui";
@@ -15,7 +15,7 @@ export default function Header(props: Props) {
   const [isOpen, setIsOpen] = useState(false);
   return (
     <header
-      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
+      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 md:container ${
         !props.admin && "md:pb-16"
       }`}
     >
@@ -29,11 +29,21 @@ export default function Header(props: Props) {
             Scout Challenge
           </h1>
         </Link>
+        <div>
+          <Form action="/logout" method="post" className="w-full">
+            <button
+              type="submit"
+              className="block w-full px-4 py-2 text-left text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"
+            >
+              Logout
+            </button>
+          </Form>
 
-        <MenuIcon
-          className="h-10 w-10 text-gray-100"
-          onClick={() => setIsOpen(!isOpen)}
-        />
+          <MenuIcon
+            className="h-10 w-10 text-gray-100"
+            onClick={() => setIsOpen(!isOpen)}
+          />
+        </div>
       </div>
       <nav
         className={`${
