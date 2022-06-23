@@ -12,11 +12,12 @@ type Props = {
 };
 
 export default function Header(props: Props) {
+  const { user, admin } = props;
   const [isOpen, setIsOpen] = useState(false);
   return (
     <header
       className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
-        !props.admin && "md:pb-16"
+        !admin && "md:pb-16"
       }`}
     >
       <div className="flex w-full items-center justify-between">
@@ -63,17 +64,28 @@ export default function Header(props: Props) {
           </div>
         </div>
         <ul className="mt-2 flex w-full flex-col pt-2 text-center">
-          {menuItems.map((item) => (
-            <li key={item.id} className="w-full">
-              <NavLink
-                className="block w-full border-t border-gray-200 py-3 text-lg font-bold"
-                to={item.path}
-                onClick={() => setIsOpen(false)}
-              >
-                {item.label}
-              </NavLink>
-            </li>
-          ))}
+          {menuItems
+            .filter((item) => {
+              if (!item.forAdmin) {
+                return true;
+              }
+              return (
+                user.role === "ADMIN" ||
+                user.role === "GROUPADMIN" ||
+                user.role === "SECTIONADMIN"
+              );
+            })
+            .map((item) => (
+              <li key={item.id} className="w-full">
+                <NavLink
+                  className="block w-full border-t border-gray-200 py-3 text-lg font-bold"
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </NavLink>
+              </li>
+            ))}
           <li className="w-full">
             <Link
               className="block w-full border-t border-gray-200 py-3 text-lg"

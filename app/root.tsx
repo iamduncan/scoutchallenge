@@ -38,7 +38,7 @@ export const links: LinksFunction = () => {
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
   title: "Scout Challenge",
-  viewport: "width=device-width,initial-scale=1",
+  viewport: "width=device-width, initial-scale=1.0",
 });
 
 type LoaderData = {
@@ -53,12 +53,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="max-w-full overflow-y-auto">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

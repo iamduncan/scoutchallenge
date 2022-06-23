@@ -73,7 +73,7 @@ const AdminLayout: FC = ({ children }) => {
   const user = useUser();
 
   return (
-    <div className="flex h-full flex-row-reverse">
+    <div className="flex h-full flex-row-reverse overflow-y-auto">
       <div className="flex flex-grow flex-col">
         <div className="text-center">
           <Header user={user} admin />
@@ -81,7 +81,7 @@ const AdminLayout: FC = ({ children }) => {
         <main className="flex-grow">{children}</main>
         <div className="text-center">Footer</div>
       </div>
-      <aside className="min-w-[225px] flex-none basis-1/5 border-r bg-slate-100">
+      <aside className="hidden min-w-[225px] flex-none basis-1/5 border-r bg-slate-100 md:block">
         <div className="p-6 text-center">
           <h2>Sidebar</h2>
         </div>
