@@ -31,7 +31,7 @@ export async function getChallengeListItems(
 }
 
 export async function getChallenge({ id }: Pick<Challenge, "id">) {
-  return prisma.challenge.findFirst({
+  const challenge = await prisma.challenge.findFirst({
     where: { id },
     include: {
       createdBy: true,
@@ -40,6 +40,16 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
       challengeSections: true,
     },
   });
+
+  if (!challenge) {
+    throw new Error("Challenge not found");
+  }
+  // const introHtml = generateHTML(challenge.introduction || "");
+
+  return {
+    ...challenge,
+    // introductionHtml: introHtml,
+  };
 }
 
 export async function addSectionToChallenge(

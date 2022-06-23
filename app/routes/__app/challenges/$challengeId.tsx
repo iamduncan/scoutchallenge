@@ -1,27 +1,45 @@
-import type { Challenge } from "@prisma/client";
-import { useLoaderData } from "@remix-run/react";
+import { createHeadlessEditor } from "@lexical/headless";
+import { $generateHtmlFromNodes } from "@lexical/html";
+import type { Challenge, User } from "@prisma/client";
+import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
+import { createEditor } from "lexical";
 import { ChallengeHero, SectionOverview } from "~/components/ui";
 import { getChallenge } from "~/models/challenge.server";
+import { getUser } from "~/session.server";
 
 type LoaderData = {
-  challenge: Challenge;
+  challenge: Challenge & { introductionHtml?: string };
+  user: User;
 };
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const user = await getUser(request);
   const challengeId = params.challengeId;
   if (!challengeId) {
     return json({ status: 404, message: "Challenge not found" });
   }
   const challenge = await getChallenge({ id: challengeId });
   return {
-    challenge,
+    challenge: {
+      ...challenge,
+    },
+    user,
   };
 };
 
+const isAdmin = (user: User) =>
+  user?.role === "ADMIN" ||
+  user?.role === "GROUPADMIN" ||
+  user?.role === "SECTIONADMIN";
+
 const ChallengeView = () => {
-  const { challenge } = useLoaderData<LoaderData>();
+  const { challenge, user } = useLoaderData<LoaderData>();
+  let introHtml = "";
+  if (typeof window !== "undefined") {
+    introHtml = generateHTML(challenge.introduction || "");
+  }
 
   return (
     <div>
@@ -34,12 +52,12 @@ const ChallengeView = () => {
         <div className="my-8 px-4">
           <h3 className="text-2xl font-semibold">Introduction</h3>
           <div
-            dangerouslySetInnerHTML={{ __html: challenge.introduction }}
+            dangerouslySetInnerHTML={{ __html: introHtml }}
             className="text-lg"
           />
         </div>
       )}
-      <div className="flex flex-col gap-3 px-4">
+      <div className="flex flex-col gap-3 p-4">
         <SectionOverview title="Hero Skills" questions={[]} />
         <SectionOverview
           title="Hero Knowledge"
@@ -77,7 +95,17 @@ const ChallengeView = () => {
           ]}
         />
       </div>
-      <div className="container hidden overflow-x-auto">
+      {isAdmin(user) && (
+        <div className="flex flex-col gap-3 p-4">
+          <Link
+            to={`/admin/challenges/${challenge.id}/edit`}
+            className="flex flex-col gap-3 p-4"
+          >
+            Edit
+          </Link>
+        </div>
+      )}
+      <div className="container overflow-x-auto">
         <pre>{JSON.stringify(challenge, null, 2)}</pre>
       </div>
     </div>
@@ -85,3 +113,21 @@ const ChallengeView = () => {
 };
 
 export default ChallengeView;
+
+// generate introduction HTML from lexical editor state
+export function generateHTML(editorState: string): string {
+  const editor = createEditor({
+    editorState: JSON.parse(editorState),
+    namespace: "challenge",
+    nodes: [],
+    onError: (error: any) => {
+      console.error(error);
+    },
+  });
+  let html = "";
+  editor.update(() => {
+    console.log("generateHTML", editor.getEditorState()._nodeMap.get("root"));
+    html = $generateHtmlFromNodes(editor);
+  });
+  return html;
+}

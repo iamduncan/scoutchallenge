@@ -57,8 +57,9 @@ export default function ViewChallengePage() {
   const [introduction, setIntroduction] = useState<string>();
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
-      const htmlString = $generateHtmlFromNodes(editor);
-      setIntroduction(htmlString);
+      const editorState = editor.getEditorState();
+      const jsonString = JSON.stringify(editorState);
+      setIntroduction(jsonString);
     });
   }
 
@@ -149,7 +150,10 @@ export default function ViewChallengePage() {
         <div>
           <label htmlFor="introduction" className="flex w-full flex-col gap-1">
             <span>Introduction: </span>
-            <Editor initialContent={introduction} onChange={onChange} />
+            <Editor
+              initialContent={challenge.introduction || ""}
+              onChange={onChange}
+            />
             <input
               type="hidden"
               name="introduction"

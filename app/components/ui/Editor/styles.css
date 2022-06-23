@@ -32,9 +32,7 @@ h1 {
 .editor-container {
   width: 100%;
   margin: 20px auto 20px auto;
-  border-radius: 10px;
   color: #000;
-  border: #000 1px solid;
   position: relative;
   line-height: 20px;
   font-weight: 400;
@@ -118,8 +116,6 @@ h1 {
   margin: 1px auto 0 auto;
   max-height: 250px;
   position: relative;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
   overflow: auto;
   line-height: 14px;
 }

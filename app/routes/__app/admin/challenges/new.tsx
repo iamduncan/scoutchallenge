@@ -9,7 +9,6 @@ import { createChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
 import Editor from "~/components/ui/Editor/Editor";
 import type { EditorState, LexicalEditor } from "lexical";
-import { $generateHtmlFromNodes } from "@lexical/html";
 
 function validateName(content: string) {
   if (content.length < 5) {
@@ -96,8 +95,9 @@ export default function NewChallenge() {
   const [introduction, setIntroduction] = useState<string>();
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
-      const htmlString = $generateHtmlFromNodes(editor);
-      setIntroduction(htmlString);
+      const editorState = editor.getEditorState();
+      const jsonString = JSON.stringify(editorState);
+      setIntroduction(jsonString);
     });
   }
 

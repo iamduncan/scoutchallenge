@@ -5,7 +5,7 @@ export default function TreeViewPlugin() {
   const [editor] = useLexicalComposerContext();
   return (
     <LexicalTreeView
-      viewClassName="tree-view-output"
+      viewClassName="tree-view-output rounded-b-md"
       timeTravelPanelClassName="debug-timetravel-panel"
       timeTravelButtonClassName="debug-timetravel-button"
       timeTravelPanelSliderClassName="debug-timetravel-panel-slider"
