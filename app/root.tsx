@@ -58,7 +58,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="max-w-full overflow-y-auto">
+      <body className="h-full max-w-full overflow-y-auto">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

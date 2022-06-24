@@ -1,10 +1,7 @@
-import { createHeadlessEditor } from "@lexical/headless";
-import { $generateHtmlFromNodes } from "@lexical/html";
 import type { Challenge, User } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
-import { createEditor } from "lexical";
 import { ChallengeHero, SectionOverview } from "~/components/ui";
 import { getChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
@@ -36,10 +33,6 @@ const isAdmin = (user: User) =>
 
 const ChallengeView = () => {
   const { challenge, user } = useLoaderData<LoaderData>();
-  let introHtml = "";
-  if (typeof window !== "undefined") {
-    introHtml = generateHTML(challenge.introduction || "");
-  }
 
   return (
     <div>
@@ -48,11 +41,11 @@ const ChallengeView = () => {
         userProgress={0.23}
         endDate={challenge.closeDate}
       />
-      {challenge.introduction && (
+      {challenge.introductionHtml && (
         <div className="my-8 px-4">
           <h3 className="text-2xl font-semibold">Introduction</h3>
           <div
-            dangerouslySetInnerHTML={{ __html: introHtml }}
+            dangerouslySetInnerHTML={{ __html: challenge.introductionHtml }}
             className="text-lg"
           />
         </div>
@@ -113,21 +106,3 @@ const ChallengeView = () => {
 };
 
 export default ChallengeView;
-
-// generate introduction HTML from lexical editor state
-export function generateHTML(editorState: string): string {
-  const editor = createEditor({
-    editorState: JSON.parse(editorState),
-    namespace: "challenge",
-    nodes: [],
-    onError: (error: any) => {
-      console.error(error);
-    },
-  });
-  let html = "";
-  editor.update(() => {
-    console.log("generateHTML", editor.getEditorState()._nodeMap.get("root"));
-    html = $generateHtmlFromNodes(editor);
-  });
-  return html;
-}

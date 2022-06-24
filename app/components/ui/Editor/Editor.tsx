@@ -56,7 +56,7 @@ type Props = {
 export default function Editor({ initialContent, onChange }: Props) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-container max-w-[1000px] flex-1 rounded-md border-2 border-blue-500 text-lg leading-loose">
+      <div className="editor-container flex-1 rounded-md border-2 border-blue-500 text-lg leading-loose">
         <ToolbarPlugin />
         <div className="editor-inner">
           <RichTextPlugin

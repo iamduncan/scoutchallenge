@@ -1,6 +1,12 @@
 import { TrashIcon } from "@heroicons/react/outline";
 import type { Challenge, Section } from "@prisma/client";
-import { Form, useFetcher, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  Outlet,
+  useFetcher,
+  useLoaderData,
+} from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { useState } from "react";
@@ -54,6 +60,12 @@ export default function ViewChallengePage() {
       <div className="flex items-center justify-between">
         <div className="text-xl font-bold">{challenge?.name}</div>
         <div className="flex items-center">
+          <Link
+            to={`/challenges/${challenge.id}`}
+            className="mr-4 rounded border border-blue-500 py-1 px-3 text-sm font-semibold"
+          >
+            Preview
+          </Link>
           <strong className="relative mr-4 inline-flex items-center rounded border border-gray-600 px-2.5 py-1.5 text-sm font-medium">
             <span className="text-gray-700"> Status: </span>
 
@@ -131,6 +143,7 @@ export default function ViewChallengePage() {
           {confirmDelete ? "Confirm" : "Delete"}
         </button>
       </Form>
+      <Outlet />
     </div>
   );
 }

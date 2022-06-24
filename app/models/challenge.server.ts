@@ -1,6 +1,7 @@
 import type { Challenge, Prisma } from "@prisma/client";
 
 import { prisma } from "~/db.server";
+import { generateHTML } from "~/utils.server";
 
 export async function createChallenge(
   data: Prisma.ChallengeCreateInput
@@ -44,11 +45,13 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
   if (!challenge) {
     throw new Error("Challenge not found");
   }
-  // const introHtml = generateHTML(challenge.introduction || "");
+
+  // console.log(challenge.introduction);
+  const introHtml = generateHTML(challenge.introduction || "");
 
   return {
     ...challenge,
-    // introductionHtml: introHtml,
+    introductionHtml: introHtml,
   };
 }
 
