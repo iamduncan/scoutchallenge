@@ -1,14 +1,25 @@
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { useRef, useState } from "react";
 
 import type { Prisma, User } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
-import type { ActionFunction } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import { createChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
 import Editor from "~/components/ui/Editor/Editor";
 import type { EditorState, LexicalEditor } from "lexical";
+import { getGroupListItems } from "~/models/group.server";
+import { useUser } from "~/utils";
+
+type LoaderData = {
+  groups: { id: string; name: string }[];
+};
+
+export const loader: LoaderFunction = async () => {
+  const groups = await getGroupListItems();
+  return json<LoaderData>({ groups });
+};
 
 function validateName(content: string) {
   if (content.length < 5) {
@@ -25,6 +36,7 @@ function validateGroup(groupId: string | null, user: User) {
 type ActionData = {
   errors?: {
     name?: string;
+    group?: string;
   };
   formError?: string;
   fields?: Prisma.ChallengeCreateInput;
@@ -90,6 +102,9 @@ export const action: ActionFunction = async ({ request }) => {
 // LexicalOnChangePlugin!
 
 export default function NewChallenge() {
+  const user = useUser();
+  const { groups } = useLoaderData<LoaderData>();
+
   const nameRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<ActionData>();
   const [introduction, setIntroduction] = useState<string>();
@@ -170,6 +185,31 @@ export default function NewChallenge() {
           </select>
         </label>
       </div>
+
+      {user?.role === "ADMIN" && (
+        <div>
+          <label className="flex w-full flex-col gap-1">
+            <span>Group: </span>
+            <select
+              name="group"
+              id="group"
+              className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
+            >
+              <option value="">None</option>
+              {groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          {actionData?.errors?.group && (
+            <div className="pt-1 text-red-700" id="group-error">
+              {actionData.errors.group}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="text-right">
         <button

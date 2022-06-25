@@ -24,7 +24,7 @@ const ProgressCircular = ({
         stroke="currentColor"
         strokeWidth={width || 2}
         fill="transparent"
-        className="text-transparent"
+        className="text-gray-200"
       />
 
       <circle

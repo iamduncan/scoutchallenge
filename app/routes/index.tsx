@@ -94,15 +94,15 @@ export default function Index() {
         </h1>
       </section>
       <section className="body-font text-gray-600">
-        <div className="container mx-auto flex flex-col items-center px-5 md:flex-row md:py-14">
-          <div className="mb-10 w-5/6 md:mb-0 md:w-1/2 lg:w-full lg:max-w-lg">
+        <div className="container mx-auto flex flex-col items-center px-5 md:py-14 lg:flex-row">
+          <div className="mb-10 w-5/6 md:mb-0 lg:w-1/2 lg:max-w-lg xl:w-full">
             <img
               className="rounded-lg object-cover object-center drop-shadow-2xl"
               alt="hero"
               src={ExploringNewPlacesImg}
             />
           </div>
-          <div className="flex flex-col items-center text-center md:w-1/2 md:items-start md:pl-16 md:text-left lg:flex-grow lg:pl-24">
+          <div className="mt-8 flex flex-col items-center text-center lg:mt-0 lg:w-1/2 lg:items-start lg:pl-16 lg:text-left xl:flex-grow xl:pl-24">
             <h1 className="title-font mb-4 text-3xl font-medium text-gray-900 sm:text-4xl">
               Keep the adventure alive even when you're not there.
             </h1>

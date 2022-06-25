@@ -121,7 +121,7 @@ export default function NewSectionPage() {
             <select
               name="group"
               id="group"
-              className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
+              className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
             >
               <option value="">None</option>
               {groups.map((group) => (

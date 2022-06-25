@@ -38,7 +38,15 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
       createdBy: true,
       updatedBy: true,
       sections: true,
-      challengeSections: true,
+      challengeSections: {
+        include: {
+          questions: {
+            orderBy: { order: "asc" },
+            select: { id: true, title: true },
+          },
+        },
+        orderBy: { order: "asc" },
+      },
     },
   });
 
@@ -46,7 +54,6 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
     throw new Error("Challenge not found");
   }
 
-  // console.log(challenge.introduction);
   const introHtml = generateHTML(challenge.introduction || "");
 
   return {

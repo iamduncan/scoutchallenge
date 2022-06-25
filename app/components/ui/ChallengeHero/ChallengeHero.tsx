@@ -10,7 +10,7 @@ type ChallengeHeroProps = {
 
 const ChallengeHero = ({
   title,
-  userProgress,
+  userProgress = 0,
   startDate,
   endDate,
 }: ChallengeHeroProps) => {
@@ -34,23 +34,23 @@ const ChallengeHero = ({
       </div>
       <div className="flex items-center justify-between border-b bg-white px-6">
         <div className="flex w-fit items-center justify-start">
-          {userProgress && (
-            <>
-              <ProgressCircular
-                progress={userProgress}
-                size={30}
-                className="text-green-600"
-                width={3}
-              />
-              <span className="mr-2 text-base text-green-600">
-                {userProgress * 100}% Complete
-              </span>
-            </>
-          )}
+          <>
+            <ProgressCircular
+              progress={userProgress}
+              size={30}
+              className="text-green-600"
+              width={3}
+            />
+            <span className="mr-2 text-base text-green-600">
+              {userProgress * 100}% Complete
+            </span>
+          </>
         </div>
-        <div>
-          {daysLeft} {daysLeftText} left
-        </div>
+        {startDate && endDate && (
+          <div>
+            {daysLeft} {daysLeftText} left
+          </div>
+        )}
       </div>
     </>
   );
