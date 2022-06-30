@@ -1,15 +1,15 @@
 import { TrashIcon } from "@heroicons/react/outline";
-import type { Challenge, Section } from "@prisma/client";
-import {
-  Form,
-  Link,
-  Outlet,
-  useFetcher,
-  useLoaderData,
-} from "@remix-run/react";
+import type {
+  Challenge,
+  ChallengeSection,
+  Question,
+  Section,
+} from "@prisma/client";
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { useState } from "react";
+import { SectionOverview } from "~/components/ui";
 import {
   addSectionToChallenge,
   deleteChallenge,
@@ -19,7 +19,12 @@ import { getSectionListItems } from "~/models/section.server";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
-  challenge: Challenge;
+  challenge: Challenge & {
+    challengeSections: (ChallengeSection & {
+      descriptionHtml?: string;
+      questions: Question[];
+    })[];
+  };
   sections: Section[];
 };
 
@@ -32,24 +37,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   const challenge = await getChallenge({ id: challengeId });
   const sections = await getSectionListItems({ groupId: user?.groups[0]?.id });
   return { challenge, sections };
-};
-
-export const action: ActionFunction = async ({ request, params }) => {
-  const challengeId = params.challengeId;
-  const formData = await request.formData();
-  const sectionId = formData.get("section");
-  if (request.method === "DELETE") {
-    await deleteChallenge({ id: challengeId as string });
-    return redirect(`/admin/challenges`);
-  }
-
-  if (typeof sectionId !== "string" || !challengeId) {
-    return {};
-  }
-
-  const challenge = await addSectionToChallenge(challengeId, sectionId);
-
-  return { challenge };
 };
 
 export default function ViewChallengePage() {
@@ -123,27 +110,66 @@ export default function ViewChallengePage() {
           </button>
         </div>
       </Form>
+      <div className="flex flex-col gap-3 p-4">
+        {challenge.challengeSections &&
+          challenge.challengeSections.map((section) => (
+            <SectionOverview
+              key={section.id}
+              title={section.title}
+              description={section.descriptionHtml}
+              questions={section.questions}
+              sectionId={section.id}
+              admin
+            />
+          ))}
+      </div>
       <div>
         <pre className="max-w-xl overflow-auto">
           {JSON.stringify(challenge, null, 2)}
         </pre>
       </div>
-      <Form method="delete">
-        <button
-          type="submit"
-          onClick={(e) => {
-            if (!confirmDelete) {
-              e.preventDefault();
-              setConfirmDelete(true);
-            }
-          }}
-          className="flex items-center rounded border border-red-600 bg-red-500 px-2 py-1 text-xs font-semibold uppercase text-red-50 shadow outline-none transition-all duration-150 ease-linear hover:bg-red-50 hover:text-red-500 hover:shadow-md focus:outline-none active:bg-red-200"
+      <div className="flex gap-2">
+        <Link
+          to="./sections/add"
+          className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
-          <TrashIcon className="mr-2 h-5 w-5" />{" "}
-          {confirmDelete ? "Confirm" : "Delete"}
-        </button>
-      </Form>
+          Add Section
+        </Link>
+        <Form method="delete">
+          <button
+            type="submit"
+            onClick={(e) => {
+              if (!confirmDelete) {
+                e.preventDefault();
+                setConfirmDelete(true);
+              }
+            }}
+            className="flex items-center rounded bg-red-500  py-2 px-4 text-white hover:bg-red-600 focus:bg-red-400"
+          >
+            <TrashIcon className="mr-2 h-5 w-5" />{" "}
+            {confirmDelete ? "Confirm" : "Delete"}
+          </button>
+        </Form>
+      </div>
       <Outlet />
     </div>
   );
 }
+
+export const action: ActionFunction = async ({ request, params }) => {
+  const challengeId = params.challengeId;
+  const formData = await request.formData();
+  const sectionId = formData.get("section");
+  if (request.method === "DELETE") {
+    await deleteChallenge({ id: challengeId as string });
+    return redirect(`/admin/challenges`);
+  }
+
+  if (typeof sectionId !== "string" || !challengeId) {
+    return {};
+  }
+
+  const challenge = await addSectionToChallenge(challengeId, sectionId);
+
+  return { challenge };
+};

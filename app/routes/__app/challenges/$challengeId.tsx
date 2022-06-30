@@ -16,7 +16,10 @@ import { getUser } from "~/session.server";
 type LoaderData = {
   challenge: Challenge & {
     introductionHtml?: string;
-    challengeSections: (ChallengeSection & { questions: Question[] })[];
+    challengeSections: (ChallengeSection & {
+      questions: Question[];
+      descriptionHtml?: string;
+    })[];
   };
   user: User;
 };
@@ -77,45 +80,11 @@ const ChallengeView = () => {
           <SectionOverview
             key={section.id}
             title={section.title}
+            description={section.descriptionHtml}
             questions={section.questions}
+            sectionId={section.id}
           />
         ))}
-        <SectionOverview title="Hero Skills" questions={[]} />
-        <SectionOverview
-          title="Hero Knowledge"
-          questions={[
-            {
-              id: "123",
-              title: "Complete Wordsearch",
-              // userStatus: "complete",
-              // order: 1,
-            },
-            {
-              id: "124",
-              title: "Complete diet sheet",
-              // userStatus: "complete",
-              // order: 2,
-            },
-            {
-              id: "125",
-              title: "How to stay hygienic on camp",
-              // userStatus: "needsAttention",
-              // order: 3,
-            },
-            {
-              id: "126",
-              title: "Solve the code",
-              // userStatus: "started",
-              // order: 4,
-            },
-            {
-              id: "127",
-              title: "Learn the phonetic alphabet",
-              // userStatus: "notStarted",
-              // order: 5,
-            },
-          ]}
-        />
       </div>
       {isAdmin(user) && (
         <div className="flex flex-col gap-3 p-4">

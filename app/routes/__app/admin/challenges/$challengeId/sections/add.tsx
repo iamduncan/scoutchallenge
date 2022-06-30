@@ -1,7 +1,11 @@
+import type { Prisma } from "@prisma/client";
 import { Form, Link } from "@remix-run/react";
+import type { ActionFunction } from "@remix-run/server-runtime";
+import { json, redirect } from "@remix-run/server-runtime";
 import type { EditorState, LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
 import Editor from "~/components/ui/Editor/Editor";
+import { createChallengeSection } from "~/models/challenge.server";
 
 const AddChallengeSection = () => {
   const titleRef = useRef<HTMLInputElement>(null);
@@ -30,12 +34,12 @@ const AddChallengeSection = () => {
           <Form method="post" className="flex w-full flex-col gap-8 p-4">
             <div>
               <label htmlFor="name" className="flex w-full flex-col gap-1">
-                <span>Name: </span>
+                <span>Title: </span>
                 <input
                   ref={titleRef}
                   type="text"
-                  name="name"
-                  id="name"
+                  name="title"
+                  id="title"
                   className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
                 />
               </label>
@@ -72,3 +76,52 @@ const AddChallengeSection = () => {
 };
 
 export default AddChallengeSection;
+
+type ActionData = {
+  errors?: {
+    title?: string;
+    description?: string;
+  };
+  formError?: string;
+  fields?: Prisma.ChallengeSectionCreateInput;
+};
+
+const badRequest = (data: ActionData) => json(data, { status: 400 });
+
+export const action: ActionFunction = async ({ request, params }) => {
+  const challengeId = params.challengeId;
+  if (!challengeId) {
+    return json({ status: 404, message: "Challenge not found" });
+  }
+
+  const formData = await request.formData();
+  const title = formData.get("title");
+  const description = formData.get("description");
+
+  if (typeof title !== "string" || title.length === 0) {
+    return badRequest({
+      errors: { title: "Title is required" },
+    });
+  }
+  if (typeof description !== "string" || description.length === 0) {
+    return badRequest({
+      errors: { description: "Description is required" },
+    });
+  }
+
+  const fields: Prisma.ChallengeSectionCreateWithoutChallengeInput = {
+    title,
+    description,
+    order: 0,
+  };
+
+  const challengeSection = await createChallengeSection(challengeId, fields);
+  if (challengeSection) {
+    return redirect(`/admin/challenges/${challengeId}`);
+  }
+
+  return {
+    title,
+    description,
+  };
+};

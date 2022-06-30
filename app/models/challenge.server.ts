@@ -1,4 +1,4 @@
-import type { Challenge, Prisma } from "@prisma/client";
+import type { Challenge, ChallengeSection, Prisma } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 import { generateHTML } from "~/utils.server";
@@ -42,7 +42,7 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
         include: {
           questions: {
             orderBy: { order: "asc" },
-            select: { id: true, title: true },
+            select: { id: true, title: true, description: true },
           },
         },
         orderBy: { order: "asc" },
@@ -56,8 +56,24 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
 
   const introHtml = generateHTML(challenge.introduction || "");
 
+  // generate HTML for each section description
+  let challengeSections = [];
+  for (const section in challenge.challengeSections) {
+    if (
+      Object.prototype.hasOwnProperty.call(challenge.challengeSections, section)
+    ) {
+      challengeSections.push({
+        ...challenge.challengeSections[section],
+        descriptionHtml: generateHTML(
+          challenge.challengeSections[section].description || ""
+        ),
+      });
+    }
+  }
+
   return {
     ...challenge,
+    challengeSections,
     introductionHtml: introHtml,
   };
 }
@@ -97,5 +113,30 @@ export async function removeSectionFromChallenge(
 export async function deleteChallenge({ id }: Pick<Challenge, "id">) {
   return prisma.challenge.delete({
     where: { id },
+  });
+}
+
+export async function createChallengeSection(
+  challengeId: string,
+  data: Prisma.ChallengeSectionCreateWithoutChallengeInput
+): Promise<Challenge> {
+  return prisma.challenge.update({
+    where: { id: challengeId },
+    data: {
+      challengeSections: {
+        create: [data],
+      },
+    },
+  });
+}
+
+export async function getChallengeSection({
+  id,
+}: Pick<ChallengeSection, "id">) {
+  return prisma.challengeSection.findFirst({
+    where: { id },
+    include: {
+      questions: true,
+    },
   });
 }
