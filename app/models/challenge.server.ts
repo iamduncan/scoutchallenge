@@ -136,7 +136,9 @@ export async function getChallengeSection({
   return prisma.challengeSection.findFirst({
     where: { id },
     include: {
-      questions: true,
+      questions: {
+        orderBy: { order: "asc" },
+      },
     },
   });
 }
