@@ -110,6 +110,7 @@ model Question {
   description String
   hint        String
   type        QuestionType
+  data        Json?
 
   order Int
 

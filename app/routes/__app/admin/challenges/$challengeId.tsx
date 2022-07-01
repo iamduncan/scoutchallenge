@@ -118,6 +118,7 @@ export default function ViewChallengePage() {
               title={section.title}
               description={section.descriptionHtml}
               questions={section.questions}
+              challengeId={challenge.id}
               sectionId={section.id}
               admin
             />
