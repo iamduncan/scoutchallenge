@@ -139,7 +139,7 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
           </li>
           <li className="flex items-center hover:bg-gray-100">
             <Link
-              to={`./sections/${sectionId}/questions/new`}
+              to={`./sections/${sectionId}/questions/add`}
               className="m-1 whitespace-nowrap py-2 px-3"
             >
               New Question

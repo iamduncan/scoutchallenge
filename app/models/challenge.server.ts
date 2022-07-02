@@ -142,3 +142,19 @@ export async function getChallengeSection({
     },
   });
 }
+
+export async function addQuestion(
+  challengeSectionId: string,
+  questionData: Prisma.QuestionCreateWithoutChallengeSectionInput
+) {
+  return prisma.question.create({
+    data: {
+      ...questionData,
+      challengeSection: {
+        connect: {
+          id: challengeSectionId,
+        },
+      },
+    },
+  });
+}

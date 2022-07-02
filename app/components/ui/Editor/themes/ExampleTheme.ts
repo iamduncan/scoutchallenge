@@ -64,6 +64,7 @@ const exampleTheme = {
     url: "editor-tokenOperator",
     variable: "editor-tokenVariable",
   },
+  hashtag: "hashtag bg-blue-300/40",
 };
 
 export default exampleTheme;

@@ -1,6 +1,8 @@
+import { HashtagNode } from "@lexical/hashtag";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { JSDOM } from "jsdom";
+import exampleTheme from "./components/ui/Editor/themes/ExampleTheme";
 
 export const generateHTML = (editorState: string) => {
   const dom = new JSDOM();
@@ -13,8 +15,9 @@ export const generateHTML = (editorState: string) => {
     onError: (error) => {
       console.error(error);
     },
-    nodes: [],
+    nodes: [HashtagNode],
     namespace: "editor",
+    theme: exampleTheme,
   });
 
   editor.setEditorState(editor.parseEditorState(editorState));

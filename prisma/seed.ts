@@ -23,6 +23,9 @@ async function seed() {
   await prisma.challenge.deleteMany({}).catch(() => {
     // no worries if it doesn't exist yet
   });
+  await prisma.challengeSection.deleteMany({}).catch(() => {
+    // no worries if it doesn't exist yet
+  });
 
   const adminHashedPassword = await bcrypt.hash("adminPassword", 10);
   const groupHashedPassword = await bcrypt.hash("groupPassword", 10);
@@ -102,138 +105,138 @@ async function seed() {
     },
   });
 
-  const challengeSections: Prisma.ChallengeSectionCreateNestedManyWithoutChallengeInput =
-    {
-      create: [
-        {
-          title: "My first challenge section",
-          description:
-            '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My first challenge section.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
-          order: 0,
-          questions: {
-            create: [
-              {
-                title: "My first question",
-                order: 0,
-                type: "TEXT",
-                description: "My first question description",
-                hint: "My first question hint",
-              },
-              {
-                title: "My second question",
-                order: 1,
-                type: "TEXT",
-                description: "My second question description",
-                hint: "My second question hint",
-              },
-              {
-                title: "My third question",
-                order: 2,
-                type: "TEXT",
-                description: "My third question description",
-                hint: "My third question hint",
-              },
-            ],
-          },
-        },
-        {
-          title: "My second challenge section",
-          description:
-            '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My second challenge section.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
-          order: 1,
-          questions: {
-            create: [
-              {
-                title: "My first question",
-                order: 0,
-                type: "TEXT",
-                description: "My first question description",
-                hint: "My first question hint",
-              },
-              {
-                title: "My second question",
-                order: 1,
-                type: "TEXT",
-                description: "My second question description",
-                hint: "My second question hint",
-              },
-              {
-                title: "My third question",
-                order: 2,
-                type: "TEXT",
-                description: "My third question description",
-                hint: "My third question hint",
-              },
-            ],
-          },
-        },
-        {
-          title: "My third challenge section",
-          description:
-            '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My third challenge section.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
-          order: 2,
-          questions: {
-            create: [
-              {
-                title: "My first question",
-                order: 0,
-                type: "TEXT",
-                description: "My first question description",
-                hint: "My first question hint",
-              },
-              {
-                title: "My second question",
-                order: 1,
-                type: "TEXT",
-                description: "My second question description",
-                hint: "My second question hint",
-              },
-              {
-                title: "My third question",
-                order: 2,
-                type: "TEXT",
-                description: "My third question description",
-                hint: "My third question hint",
-              },
-            ],
-          },
-        },
-      ],
-    };
+  // const challengeSections: Prisma.ChallengeSectionCreateNestedManyWithoutChallengeInput =
+  //   {
+  //     create: [
+  //       {
+  //         title: "My first challenge section",
+  //         description:
+  //           '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My first challenge section.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
+  //         order: 0,
+  //         questions: {
+  //           create: [
+  //             {
+  //               title: "My first question",
+  //               order: 0,
+  //               type: "TEXT",
+  //               description: "My first question description",
+  //               hint: "My first question hint",
+  //             },
+  //             {
+  //               title: "My second question",
+  //               order: 1,
+  //               type: "TEXT",
+  //               description: "My second question description",
+  //               hint: "My second question hint",
+  //             },
+  //             {
+  //               title: "My third question",
+  //               order: 2,
+  //               type: "TEXT",
+  //               description: "My third question description",
+  //               hint: "My third question hint",
+  //             },
+  //           ],
+  //         },
+  //       },
+  //       {
+  //         title: "My second challenge section",
+  //         description:
+  //           '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My second challenge section.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
+  //         order: 1,
+  //         questions: {
+  //           create: [
+  //             {
+  //               title: "My first question",
+  //               order: 0,
+  //               type: "TEXT",
+  //               description: "My first question description",
+  //               hint: "My first question hint",
+  //             },
+  //             {
+  //               title: "My second question",
+  //               order: 1,
+  //               type: "TEXT",
+  //               description: "My second question description",
+  //               hint: "My second question hint",
+  //             },
+  //             {
+  //               title: "My third question",
+  //               order: 2,
+  //               type: "TEXT",
+  //               description: "My third question description",
+  //               hint: "My third question hint",
+  //             },
+  //           ],
+  //         },
+  //       },
+  //       {
+  //         title: "My third challenge section",
+  //         description:
+  //           '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My third challenge section.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
+  //         order: 2,
+  //         questions: {
+  //           create: [
+  //             {
+  //               title: "My first question",
+  //               order: 0,
+  //               type: "TEXT",
+  //               description: "My first question description",
+  //               hint: "My first question hint",
+  //             },
+  //             {
+  //               title: "My second question",
+  //               order: 1,
+  //               type: "TEXT",
+  //               description: "My second question description",
+  //               hint: "My second question hint",
+  //             },
+  //             {
+  //               title: "My third question",
+  //               order: 2,
+  //               type: "TEXT",
+  //               description: "My third question description",
+  //               hint: "My third question hint",
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     ],
+  //   };
 
-  await prisma.challenge.create({
-    data: {
-      name: "My first challenge",
-      introduction:
-        '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My first challenge introduction.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
-      group: {
-        connect: {
-          id: group.id,
-        },
-      },
-      sections: {
-        connect: [
-          {
-            id: section.id,
-          },
-        ],
-      },
-      challengeSections,
-      createdBy: {
-        connect: {
-          id: groupUser.id,
-        },
-      },
-      updatedBy: {
-        connect: {
-          id: groupUser.id,
-        },
-      },
-    },
-    include: {
-      challengeSections: true,
-    },
-  });
+  // await prisma.challenge.create({
+  //   data: {
+  //     name: "My first challenge",
+  //     introduction:
+  //       '{"_nodeMap":[["root",{"__children":["1"],"__dir":"ltr","__format":0,"__indent":0,"__key":"root","__parent":null,"__type":"root"}],["1",{"__type":"paragraph","__parent":"root","__key":"1","__children":["11"],"__format":0,"__indent":0,"__dir":"ltr"}],["11",{"__type":"text","__parent":"1","__key":"11","__text":"My first challenge introduction.","__format":0,"__style":"","__mode":0,"__detail":0}]],"_selection":{"anchor":{"key":"11","offset":31,"type":"text"},"focus":{"key":"11","offset":31,"type":"text"},"type":"range"}}',
+  //     group: {
+  //       connect: {
+  //         id: group.id,
+  //       },
+  //     },
+  //     sections: {
+  //       connect: [
+  //         {
+  //           id: section.id,
+  //         },
+  //       ],
+  //     },
+  //     challengeSections,
+  //     createdBy: {
+  //       connect: {
+  //         id: groupUser.id,
+  //       },
+  //     },
+  //     updatedBy: {
+  //       connect: {
+  //         id: groupUser.id,
+  //       },
+  //     },
+  //   },
+  //   include: {
+  //     challengeSections: true,
+  //   },
+  // });
 
   console.log(`Database has been seeded. 🌱`);
 }

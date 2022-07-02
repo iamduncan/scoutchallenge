@@ -279,8 +279,8 @@ function BlockOptionsDropdownList({
 
     if (toolbar !== null && dropDown !== null) {
       const { top, left } = toolbar.getBoundingClientRect();
-      dropDown.style.top = `${top + 280}px`;
-      dropDown.style.left = `${left + 100}px`;
+      dropDown.style.top = `${top + 8}px`;
+      dropDown.style.left = `${left + 50}px`;
     }
   }, [dropDownRef, toolbarRef]);
 
