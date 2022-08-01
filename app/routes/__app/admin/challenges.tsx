@@ -1,6 +1,7 @@
+import { TrashIcon } from "@heroicons/react/outline";
 import type { Challenge } from "@prisma/client";
-import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
+import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { getChallengeListItems } from "~/models/challenge.server";
 
@@ -24,15 +25,26 @@ export default function ChallengesPage() {
 
           <ol>
             {challenges.map((challenge) => (
-              <li key={challenge.id}>
+              <li
+                key={challenge.id}
+                className="flex items-center justify-between border-b p-4 text-xl"
+              >
                 <NavLink
                   className={({ isActive }) =>
-                    `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                    `block ${isActive ? "bg-white" : ""}`
                   }
                   to={`/admin/challenges/${challenge.id}`}
                 >
                   {challenge.name}
                 </NavLink>
+                <Form
+                  method="delete"
+                  action={`/admin/challenges/${challenge.id}`}
+                >
+                  <button type="submit" className="text-red-500">
+                    <TrashIcon className="h-5 w-5" />
+                  </button>
+                </Form>
               </li>
             ))}
           </ol>

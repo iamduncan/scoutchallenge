@@ -170,6 +170,8 @@ export const sendPasswordReset = async (email: User["email"]) => {
         Please click the following link to reset your password:
         https://scoutchallenge.app/reset-password/${token.token}
 
+        This link will expire in 24 hours.
+
         If you did not request to reset your password, please ignore this email.`,
     });
   } catch (err) {
