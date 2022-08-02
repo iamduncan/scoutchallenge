@@ -343,20 +343,24 @@ function BlockOptionsDropdownList({
     setShowBlockOptionsDropDown(false);
   };
 
+  const command = () => {
+    return;
+  };
+
   const formatBulletList = () => {
     if (blockType !== "ul") {
-      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, "");
+      editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, command());
     } else {
-      editor.dispatchCommand(REMOVE_LIST_COMMAND, "");
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, command());
     }
     setShowBlockOptionsDropDown(false);
   };
 
   const formatNumberedList = () => {
     if (blockType !== "ol") {
-      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, "");
+      editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, command());
     } else {
-      editor.dispatchCommand(REMOVE_LIST_COMMAND, "");
+      editor.dispatchCommand(REMOVE_LIST_COMMAND, command());
     }
     setShowBlockOptionsDropDown(false);
   };
@@ -427,6 +431,10 @@ function BlockOptionsDropdownList({
     </div>
   );
 }
+
+const command = () => {
+  return;
+};
 
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -557,7 +565,7 @@ export default function ToolbarPlugin() {
       <button
         disabled={!canUndo}
         onClick={() => {
-          editor.dispatchCommand(UNDO_COMMAND, "");
+          editor.dispatchCommand(UNDO_COMMAND, command());
         }}
         className="toolbar-item spaced"
         aria-label="Undo"
@@ -568,7 +576,7 @@ export default function ToolbarPlugin() {
       <button
         disabled={!canRedo}
         onClick={() => {
-          editor.dispatchCommand(REDO_COMMAND, "");
+          editor.dispatchCommand(REDO_COMMAND, command());
         }}
         className="toolbar-item"
         aria-label="Redo"
