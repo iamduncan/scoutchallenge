@@ -11,6 +11,16 @@ export async function createChallenge(
   });
 }
 
+export async function updateChallenge(
+  id: string,
+  data: Prisma.ChallengeUpdateInput
+): Promise<Challenge> {
+  return prisma.challenge.update({
+    where: { id },
+    data,
+  });
+}
+
 export async function listChallenges(): Promise<Challenge[]> {
   return prisma.challenge.findMany();
 }
