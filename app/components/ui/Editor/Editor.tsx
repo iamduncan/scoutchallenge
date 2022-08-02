@@ -59,7 +59,9 @@ type Props = {
 
 export default function Editor({ initialContent, onChange }: Props) {
   return (
-    <LexicalComposer initialConfig={editorConfig}>
+    <LexicalComposer
+      initialConfig={{ ...editorConfig, editorState: initialContent }}
+    >
       <div className="editor-container flex-1 rounded-md border-2 border-blue-500 text-lg leading-loose">
         <ToolbarPlugin />
         <div className="editor-inner">
@@ -67,7 +69,7 @@ export default function Editor({ initialContent, onChange }: Props) {
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
             placeholder={<Placeholder />}
-            initialEditorState={initialContent}
+            // initialEditorState={initialContent}
           />
           <OnChangePlugin onChange={onChange} />
           <HistoryPlugin />

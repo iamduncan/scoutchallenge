@@ -1,13 +1,17 @@
-import { $generateHtmlFromNodes } from "@lexical/html";
-import type { Challenge, Prisma, Section } from "@prisma/client";
+import type { Challenge, Prisma, Section, User } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import type { EditorState, LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
 import Editor from "~/components/ui/Editor/Editor";
-import { addSectionToChallenge, getChallenge } from "~/models/challenge.server";
+import {
+  addSectionToChallenge,
+  getChallenge,
+  updateChallenge,
+} from "~/models/challenge.server";
 import { getSectionListItems } from "~/models/section.server";
 import { getUser } from "~/session.server";
 
@@ -27,27 +31,81 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   return { challenge, sections };
 };
 
+function validateName(content: string) {
+  if (content.length < 5) {
+    return `That title is too short`;
+  }
+}
+
+function validateGroup(groupId: string | null, user: User) {
+  if (user.role === "ADMIN" && groupId === null) {
+    return "You must select a group";
+  }
+}
+
 type ActionData = {
   errors?: {
     name?: string;
   };
   formError?: string;
-  fields?: Prisma.ChallengeCreateInput;
+  fields?: Prisma.ChallengeUpdateInput;
 };
 
 const badRequest = (data: ActionData) => json(data, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
   const challengeId = params.challengeId;
+  const user = await getUser(request);
+  if (!user || !challengeId) {
+    return badRequest({
+      formError: "You must be logged in to update a challenge",
+    });
+  }
   const formData = await request.formData();
-  const sectionId = formData.get("section");
-  if (typeof sectionId !== "string" || !challengeId) {
-    return {};
+  const name = formData.get("name") as string;
+  const openDate = formData.get("openDate") as string | null;
+  const closeDate = formData.get("closeDate") as string | null;
+  const introduction = formData.get("introduction") as string | null;
+  const status = formData.get("status") as ChallengeStatus;
+  let group = formData.get("group") as string | null;
+
+  if (validateGroup(group, user)) {
+    return badRequest({
+      formError: validateGroup(group, user),
+    });
   }
 
-  const challenge = await addSectionToChallenge(challengeId, sectionId);
+  const errors = {
+    name: validateName(name),
+  };
 
-  return { challenge };
+  if (group === null) {
+    group = user.groups[0].id;
+  }
+
+  const fields: Prisma.ChallengeUpdateInput = {
+    name,
+    openDate: openDate !== null ? new Date(openDate) : null,
+    closeDate: closeDate !== null ? new Date(closeDate) : null,
+    introduction: introduction !== null ? introduction : null,
+    status: (status as ChallengeStatus) || "OPEN",
+    group: { connect: { id: group } },
+    createdBy: {
+      connect: {
+        id: user.id,
+      },
+    },
+    updatedBy: {
+      connect: {
+        id: user.id,
+      },
+    },
+  };
+  if (Object.values(errors).some(Boolean)) {
+    return badRequest({ errors, fields });
+  }
+  const challenge = await updateChallenge(challengeId, fields);
+  return redirect(`/admin/challenges/${challenge.id}`);
 };
 
 export default function ViewChallengePage() {
