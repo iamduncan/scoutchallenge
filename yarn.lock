@@ -1390,6 +1390,11 @@
   resolved "https://registry.yarnpkg.com/@lexical/rich-text/-/rich-text-0.3.6.tgz#cf0290f29fdf6b5be348566a6b1044e8b573e707"
   integrity sha512-SXUEZhZvFPy3XuA6cAgST7+BdK/S+ugLr5Vke7detVvYXEktI5SL1YP64O0C+snzsVOsqf074hafqzEzUnHRgg==
 
+"@lexical/rich-text@0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@lexical/rich-text/-/rich-text-0.3.8.tgz#26a68b7df375fd7b9ece305fc64b97371d8ebe29"
+  integrity sha512-TCeaQaJs8AfSafZfn94i7Z+UPOMDNfTwOyjkcoZYY9QE46vPuUV+uhzFZpdJ9U199BPBUOhv8jf9mKDKiBfGqw==
+
 "@lexical/selection@0.3.6":
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/@lexical/selection/-/selection-0.3.6.tgz#06b57a133215d72c3bda1dd2b6bb895ba331f04c"
