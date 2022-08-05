@@ -1,6 +1,11 @@
 import type { FC } from "react";
 
-const SuccessAlert: FC<{ title?: string }> = ({ children, title }) => {
+interface InputProps {
+  children: string;
+  title?: string;
+}
+
+const SuccessAlert: FC<InputProps> = ({ children, title }) => {
   return (
     <div className="mb-8 flex w-full justify-center text-center">
       <div
@@ -27,7 +32,6 @@ const SuccessAlert: FC<{ title?: string }> = ({ children, title }) => {
 
           <p className="flex-grow">
             <strong className="text-sm font-medium">
-              {" "}
               {title ? title : "Success!"}{" "}
             </strong>
 

@@ -2,7 +2,11 @@ import type { FC } from "react";
 import { Header } from "~/components/common";
 import { useUser } from "~/utils";
 
-const AppLayout: FC = ({ children }) => {
+interface InputProps {
+  children: React.ReactElement;
+}
+
+const AppLayout: FC<InputProps> = ({ children }) => {
   const user = useUser();
   return (
     <div className="layout flex flex-col">
