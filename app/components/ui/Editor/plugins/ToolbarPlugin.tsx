@@ -539,7 +539,7 @@ export default function ToolbarPlugin() {
 
   const codeLanguges = useMemo(() => getCodeLanguages(), []);
   const onCodeLanguageSelect = useCallback(
-    (e) => {
+    (e: any) => {
       editor.update(() => {
         if (selectedElementKey !== null) {
           const node = $getNodeByKey(selectedElementKey);

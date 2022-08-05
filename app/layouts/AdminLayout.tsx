@@ -69,7 +69,11 @@ const menuItems: {
   },
 ];
 
-const AdminLayout: FC = ({ children }) => {
+interface InputProps {
+  children: React.ReactElement;
+}
+
+const AdminLayout: FC<InputProps> = ({ children }) => {
   const user = useUser();
 
   return (
