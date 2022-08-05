@@ -1,14 +1,27 @@
-import { defineConfig } from 'cypress'
+import { defineConfig } from "cypress";
 
 export default defineConfig({
-  projectId: 'u6366j',
   e2e: {
-    // We've imported your old cypress plugins here.
-    // You may want to clean this up later by importing these.
-    setupNodeEvents(on, config) {
-      return require('./cypress/plugins/index.ts')(on, config)
+    setupNodeEvents: (on, config) => {
+      const isDev = config.watchForFileChanges;
+      const port = process.env.PORT ?? (isDev ? "3000" : "8811");
+      const configOverrides: Partial<Cypress.PluginConfigOptions> = {
+        baseUrl: `http://localhost:${port}`,
+        video: !process.env.CI,
+        screenshotOnRunFailure: !process.env.CI,
+      };
+
+      // To use this:
+      // cy.task('log', whateverYouWantInTheTerminal)
+      on("task", {
+        log: (message) => {
+          console.log(message);
+
+          return null;
+        },
+      });
+
+      return { ...config, ...configOverrides };
     },
-    baseUrl: 'http://localhost:3000',
-    specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
   },
-})
+});
