@@ -1,58 +1,42 @@
 import { ExclamationIcon } from "@heroicons/react/outline";
-import type {
-  Challenge,
-  ChallengeSection,
-  Question,
-  User,
-} from "@prisma/client";
+import type { User } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
+import type { LoaderArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { ChallengeHero, SectionOverview } from "~/components/ui";
 import { getChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
 
-type LoaderData = {
-  challenge: Challenge & {
-    introductionHtml?: string;
-    challengeSections: (ChallengeSection & {
-      questions: Question[];
-      descriptionHtml?: string;
-    })[];
-  };
-  user: User;
-};
+const isAdmin = (role: User["role"]) =>
+  role === "ADMIN" || role === "GROUPADMIN" || role === "SECTIONADMIN";
 
-const isAdmin = (user: User) =>
-  user?.role === "ADMIN" ||
-  user?.role === "GROUPADMIN" ||
-  user?.role === "SECTIONADMIN";
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const user = await getUser(request);
+  if (!user) {
+    return redirect("/login");
+  }
   const challengeId = params.challengeId;
   if (!challengeId) {
-    return json({ status: 404, message: "Challenge not found" });
+    throw new Response("Not Found", { status: 404 });
   }
   const challenge = await getChallenge({ id: challengeId });
   if (
     user &&
-    !isAdmin(user) &&
+    !isAdmin(user.role) &&
     (challenge.status === "DRAFT" || challenge.status === "DELETED")
   ) {
     return redirect("../");
   }
-  return {
+  return json({
     challenge: {
       ...challenge,
     },
     user,
-  };
+  });
 };
 
 const ChallengeView = () => {
-  const { challenge, user } = useLoaderData<LoaderData>();
+  const { user, challenge } = useLoaderData<typeof loader>();
 
   return (
     <div>
@@ -61,7 +45,7 @@ const ChallengeView = () => {
         userProgress={0}
         endDate={challenge.closeDate}
       />
-      {isAdmin(user) && challenge.status === "DRAFT" && (
+      {isAdmin(user.role) && challenge.status === "DRAFT" && (
         <div className="mx-auto mt-6 flex w-11/12 items-center justify-center gap-2 rounded border border-red-500 bg-red-100 py-3 text-xl font-semibold text-red-600 md:w-10/12">
           <ExclamationIcon className="h-6 w-6" /> Challenge is not published.
         </div>
@@ -87,7 +71,7 @@ const ChallengeView = () => {
           />
         ))}
       </div>
-      {isAdmin(user) && (
+      {isAdmin(user.role) && (
         <div className="flex gap-3 p-4">
           <Link
             to={`/admin/challenges/${challenge.id}`}
