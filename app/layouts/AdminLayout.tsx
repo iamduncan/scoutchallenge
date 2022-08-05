@@ -77,60 +77,69 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
   const user = useUser();
 
   return (
-    <div className="flex h-full flex-row-reverse overflow-y-auto">
-      <div className="flex flex-grow flex-col">
-        <div className="text-center">
-          <Header user={user} admin />
-        </div>
-        <main className="flex-grow">{children}</main>
-        <div className="text-center">Footer</div>
-      </div>
-      <aside className="hidden min-w-[225px] flex-none basis-1/5 border-r bg-slate-100 md:block">
-        <div className="p-6 text-center">
-          <h2>Sidebar</h2>
-        </div>
-        <ul className="md:text-lg">
-          {menuItems
-            .filter(({ level }) => {
-              if (!level) {
-                return true;
-              }
-              const userLevel = user?.role;
-              if (
-                userLevel === "ADMIN" &&
-                (level === "super" || level === "group" || level === "section")
-              ) {
-                return true;
-              }
-              if (
-                userLevel === "GROUPADMIN" &&
-                (level === "group" || level === "section")
-              ) {
-                return true;
-              }
-              if (userLevel === "SECTIONADMIN" && level === "section") {
-                return true;
-              }
-              return false;
-            })
-            .map(({ icon: Icon, label, to }) => (
-              <li key={to}>
-                <NavLink
-                  to={to}
-                  className={({ isActive }) =>
-                    `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                      isActive && "bg-indigo-100"
-                    }`
-                  }
-                >
-                  <Icon className="mr-3 h-6 w-6" /> {label}
-                </NavLink>
-              </li>
-            ))}
-        </ul>
-      </aside>
+    <div className="layout flex flex-col">
+      <Header user={user} />
+      <main className="layout-main container box-content flex-grow overflow-y-auto bg-zinc-100 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400 md:mx-auto md:-mt-10 md:rounded-t-xl">
+        {children}
+      </main>
     </div>
   );
 };
 
 export default AdminLayout;
+
+// const old = () => (
+//     <div className="flex h-full flex-row-reverse overflow-y-auto">
+//       <div className="flex flex-grow flex-col">
+//         <div className="text-center">
+//           <Header user={user} admin />
+//         </div>
+//         <main className="flex-grow">{children}</main>
+//         <div className="text-center">Footer</div>
+//       </div>
+//       <aside className="hidden min-w-[225px] flex-none basis-1/5 border-r bg-slate-100 md:block">
+//         <div className="p-6 text-center">
+//           <h2>Sidebar</h2>
+//         </div>
+//         <ul className="md:text-lg">
+//           {menuItems
+//             .filter(({ level }) => {
+//               if (!level) {
+//                 return true;
+//               }
+//               const userLevel = user?.role;
+//               if (
+//                 userLevel === "ADMIN" &&
+//                 (level === "super" || level === "group" || level === "section")
+//               ) {
+//                 return true;
+//               }
+//               if (
+//                 userLevel === "GROUPADMIN" &&
+//                 (level === "group" || level === "section")
+//               ) {
+//                 return true;
+//               }
+//               if (userLevel === "SECTIONADMIN" && level === "section") {
+//                 return true;
+//               }
+//               return false;
+//             })
+//             .map(({ icon: Icon, label, to }) => (
+//               <li key={to}>
+//                 <NavLink
+//                   to={to}
+//                   className={({ isActive }) =>
+//                     `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
+//                       isActive && "bg-indigo-100"
+//                     }`
+//                   }
+//                 >
+//                   <Icon className="mr-3 h-6 w-6" /> {label}
+//                 </NavLink>
+//               </li>
+//             ))}
+//         </ul>
+//       </aside>
+//     </div>
+//   );

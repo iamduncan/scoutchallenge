@@ -26,19 +26,17 @@ export default function Header(props: Props) {
         </Link>
 
         <Link to="/" className="title-font md:mb-0">
-          <h1 className="text-xl font-semibold text-gray-100">
-            Scout Challenge
-          </h1>
+          <h1 className="text-xl font-medium text-gray-100">Scout Challenge</h1>
         </Link>
         <div>
-          <Form action="/logout" method="post" className="w-full">
+          {/* <Form action="/logout" method="post" className="w-full">
             <button
               type="submit"
               className="block w-full px-4 py-2 text-left text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"
             >
               Logout
             </button>
-          </Form>
+          </Form> */}
 
           <MenuIcon
             className="h-10 w-10 text-gray-100"

@@ -15,7 +15,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const subscriberList = process.env.MAILGUN_SUBSCRIBER_LIST;
   if (!subscriberList) {
     console.error("MAILGUN_SUBSCRIBER_LIST is not set");
-    return;
+    return {};
   }
   try {
     const subscribers = await mg().lists.members.listMembers(subscriberList);

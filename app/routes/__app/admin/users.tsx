@@ -19,9 +19,9 @@ export default function AdminUsers() {
   return (
     <div className="flex h-full flex-col">
       <main className="flex h-full bg-white">
-        <div className="h-full w-80 border-r bg-gray-50">
+        <div className="hidden h-full w-80 border-r bg-gray-50 md:block">
           <Link to="new" className="block p-4 text-xl text-blue-500">
-            + New Setting
+            + New User
           </Link>
 
           <hr />
