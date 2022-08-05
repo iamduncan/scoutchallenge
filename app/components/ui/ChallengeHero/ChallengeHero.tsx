@@ -4,8 +4,8 @@ import ProgressCircular from "../ProgressCircular";
 type ChallengeHeroProps = {
   title: string;
   userProgress?: number;
-  startDate?: Date | null;
-  endDate?: Date | null;
+  startDate?: string | null;
+  endDate?: string | null;
 };
 
 const ChallengeHero = ({
