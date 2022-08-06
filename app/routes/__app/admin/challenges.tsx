@@ -3,6 +3,7 @@ import type { Challenge } from "@prisma/client";
 import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
+import { AdminList } from "~/components/ui";
 import { getChallengeListItems } from "~/models/challenge.server";
 
 export const loader: LoaderFunction = async () => {
@@ -14,46 +15,10 @@ export default function ChallengesPage() {
   const { challenges } = useLoaderData<{ challenges: Challenge[] }>();
 
   return (
-    <div className="flex h-full flex-col">
-      <main className="flex h-full bg-white">
-        <div className="h-full w-80 border-r bg-gray-50">
-          <Link to="new" className="block p-4 text-xl text-blue-500">
-            + New Challenge
-          </Link>
-
-          <hr />
-
-          <ol>
-            {challenges.map((challenge) => (
-              <li
-                key={challenge.id}
-                className="flex items-center justify-between border-b p-4 text-xl"
-              >
-                <NavLink
-                  className={({ isActive }) =>
-                    `block ${isActive ? "bg-white" : ""}`
-                  }
-                  to={`/admin/challenges/${challenge.id}`}
-                >
-                  {challenge.name}
-                </NavLink>
-                <Form
-                  method="delete"
-                  action={`/admin/challenges/${challenge.id}`}
-                >
-                  <button type="submit" className="text-red-500">
-                    <TrashIcon className="h-5 w-5" />
-                  </button>
-                </Form>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        <div className="flex-1 p-6">
-          <Outlet />
-        </div>
-      </main>
-    </div>
+    <AdminList title="Challenge" route="challenges" listItems={challenges}>
+      <AdminList.Content>
+        <Outlet />
+      </AdminList.Content>
+    </AdminList>
   );
 }

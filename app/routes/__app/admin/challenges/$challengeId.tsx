@@ -1,4 +1,4 @@
-import { TrashIcon } from "@heroicons/react/outline";
+import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/outline";
 import type {
   Challenge,
   ChallengeSection,
@@ -130,6 +130,13 @@ export default function ViewChallengePage() {
         </pre>
       </div>
       <div className="flex gap-2">
+        <Link
+          to=".."
+          className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500"
+          type="button"
+        >
+          <ArrowLeftIcon className="h-6 w-6" /> Back
+        </Link>
         <Link
           to="./sections/add"
           className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"

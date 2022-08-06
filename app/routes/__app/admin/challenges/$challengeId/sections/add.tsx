@@ -21,7 +21,7 @@ const AddChallengeSection = () => {
   return (
     <div className="fixed inset-0 z-50 block h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
       <div className="flex h-full w-full items-center justify-center">
-        <div className="mx-auto w-10/12 rounded-md border bg-white shadow-lg">
+        <div className="mx-auto w-11/12 rounded-md border bg-white shadow-lg md:w-10/12">
           <div className="flex h-12 w-full items-center justify-between border-b border-gray-400">
             <div></div>
             <h2 className="text-xl font-bold">

@@ -1,4 +1,5 @@
-import { useLoaderData } from "@remix-run/react";
+import { ArrowLeftIcon } from "@heroicons/react/outline";
+import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { getUserById } from "~/models/user.server";
@@ -48,6 +49,13 @@ export default function AdminUser() {
           )}
         </div>
       </main>
+      <Link
+        to=".."
+        className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 md:hidden"
+        type="button"
+      >
+        <ArrowLeftIcon className="h-6 w-6" /> Back
+      </Link>
     </div>
   );
 }
