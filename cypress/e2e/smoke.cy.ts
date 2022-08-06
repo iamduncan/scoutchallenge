@@ -29,6 +29,7 @@ describe("smoke tests", () => {
     // cy.findByRole("button", {
     //   name: `avatar ${loginForm.firstName} ${loginForm.lastName}`,
     // }).click();
+    cy.get("header").find("#open-menu").click();
     cy.findByRole("button", { name: /logout/i }).click();
     // cy.findByRole("link", { name: /log in/i });
   });

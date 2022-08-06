@@ -45,7 +45,7 @@ const menuItems: {
   },
   {
     icon: CogIcon,
-    label: "Group Settings",
+    label: "Settings",
     to: "/admin/settings",
     level: "group",
   },
@@ -57,7 +57,7 @@ const menuItems: {
   },
   {
     icon: CollectionIcon,
-    label: "Mailing List",
+    label: "Mail List",
     to: "/admin/mailing-list",
     level: "super",
   },
@@ -77,58 +77,60 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
   const user = useUser();
 
   return (
-    <div className="flex h-full flex-row-reverse overflow-y-auto">
-      <div className="flex flex-grow flex-col">
-        <div className="text-center">
-          <Header user={user} admin />
-        </div>
-        <main className="flex-grow">{children}</main>
-        <div className="text-center">Footer</div>
-      </div>
-      <aside className="hidden min-w-[225px] flex-none basis-1/5 border-r bg-slate-100 md:block">
-        <div className="p-6 text-center">
-          <h2>Sidebar</h2>
-        </div>
-        <ul className="md:text-lg">
-          {menuItems
-            .filter(({ level }) => {
-              if (!level) {
-                return true;
-              }
-              const userLevel = user?.role;
-              if (
-                userLevel === "ADMIN" &&
-                (level === "super" || level === "group" || level === "section")
-              ) {
-                return true;
-              }
-              if (
-                userLevel === "GROUPADMIN" &&
-                (level === "group" || level === "section")
-              ) {
-                return true;
-              }
-              if (userLevel === "SECTIONADMIN" && level === "section") {
-                return true;
-              }
-              return false;
-            })
-            .map(({ icon: Icon, label, to }) => (
-              <li key={to}>
-                <NavLink
-                  to={to}
-                  className={({ isActive }) =>
-                    `flex items-center py-2 pl-8 font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 ${
-                      isActive && "bg-indigo-100"
-                    }`
-                  }
+    <div className="layout flex flex-col">
+      <Header user={user} admin />
+      <main className="layout-main container box-content flex-grow overflow-y-auto bg-zinc-100 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400">
+        <nav>
+          <ul className="flex justify-between overflow-x-auto md:justify-center">
+            {menuItems
+              .filter(({ level }) => {
+                if (!level) {
+                  return true;
+                }
+                const userLevel = user?.role;
+                if (
+                  userLevel === "ADMIN" &&
+                  (level === "super" ||
+                    level === "group" ||
+                    level === "section")
+                ) {
+                  return true;
+                }
+                if (
+                  userLevel === "GROUPADMIN" &&
+                  (level === "group" || level === "section")
+                ) {
+                  return true;
+                }
+                if (userLevel === "SECTIONADMIN" && level === "section") {
+                  return true;
+                }
+                return false;
+              })
+              .map(({ icon: Icon, label, to }) => (
+                <li
+                  key={to}
+                  className="border-zinc-400 md:border-r first:md:border-l"
                 >
-                  <Icon className="mr-3 h-6 w-6" /> {label}
-                </NavLink>
-              </li>
-            ))}
-        </ul>
-      </aside>
+                  <NavLink
+                    to={to}
+                    className={({ isActive }) =>
+                      `flex flex-col items-center justify-center py-2 px-1 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 md:flex-row md:px-4 md:text-base ${
+                        isActive && "bg-indigo-100"
+                      }`
+                    }
+                  >
+                    <Icon className="h-5 w-5 md:mr-3 md:h-6 md:w-6" />{" "}
+                    <span className="whitespace-nowrap">{label}</span>
+                  </NavLink>
+                </li>
+              ))}
+          </ul>
+        </nav>
+        <section className="min-h-[calc(100vh_-_120px)] overflow-x-auto">
+          {children}
+        </section>
+      </main>
     </div>
   );
 };

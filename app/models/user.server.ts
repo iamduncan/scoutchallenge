@@ -7,7 +7,10 @@ import { mg } from "~/libs/email/config";
 export type { User, Token } from "@prisma/client";
 
 export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({ where: { id }, include: { groups: true } });
+  return prisma.user.findUnique({
+    where: { id },
+    include: { groups: true, sections: true },
+  });
 }
 
 export async function getUserByEmail(email: User["email"]) {

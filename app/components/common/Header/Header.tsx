@@ -26,24 +26,12 @@ export default function Header(props: Props) {
         </Link>
 
         <Link to="/" className="title-font md:mb-0">
-          <h1 className="text-xl font-semibold text-gray-100">
-            Scout Challenge
-          </h1>
+          <h1 className="text-xl font-medium text-gray-100">Scout Challenge</h1>
         </Link>
         <div>
-          <Form action="/logout" method="post" className="w-full">
-            <button
-              type="submit"
-              className="block w-full px-4 py-2 text-left text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"
-            >
-              Logout
-            </button>
-          </Form>
-
-          <MenuIcon
-            className="h-10 w-10 text-gray-100"
-            onClick={() => setIsOpen(!isOpen)}
-          />
+          <button id="open-menu" onClick={() => setIsOpen(!isOpen)}>
+            <MenuIcon className="h-10 w-10 text-gray-100" />
+          </button>
         </div>
       </div>
       <nav
@@ -56,12 +44,14 @@ export default function Header(props: Props) {
           <h1 className="text-xl font-semibold text-gray-800">
             Scout Challenge
           </h1>
-          <div
+          <button
+            type="button"
+            id="close-menu"
             className="close-menu flex content-center items-center justify-center rounded bg-gray-800 px-2 py-1 uppercase text-white"
             onClick={() => setIsOpen(false)}
           >
             Close
-          </div>
+          </button>
         </div>
         <ul className="mt-2 flex w-full flex-col pt-2 text-center">
           {menuItems
@@ -93,6 +83,16 @@ export default function Header(props: Props) {
             >
               Contact
             </Link>
+          </li>
+          <li className="w-full">
+            <Form action="/logout" method="post" className="w-full">
+              <button
+                type="submit"
+                className="block w-full border-t border-gray-200 py-3 text-lg"
+              >
+                Logout
+              </button>
+            </Form>
           </li>
         </ul>
       </nav>

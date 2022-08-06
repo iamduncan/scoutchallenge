@@ -5,3 +5,5 @@ export { default as ProgressCircular } from "./ProgressCircular";
 export { default as ChallengeCard } from "./ChallengeCard";
 export { default as ChallengeHero } from "./ChallengeHero";
 export { default as SectionOverview } from "./SectionOverview";
+
+export { default as AdminList } from "./AdminList";
