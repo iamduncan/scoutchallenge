@@ -6443,10 +6443,10 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lexical@0.3.8:
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.3.8.tgz#7f11b32141eefaa6859f179e062b18e530cd71b9"
-  integrity sha512-0OG/170nHV8UmBvxKGR5LoWwRGYmVmUcrzmUHpkJ7sDwwleqKOt5fQ/vjKqJ1g0cXwyGj9Fe/xauCgrVcFwSfA==
+lexical@0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.5.0.tgz#03a8abc816f6d922384ecd01bd14ed36a1ea4d63"
+  integrity sha512-J0cFuNPQQY5P9W5XW2/xgqp5W0eEQ2rxShLf8eevLvxFWsPSY3zjg3RCzTHyheSiGBBjKDIaM4gxtO8eNeJr2A==
 
 lilconfig@^2.0.5, lilconfig@^2.0.6:
   version "2.0.6"
