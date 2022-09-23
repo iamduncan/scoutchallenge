@@ -1322,10 +1322,10 @@
   dependencies:
     "@lexical/utils" "0.3.8"
 
-"@lexical/headless@0.3.8":
-  version "0.3.8"
-  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.3.8.tgz#e8eb8f462d0a003f552695b5d0781d2ef2071016"
-  integrity sha512-V9AUMyuVTBuw+azRQHFAutrImh9hMKAYox4FRysTKBZG8ZwfR5+r5CIxQdna5NlF13FcrQm7KZ4mLgqf5V2msg==
+"@lexical/headless@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.5.0.tgz#a857e50eac242d0aabdc524ac9b6a1c52af81777"
+  integrity sha512-diIfSdbAZ/yDH6wUPod4m4vc0O7bTnpei53b+mlU7Q+g9ZROoS5q2XQWXDsMSpyag5EOuYhgTM75BT2DvtJbCA==
 
 "@lexical/history@0.3.8":
   version "0.3.8"
