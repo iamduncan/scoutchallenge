@@ -44,7 +44,7 @@
     "@lexical/html": "0.3.8",
     "@lexical/link": "0.3.8",
     "@lexical/list": "0.3.8",
-    "@lexical/markdown": "0.3.8",
+    "@lexical/markdown": "0.5.0",
     "@lexical/react": "0.3.8",
     "@lexical/rich-text": "0.3.8",
     "@lexical/selection": "0.3.8",
