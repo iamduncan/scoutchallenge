@@ -19,7 +19,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
   try {
     const subscribers = await mg().lists.members.listMembers(subscriberList);
-    return { subscribers };
+    return { subscribers: subscribers.items };
   } catch (error) {
     console.error(error);
   }
