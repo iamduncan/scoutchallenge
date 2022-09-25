@@ -1,45 +1,27 @@
-import type { Challenge, Prisma, Section, User } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import type { EditorState, LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
 import Editor from "~/components/ui/Editor/Editor";
-import {
-  addSectionToChallenge,
-  getChallenge,
-  updateChallenge,
-} from "~/models/challenge.server";
-import { getSectionListItems } from "~/models/section.server";
+import { getChallenge, updateChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
 
-type LoaderData = {
-  challenge: Challenge;
-  sections: Section[];
-};
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const challengeId = params.challengeId;
-  const user = await getUser(request);
   if (!challengeId) {
-    return {};
+    return redirect("/admin/challenges");
   }
   const challenge = await getChallenge({ id: challengeId });
-  const sections = await getSectionListItems({ groupId: user?.groups[0]?.id });
-  return { challenge, sections };
+  return json({ challenge });
 };
 
 function validateName(content: string) {
   if (content.length < 5) {
     return `That title is too short`;
-  }
-}
-
-function validateGroup(groupId: string | null, user: User) {
-  if (user.role === "ADMIN" && groupId === null) {
-    return "You must select a group";
   }
 }
 
@@ -67,21 +49,10 @@ export const action: ActionFunction = async ({ request, params }) => {
   const closeDate = formData.get("closeDate") as string | null;
   const introduction = formData.get("introduction") as string | null;
   const status = formData.get("status") as ChallengeStatus;
-  let group = formData.get("group") as string | null;
-
-  if (validateGroup(group, user)) {
-    return badRequest({
-      formError: validateGroup(group, user),
-    });
-  }
 
   const errors = {
     name: validateName(name),
   };
-
-  if (group === null) {
-    group = user.groups[0].id;
-  }
 
   const fields: Prisma.ChallengeUpdateInput = {
     name,
@@ -89,7 +60,6 @@ export const action: ActionFunction = async ({ request, params }) => {
     closeDate: closeDate !== null ? new Date(closeDate) : null,
     introduction: introduction !== null ? introduction : null,
     status: (status as ChallengeStatus) || "OPEN",
-    group: { connect: { id: group } },
     createdBy: {
       connect: {
         id: user.id,
@@ -109,7 +79,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function ViewChallengePage() {
-  const { challenge, sections } = useLoaderData<LoaderData>();
+  const { challenge } = useLoaderData<typeof loader>();
   const nameRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<ActionData>();
   const [introduction, setIntroduction] = useState<string>();
@@ -209,13 +179,13 @@ export default function ViewChallengePage() {
           <label htmlFor="introduction" className="flex w-full flex-col gap-1">
             <span>Introduction: </span>
             <Editor
-              initialContent={challenge.introduction || ""}
+              initialContent={challenge.introduction || undefined}
               onChange={onChange}
             />
             <input
               type="hidden"
               name="introduction"
-              defaultValue={introduction}
+              defaultValue={challenge.introduction || ""}
             />
           </label>
         </div>
@@ -227,6 +197,7 @@ export default function ViewChallengePage() {
               name="status"
               id="status"
               className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
+              defaultValue={challenge?.status}
             >
               <option value={ChallengeStatus.DRAFT}>Draft</option>
               <option value={ChallengeStatus.PUBLISHED}>Published</option>

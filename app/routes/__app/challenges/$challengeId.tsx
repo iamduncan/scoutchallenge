@@ -41,7 +41,7 @@ const ChallengeView = () => {
   return (
     <div>
       <ChallengeHero
-        title="A Scout Hero's Quest"
+        title={challenge.name}
         userProgress={0}
         endDate={challenge.closeDate}
       />

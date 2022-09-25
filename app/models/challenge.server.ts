@@ -64,7 +64,8 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
     throw new Error("Challenge not found");
   }
 
-  const introHtml = generateHTML(challenge.introduction || "");
+  console.log("challenge introduction", challenge.introduction);
+  const introHtml = generateHTML(challenge.introduction);
 
   // generate HTML for each section description
   let challengeSections = [];

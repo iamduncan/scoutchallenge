@@ -46,7 +46,7 @@ const ListItems = ({
       {({ title, listItems }) => (
         <div
           className={`h-full flex-none border-r bg-gray-50 md:basis-80 ${
-            isRoot ? "w-full" : "hidden md:block"
+            isRoot ? "w-full flex-grow" : "hidden lg:block"
           }`}
         >
           {!hideNewLink && (
@@ -116,7 +116,7 @@ const AdminList = (props: AdminListContextType) => {
         />
         <div
           className={`h-full flex-grow p-6 ${
-            isSectionRoot && "hidden md:block"
+            isSectionRoot && "hidden lg:block"
           }`}
         >
           {props.children}

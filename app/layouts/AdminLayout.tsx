@@ -79,7 +79,7 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
   return (
     <div className="layout flex flex-col">
       <Header user={user} admin />
-      <main className="layout-main container box-content flex-grow overflow-y-auto bg-zinc-100 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400">
+      <main className="layout-main box-content flex-grow overflow-y-auto bg-zinc-100 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400">
         <nav>
           <ul className="flex justify-between overflow-x-auto md:justify-center">
             {menuItems

@@ -2,6 +2,7 @@ import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
 import { useRef, useState } from "react";
 
 import type { Prisma, User } from "@prisma/client";
+import { ChallengeType } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
@@ -56,6 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
   const openDate = formData.get("openDate") as string | null;
   const closeDate = formData.get("closeDate") as string | null;
   const introduction = formData.get("introduction") as string | null;
+  const type = formData.get("type") as ChallengeType | null;
   const status = formData.get("status") as ChallengeStatus;
   let group = formData.get("group") as string | null;
 
@@ -78,6 +80,7 @@ export const action: ActionFunction = async ({ request }) => {
     openDate: openDate !== null ? new Date(openDate) : null,
     closeDate: closeDate !== null ? new Date(closeDate) : null,
     introduction: introduction !== null ? introduction : null,
+    type: type !== null ? type : "STANDARD",
     status: (status as ChallengeStatus) || "OPEN",
     group: { connect: { id: group } },
     createdBy: {
@@ -169,6 +172,22 @@ export default function NewChallenge() {
             name="introduction"
             defaultValue={introduction}
           />
+        </label>
+      </div>
+
+      <div>
+        <label htmlFor="type" className="flex w-full flex-col gap-1">
+          <span>Type: </span>
+          <select
+            name="type"
+            id="type"
+            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
+          >
+            <option value={ChallengeType.STANDARD}>Standard</option>
+            <option value={ChallengeType.CONTEST}>Contest</option>
+            <option value={ChallengeType.LIVE}>Live</option>
+            <option value={ChallengeType.TEAM}>Team</option>
+          </select>
         </label>
       </div>
 

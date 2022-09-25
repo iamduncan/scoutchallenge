@@ -71,6 +71,7 @@ model Challenge {
   openDate     DateTime?
   closeDate    DateTime?
   introduction String?
+  type         ChallengeType   @default(STANDARD)
   status       ChallengeStatus @default(DRAFT)
 
   createdAt DateTime @default(now())
@@ -166,6 +167,13 @@ enum RoleType {
   YOUNGPERSON
   PARENT
   USER
+}
+
+enum ChallengeType {
+  STANDARD // Standard challenge
+  LIVE // Live challenge (e.g. navigation challenge)
+  TEAM // Team challenge
+  CONTEST // Contest challenge (e.g. Pinewood Derby, etc)
 }
 
 enum ChallengeStatus {

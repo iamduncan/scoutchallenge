@@ -4,7 +4,10 @@ import { $generateHtmlFromNodes } from "@lexical/html";
 import { JSDOM } from "jsdom";
 import exampleTheme from "./components/ui/Editor/themes/ExampleTheme";
 
-export const generateHTML = (editorState: string) => {
+export const generateHTML = (editorState?: string | null) => {
+  if (!editorState) {
+    return "";
+  }
   const dom = new JSDOM();
   global.window = dom.window as any;
   global.document = dom.window.document;

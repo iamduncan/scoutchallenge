@@ -6,7 +6,8 @@ import type {
   Section,
 } from "@prisma/client";
 import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderArgs } from "@remix-run/server-runtime";
+import { json, LoaderFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { SectionOverview } from "~/components/ui";
@@ -18,67 +19,63 @@ import {
 import { getSectionListItems } from "~/models/section.server";
 import { getUser } from "~/session.server";
 
-type LoaderData = {
-  challenge: Challenge & {
-    challengeSections: (ChallengeSection & {
-      descriptionHtml?: string;
-      questions: Question[];
-    })[];
-  };
-  sections: Section[];
-};
-
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderArgs) => {
   const challengeId = params.challengeId;
   const user = await getUser(request);
   if (!challengeId) {
-    return {};
+    return redirect("/admin/challenges");
   }
-  const challenge = await getChallenge({ id: challengeId });
-  const sections = await getSectionListItems({ groupId: user?.groups[0]?.id });
-  return { challenge, sections };
+  const [challenge, sections] = await Promise.all([
+    getChallenge({ id: challengeId }),
+    getSectionListItems({ groupId: user?.groups[0]?.id }),
+  ]);
+  return json({ challenge, sections });
 };
 
 export default function ViewChallengePage() {
-  const { challenge, sections } = useLoaderData<LoaderData>();
+  const { challenge, sections } = useLoaderData<typeof loader>();
   const [confirmDelete, setConfirmDelete] = useState(false);
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
         <div className="text-xl font-bold">{challenge?.name}</div>
-        <div className="flex items-center">
-          <Link
-            to={`/challenges/${challenge.id}`}
-            className="mr-4 rounded border border-blue-500 py-1 px-3 text-sm font-semibold"
-          >
-            Preview
-          </Link>
-          <strong className="relative mr-4 inline-flex items-center rounded border border-gray-600 px-2.5 py-1.5 text-sm font-medium">
-            <span className="text-gray-700"> Status: </span>
+        <div className="flex flex-col gap-2 md:flex-row md:items-center">
+          <div className="flex">
+            <Link
+              to={`/challenges/${challenge.id}`}
+              className="mr-4 rounded border border-blue-500 py-1 px-3 text-sm font-semibold"
+            >
+              Preview
+            </Link>
+            <strong className="relative mr-4 inline-flex items-center rounded border border-gray-600 px-2.5 py-1.5 text-sm font-medium">
+              <span className="text-gray-700"> Status: </span>
 
-            <span className="ml-1 capitalize text-green-700">
-              {challenge.status.toLowerCase()}
-            </span>
-          </strong>
-          {challenge?.openDate && (
-            <>
+              <span className="ml-1 capitalize text-green-700">
+                {challenge.status.toLowerCase()}
+              </span>
+            </strong>
+          </div>
+          <div className="flex">
+            {challenge?.openDate && (
+              <>
+                <div className="flex flex-col text-center">
+                  <span className="text-sm font-bold">from</span>
+                  <span>
+                    {new Date(challenge.openDate).toLocaleDateString("en-GB")}
+                  </span>
+                </div>
+                <span className="px-2"> &rarr; </span>
+              </>
+            )}
+            {challenge?.closeDate && (
               <div className="flex flex-col text-center">
-                <span className="text-sm font-bold">from</span>
+                <span className="text-sm font-bold">to</span>
                 <span>
-                  {new Date(challenge.openDate).toLocaleDateString("en-GB")}
+                  {new Date(challenge.closeDate).toLocaleDateString("en-GB")}
                 </span>
               </div>
-              <span className="px-2"> &rarr; </span>
-            </>
-          )}
-          {challenge?.closeDate && (
-            <div className="flex flex-col text-center">
-              <span className="text-sm font-bold">to</span>
-              <span>
-                {new Date(challenge.closeDate).toLocaleDateString("en-GB")}
-              </span>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
       <Form method="post" className="flex w-full flex-col gap-8">
@@ -110,6 +107,7 @@ export default function ViewChallengePage() {
           </button>
         </div>
       </Form>
+      <div dangerouslySetInnerHTML={{ __html: challenge.introductionHtml }} />
       <div className="flex flex-col gap-3 p-4">
         {challenge.challengeSections &&
           challenge.challengeSections.map((section) => (
@@ -132,16 +130,22 @@ export default function ViewChallengePage() {
       <div className="flex gap-2">
         <Link
           to=".."
-          className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500"
+          className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 lg:hidden"
           type="button"
         >
           <ArrowLeftIcon className="h-6 w-6" /> Back
         </Link>
         <Link
           to="./sections/add"
-          className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="rounded bg-green-500  py-2 px-4 text-white hover:bg-green-600 focus:bg-green-400"
         >
           Add Section
+        </Link>
+        <Link
+          to={`./edit`}
+          className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+        >
+          Edit
         </Link>
         <Form method="delete">
           <button
