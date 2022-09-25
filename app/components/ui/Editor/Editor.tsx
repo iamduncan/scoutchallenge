@@ -58,7 +58,7 @@ type Props = {
 };
 
 export default function Editor({ initialContent, onChange }: Props) {
-  return (
+  return typeof window !== "undefined" ? (
     <LexicalComposer
       initialConfig={{ ...editorConfig, editorState: initialContent }}
     >
@@ -69,7 +69,6 @@ export default function Editor({ initialContent, onChange }: Props) {
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
             placeholder={<Placeholder />}
-            // initialEditorState={initialContent}
           />
           <OnChangePlugin onChange={onChange} />
           <HistoryPlugin />
@@ -83,5 +82,7 @@ export default function Editor({ initialContent, onChange }: Props) {
         </div>
       </div>
     </LexicalComposer>
+  ) : (
+    <></>
   );
 }
