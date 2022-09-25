@@ -23,7 +23,7 @@ import {
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $isParentElementRTL,
-  $wrapLeafNodesInElements,
+  $wrapNodes,
   $isAtNodeEnd,
 } from "@lexical/selection";
 import { $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
@@ -310,7 +310,7 @@ function BlockOptionsDropdownList({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createParagraphNode());
+          $wrapNodes(selection, () => $createParagraphNode());
         }
       });
     }
@@ -323,7 +323,7 @@ function BlockOptionsDropdownList({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createHeadingNode("h1"));
+          $wrapNodes(selection, () => $createHeadingNode("h1"));
         }
       });
     }
@@ -336,7 +336,7 @@ function BlockOptionsDropdownList({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createHeadingNode("h2"));
+          $wrapNodes(selection, () => $createHeadingNode("h2"));
         }
       });
     }
@@ -371,7 +371,7 @@ function BlockOptionsDropdownList({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createQuoteNode());
+          $wrapNodes(selection, () => $createQuoteNode());
         }
       });
     }
@@ -384,7 +384,7 @@ function BlockOptionsDropdownList({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createCodeNode());
+          $wrapNodes(selection, () => $createCodeNode());
         }
       });
     }
