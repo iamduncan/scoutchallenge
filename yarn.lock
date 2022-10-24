@@ -6721,15 +6721,14 @@ magic-string@^0.26.2:
   dependencies:
     sourcemap-codec "^1.4.8"
 
-mailgun.js@8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/mailgun.js/-/mailgun.js-8.0.0.tgz#ab4837e5457d38101020422f981b265837d23517"
-  integrity sha512-7JAW++fGMt42GEMgrcUTA9FjOEbq0hwWQ9weRG0L+VWzXneTKnerxWcvh8Hx0xBegeXML6M4bPX73X/nZcR7JQ==
+mailgun.js@8.0.2:
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/mailgun.js/-/mailgun.js-8.0.2.tgz#a917b38c162da590f90c9f06945b3bcfa79cab49"
+  integrity sha512-s0esDPrHlo72rLylEj61akLO49HvUltmjKIj/lrbY89kWcL/lcPy23yh4ifFkWTuiBO6oHVqXwzfQI3lhSvK9A==
   dependencies:
     axios "^0.27.2"
     base-64 "^1.0.0"
     url-join "^4.0.1"
-    webpack-merge "^5.4.0"
 
 make-dir@^2.0.0, make-dir@^2.1.0:
   version "2.1.0"
@@ -10044,14 +10043,6 @@ webidl-conversions@^7.0.0:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-7.0.0.tgz#256b4e1882be7debbf01d05f0aa2039778ea080a"
   integrity sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==
 
-webpack-merge@^5.4.0:
-  version "5.8.0"
-  resolved "https://registry.yarnpkg.com/webpack-merge/-/webpack-merge-5.8.0.tgz#2b39dbf22af87776ad744c390223731d30a68f61"
-  integrity sha512-/SaI7xY0831XwP6kzuwhKWVKDP9t1QY1h65lAFLbZqMPIuYcD9QAW4u9STIbU9kaJbPBB/geU/gLr1wDjOhQ+Q==
-  dependencies:
-    clone-deep "^4.0.1"
-    wildcard "^2.0.0"
-
 whatwg-encoding@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/whatwg-encoding/-/whatwg-encoding-2.0.0.tgz#e7635f597fd87020858626805a2729fa7698ac53"
@@ -10116,11 +10107,6 @@ which@^2.0.1:
   integrity sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==
   dependencies:
     isexe "^2.0.0"
-
-wildcard@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/wildcard/-/wildcard-2.0.0.tgz#a77d20e5200c6faaac979e4b3aadc7b3dd7f8fec"
-  integrity sha512-JcKqAHLPxcdb9KM49dufGXn2x3ssnfjbcaQdLlfZsL9rH9wgDQjUtDxbo8NE0F6SFvydeu1VhZe7hZuHsB2/pw==
 
 word-wrap@^1.0.3, word-wrap@^1.2.3, word-wrap@~1.2.3:
   version "1.2.3"
