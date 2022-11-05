@@ -92,7 +92,7 @@
     "cypress": "10.4.0",
     "cz-conventional-changelog": "3.3.0",
     "cz-customizable": "6.9.2",
-    "dotenv": "16.0.1",
+    "dotenv": "16.0.3",
     "esbuild": "0.15.9",
     "eslint": "8.24.0",
     "eslint-config-prettier": "8.5.0",
