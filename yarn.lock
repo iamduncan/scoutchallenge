@@ -1876,10 +1876,10 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@testing-library/cypress@8.0.3":
-  version "8.0.3"
-  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-8.0.3.tgz#24ab34df34d7896866603ade705afbdd186e273c"
-  integrity sha512-nY2YaSbmuPo5k6kL0iLj/pGPPfka3iwb3kpTx8QN/vOCns92Saz9wfACqB8FJzcR7+lfA4d5HUOWqmTddBzczg==
+"@testing-library/cypress@8.0.4":
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/@testing-library/cypress/-/cypress-8.0.4.tgz#edb02b28033bb73e9b0ed0222f52dad8bd931b5b"
+  integrity sha512-R3cpRt/tYvcY7KKe0qULImqmwiVHCJZVIuUpHl624uz102XLyyzc2714PkmRgzYo0mFOu3kNAV4NP+H1Q7pwlA==
   dependencies:
     "@babel/runtime" "^7.14.6"
     "@testing-library/dom" "^8.1.0"
