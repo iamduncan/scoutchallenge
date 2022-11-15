@@ -6,11 +6,11 @@ import { useUser } from "~/utils";
 
 import avatarPlaceholder from "~/assets/images/avatar-placeholder.gif";
 import {
-  CollectionIcon,
-  PuzzleIcon,
+  RectangleGroupIcon,
+  PuzzlePieceIcon,
   UserGroupIcon,
   UserIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import { AppLayout } from "~/layouts";
 import { updateUser } from "~/models/user.server";
 import { getUserId } from "~/session.server";
@@ -184,7 +184,7 @@ export default function ProfilePage() {
             </div>
             <div className="flex items-center space-x-2 font-semibold leading-8 text-gray-900">
               <span className="text-purple-600">
-                <CollectionIcon className="h-5" />
+                <RectangleGroupIcon className="h-5" />
               </span>
               <span className="tracking-wide">Groups</span>
             </div>
@@ -218,7 +218,7 @@ export default function ProfilePage() {
               <div>
                 <div className="mb-3 flex items-center space-x-2 font-semibold leading-8 text-gray-900">
                   <span className="text-purple-600">
-                    <PuzzleIcon className="h-5" />
+                    <PuzzlePieceIcon className="h-5" />
                   </span>
                   <span className="tracking-wide">Challenges</span>
                 </div>

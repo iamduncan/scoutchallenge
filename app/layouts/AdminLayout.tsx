@@ -1,15 +1,15 @@
 import type { FC, SVGProps } from "react";
 import { NavLink } from "@remix-run/react";
 import {
-  ChatIcon,
+  ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
-  CollectionIcon,
-  InboxInIcon,
-  PuzzleIcon,
+  RectangleStackIcon,
+  InboxArrowDownIcon,
+  PuzzlePieceIcon,
   TicketIcon,
   UserGroupIcon,
   UserIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import { Header } from "~/components/common";
 import { useUser } from "~/utils";
 
@@ -26,19 +26,19 @@ const menuItems: {
     level: "group",
   },
   {
-    icon: PuzzleIcon,
+    icon: PuzzlePieceIcon,
     label: "Challenges",
     to: "/admin/challenges",
     level: "section",
   },
   {
-    icon: InboxInIcon,
+    icon: InboxArrowDownIcon,
     label: "Responses",
     to: "/admin/responses",
     level: "section",
   },
   {
-    icon: ChatIcon,
+    icon: ChatBubbleOvalLeftEllipsisIcon,
     label: "Messages",
     to: "/admin/messages",
     level: "section",
@@ -56,7 +56,7 @@ const menuItems: {
     level: "super",
   },
   {
-    icon: CollectionIcon,
+    icon: RectangleStackIcon,
     label: "Mail List",
     to: "/admin/mailing-list",
     level: "super",

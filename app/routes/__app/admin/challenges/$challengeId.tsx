@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/outline";
+import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type {
   Challenge,
   ChallengeSection,

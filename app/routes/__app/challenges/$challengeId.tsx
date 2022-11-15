@@ -1,4 +1,4 @@
-import { ExclamationIcon } from "@heroicons/react/outline";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type { User } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/node";
@@ -47,7 +47,7 @@ const ChallengeView = () => {
       />
       {isAdmin(user.role) && challenge.status === "DRAFT" && (
         <div className="mx-auto mt-6 flex w-11/12 items-center justify-center gap-2 rounded border border-red-500 bg-red-100 py-3 text-xl font-semibold text-red-600 md:w-10/12">
-          <ExclamationIcon className="h-6 w-6" /> Challenge is not published.
+          <ExclamationTriangleIcon className="h-6 w-6" /> Challenge is not published.
         </div>
       )}
       {challenge.introductionHtml && (

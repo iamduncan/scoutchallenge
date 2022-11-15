@@ -1,4 +1,4 @@
-import { XIcon } from "@heroicons/react/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Form, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
 import { mg } from "~/libs/email/config";
@@ -62,7 +62,7 @@ export default function MailingList() {
                         type="submit"
                         className="btn btn-sm btn-danger text-transparent group-hover:text-red-500"
                       >
-                        <XIcon className="inline-block h-6 w-6" />
+                        <XMarkIcon className="inline-block h-6 w-6" />
                       </button>
                     </Form>
                   </div>

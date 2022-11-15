@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/outline";
+import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { Section } from "@prisma/client";
 import { Form, Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";

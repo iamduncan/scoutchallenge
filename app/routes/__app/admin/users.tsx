@@ -1,4 +1,4 @@
-import { UserIcon } from "@heroicons/react/outline";
+import { UserIcon } from "@heroicons/react/24/outline";
 import type { Group } from "~/models/group.server";
 import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
