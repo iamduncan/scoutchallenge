@@ -6,6 +6,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import TreeViewPlugin from "./plugins/TreeViewPlugin";
 import ToolbarPlugin from "./plugins/ToolbarPlugin";
@@ -69,6 +70,7 @@ export default function Editor({ initialContent, onChange }: Props) {
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
             placeholder={<Placeholder />}
+            ErrorBoundary={LexicalErrorBoundary}
           />
           <OnChangePlugin onChange={onChange} />
           <HistoryPlugin />
