@@ -1,4 +1,4 @@
-import { MenuIcon } from "@heroicons/react/outline";
+import { Bars3Icon } from "@heroicons/react/24/outline";
 import type { Group, User } from "@prisma/client";
 import { Form, Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
@@ -30,7 +30,7 @@ export default function Header(props: Props) {
         </Link>
         <div>
           <button id="open-menu" onClick={() => setIsOpen(!isOpen)}>
-            <MenuIcon className="h-10 w-10 text-gray-100" />
+            <Bars3Icon className="h-10 w-10 text-gray-100" />
           </button>
         </div>
       </div>

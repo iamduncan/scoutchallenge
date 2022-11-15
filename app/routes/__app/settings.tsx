@@ -3,8 +3,8 @@ import {
   CogIcon,
   KeyIcon,
   UserCircleIcon,
-  ViewGridAddIcon,
-} from "@heroicons/react/outline";
+  SquaresPlusIcon,
+} from "@heroicons/react/24/outline";
 import { NavLink, Outlet } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import { AppLayout } from "~/layouts";
@@ -45,7 +45,7 @@ const settingsMenu = [
   {
     key: "integrations",
     label: "Integrations",
-    icon: ViewGridAddIcon,
+    icon: SquaresPlusIcon,
     to: "/settings/integrations",
     enabled: false,
   },

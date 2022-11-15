@@ -2,9 +2,9 @@ import {
   CheckCircleIcon,
   ChevronDownIcon,
   ChevronUpIcon,
-  MenuIcon,
+  Bars3Icon,
   PencilIcon,
-} from "@heroicons/react/outline";
+} from "@heroicons/react/24/outline";
 import type { Question } from "@prisma/client";
 import { Link } from "@remix-run/react";
 import type { MouseEvent } from "react";
@@ -122,7 +122,7 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
 
   return (
     <div onClick={onClick} className="relative">
-      <MenuIcon className="h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
+      <Bars3Icon className="h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
       <div
         className={`absolute right-0 z-50 mt-2 rounded border bg-white ${
           menuOpen ? "block" : "hidden"
