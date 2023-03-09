@@ -97,7 +97,7 @@
     "esbuild": "0.17.11",
     "eslint": "8.35.0",
     "eslint-config-prettier": "8.7.0",
-    "happy-dom": "7.8.1",
+    "happy-dom": "8.9.0",
     "husky": "8.0.3",
     "msw": "1.1.0",
     "npm-run-all": "4.1.5",
