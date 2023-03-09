@@ -1,4 +1,4 @@
-import type { FC, SVGProps } from "react";
+import type { FC, JSXElementConstructor, ReactElement, SVGProps } from "react";
 import { NavLink } from "@remix-run/react";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
@@ -14,7 +14,7 @@ import { Header } from "~/components/common";
 import { useUser } from "~/utils";
 
 const menuItems: {
-  icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+  icon: (props: SVGProps<SVGSVGElement> & { title?: string; titleId?: string; }) => ReactElement<any, string | JSXElementConstructor<any>> | null;
   label: string;
   to: string;
   level?: "super" | "group" | "section";
