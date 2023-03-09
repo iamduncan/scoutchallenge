@@ -32,6 +32,10 @@ export const links: LinksFunction = () => {
       rel: "stylesheet",
       href: "https://fonts.googleapis.com/css2?family=Nunito&display=swap",
     },
+    {
+      rel: "manifest",
+      href: "/app.webmanifest",
+    }
   ];
 };
 

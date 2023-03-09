@@ -227,13 +227,13 @@ export default function Index() {
               className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-blue-700 shadow-sm hover:bg-blue-50 sm:px-8"
             >
               Sign up
-            </Link>
+            </Link> */}
             <Link
               to="/login"
-              className="flex items-center justify-center rounded-md bg-blue-500 px-4 py-3 font-medium text-white hover:bg-blue-600  "
+              className="flex items-center justify-center rounded-md px-4 py-3 font-medium text-white"
             >
               Log In
-            </Link> */}
+            </Link>
           </div>
         )}
       </div>
