@@ -1891,10 +1891,10 @@
   dependencies:
     "@lexical/utils" "0.8.1"
 
-"@lexical/headless@0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.8.1.tgz#81dcb6c990ba1fd194cb3e53ca33a54ea0ce318f"
-  integrity sha512-QdslxUv9Ynq8nq9/JF6DCBeNcC+iQUMIWc0lG7scYpL83kBVf3Hje1CoMe/5SPuUxWugwJALcA1wAGdAeuAGbw==
+"@lexical/headless@0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.9.0.tgz#59994fba73bc745aac1a5fba2a88a0b468fe0d3f"
+  integrity sha512-rA1fTyZAAA9XXXgSDaz0JMHCkMclgoy5rdaZvmnQY4t742BvtdFd2rPEcLCcj6TI7UHgFpkpb9xjZD5ICXu6tA==
 
 "@lexical/history@0.8.1":
   version "0.8.1"

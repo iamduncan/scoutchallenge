@@ -40,7 +40,7 @@
     "@heroicons/react": "2.0.13",
     "@lexical/code": "0.8.1",
     "@lexical/hashtag": "0.8.1",
-    "@lexical/headless": "0.8.1",
+    "@lexical/headless": "0.9.0",
     "@lexical/html": "0.8.1",
     "@lexical/link": "0.8.1",
     "@lexical/list": "0.8.1",
