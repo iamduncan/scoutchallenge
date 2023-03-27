@@ -43,7 +43,7 @@
     "@lexical/headless": "0.9.0",
     "@lexical/html": "0.9.0",
     "@lexical/link": "0.9.0",
-    "@lexical/list": "0.9.0",
+    "@lexical/list": "0.9.1",
     "@lexical/markdown": "0.9.0",
     "@lexical/react": "0.9.0",
     "@lexical/rich-text": "0.9.0",
