@@ -30,7 +30,7 @@ export default function ViewSectionPage() {
       <div className="flex gap-2">
         <Link
           to=".."
-          className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500"
+          className="md:hidden mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500"
           type="button"
         >
           <ArrowLeftIcon className="h-6 w-6" /> Back

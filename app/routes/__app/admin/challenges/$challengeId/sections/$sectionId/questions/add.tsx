@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { QuestionType } from "@prisma/client";
-import { Form, Link } from "@remix-run/react";
+import { Form, Link, useActionData } from "@remix-run/react";
 import { useRef, useState } from "react";
 import Editor from "~/components/ui/Editor/Editor";
 import type { EditorState, LexicalEditor } from "lexical";
@@ -8,6 +8,7 @@ import type { ActionFunction } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { addQuestion } from "~/models/challenge.server";
+import { CreateMultipleChoice } from "~/components/ui";
 
 export default function NewQuestionPage() {
   const [description, setDescription] = useState<string>();
@@ -21,8 +22,13 @@ export default function NewQuestionPage() {
       setDescription(jsonString);
     });
   }
-
   const titleRef = useRef<HTMLInputElement>(null);
+  const [questionData, setQuestionData] = useState<{
+    question: any;
+    answer?: any;
+  }>();
+
+  const actionData = useActionData<ActionData>();
 
   return (
     <>
@@ -31,11 +37,13 @@ export default function NewQuestionPage() {
         <Link to="../../">X</Link>
       </div>
       <div className="flex max-h-[calc(95vh_-_3rem)] w-full flex-col gap-8 overflow-x-auto p-4">
-        <div>New Question Form</div>
         <Form method="post">
           <div>
             <label htmlFor="name" className="flex w-full flex-col gap-1">
               <span>Title: </span>
+              {actionData?.errors?.title && (
+                <span className="text-red-500">{actionData.errors.title}</span>
+              )}
               <input
                 ref={titleRef}
                 type="text"
@@ -47,8 +55,13 @@ export default function NewQuestionPage() {
           </div>
 
           <div>
-            <label htmlFor="description">
-              <span>Description</span>
+            <label htmlFor="description" className="flex w-full flex-col gap-1">
+              <span>Description: </span>
+              {actionData?.errors?.description && (
+                <span className="block text-red-500">
+                  {actionData.errors.description}
+                </span>
+              )}
               <Editor onChange={onChange} />
               <input
                 type="hidden"
@@ -89,7 +102,15 @@ export default function NewQuestionPage() {
           </div>
 
           <div>
-            <QuestionTypeContent questionType={questionType} />
+            <QuestionTypeContent
+              questionType={questionType}
+              questionData={questionData}
+              handleUpdate={setQuestionData}
+            />
+          </div>
+
+          <div>
+            <pre>{JSON.stringify(questionData, null, 2)}</pre>
           </div>
 
           <div className="text-right">
@@ -127,21 +148,23 @@ export const action: ActionFunction = async ({ request, params }) => {
   const title = formData.get("title");
   const description = formData.get("description");
   const type = formData.get("questionType") as QuestionType;
+  const errors: ActionData["errors"] = {};
 
   if (typeof title !== "string" || title.length === 0) {
-    return badRequest({
-      errors: { title: "Title is required" },
-    });
+    errors.title = "Title is required";
   }
   if (typeof description !== "string" || description.length === 0) {
+    errors.description = "Description is required";
+  }
+  if (Object.keys(errors).length > 0) {
     return badRequest({
-      errors: { description: "Description is required" },
+      errors,
     });
   }
 
   const question = await addQuestion(challengeSectionId, {
-    title,
-    description,
+    title: title as string,
+    description: description as string,
     hint: "",
     type,
     order: 0,
@@ -157,12 +180,21 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 const QuestionTypeContent = ({
   questionType,
+  handleUpdate,
+  questionData,
 }: {
   questionType: QuestionType;
+  questionData: any;
+  handleUpdate: (data: { question: any; answer?: any }) => void;
 }) => {
   switch (questionType) {
     case QuestionType.MULTIPLECHOICE:
-      return <MultipleChoice />;
+      return (
+        <CreateMultipleChoice
+          questionData={questionData}
+          handleUpdate={handleUpdate}
+        />
+      );
     case QuestionType.TRUEFALSE:
       return <TrueFalse />;
     case QuestionType.TEXT:
@@ -180,16 +212,6 @@ const QuestionTypeContent = ({
     default:
       return <>Question title</>;
   }
-};
-
-const MultipleChoice = () => {
-  const questionData = {};
-  return (
-    <>
-      <p>Question title</p>
-      <p>Multiple Choice</p>
-    </>
-  );
 };
 
 const TrueFalse = () => {

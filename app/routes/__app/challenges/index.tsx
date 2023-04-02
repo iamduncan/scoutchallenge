@@ -3,13 +3,15 @@ import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
 import { ChallengeCard } from "~/components/ui";
 import { getChallengeListItems } from "~/models/challenge.server";
+import { getUser } from '~/session.server';
 
 type LoaderData = {
   challenges: Challenge[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const challenges = await getChallengeListItems();
+  const user = await getUser(request);
+  const challenges = await getChallengeListItems(user?.groups);
 
   return {
     challenges,

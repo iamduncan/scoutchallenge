@@ -1,14 +1,7 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
-import type {
-  Challenge,
-  ChallengeSection,
-  Question,
-  Section,
-} from "@prisma/client";
 import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderArgs } from "@remix-run/server-runtime";
-import { json, LoaderFunction } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
+import { json, redirect } from "@remix-run/server-runtime";
 import { useState } from "react";
 import { SectionOverview } from "~/components/ui";
 import {
@@ -26,7 +19,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     return redirect("/admin/challenges");
   }
   const [challenge, sections] = await Promise.all([
-    getChallenge({ id: challengeId }),
+    getChallenge({ id: challengeId, groups: user?.groups }),
     getSectionListItems({ groupId: user?.groups[0]?.id }),
   ]);
   return json({ challenge, sections });
@@ -122,11 +115,6 @@ export default function ViewChallengePage() {
             />
           ))}
       </div>
-      <div>
-        <pre className="max-w-xl overflow-auto">
-          {JSON.stringify(challenge, null, 2)}
-        </pre>
-      </div>
       <div className="flex gap-2">
         <Link
           to=".."
@@ -185,3 +173,14 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   return { challenge };
 };
+
+export function CatchBoundary() {
+  return (
+    <div>
+      <h2>We couldn't find that challenge!</h2>
+      <Link to={'/admin/challenges/new'} className='btn btn-primary'>
+        Create a new challenge
+      </Link>
+    </div>
+  );
+}

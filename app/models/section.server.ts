@@ -4,10 +4,12 @@ import { prisma } from "~/db.server";
 
 export type { Section } from "@prisma/client";
 
-export function getSection({ id }: Pick<Section, "id">) {
+export function getSection({ id, groupId }: {id: Section["id"], groupId?: Group["id"]}) {
   return prisma.section.findFirst({
-    where: { id },
+    where: { id, groupId },
     include: {
+      group: true,
+      challenges: true,
       users: true,
     },
   });

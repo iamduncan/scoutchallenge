@@ -46,7 +46,7 @@ const ListItems = ({
       {({ title, listItems }) => (
         <div
           className={`h-full flex-none border-r bg-gray-50 md:basis-80 ${
-            isRoot ? "w-full flex-grow" : "hidden lg:block"
+            isRoot ? "w-full" : "hidden lg:block"
           }`}
         >
           {!hideNewLink && (
@@ -108,7 +108,7 @@ const AdminList = (props: AdminListContextType) => {
   const isSectionRoot = paths[paths.length - 1] === props.route;
   return (
     <AdminListContext.Provider value={props}>
-      <div className="flex h-full min-h-full">
+      <div className="flex h-full min-h-full flex-none">
         <ListItems
           isRoot={isSectionRoot}
           hideNewLink={props.hideNewLink}

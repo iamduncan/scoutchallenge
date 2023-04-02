@@ -1,4 +1,5 @@
-import type { Challenge, ChallengeSection, Prisma } from "@prisma/client";
+import type { Challenge, ChallengeSection, Group, Prisma } from "@prisma/client";
+import { ChallengeStatus } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 import { generateHTML } from "~/utils.server";
@@ -21,8 +22,10 @@ export async function updateChallenge(
   });
 }
 
-export async function listChallenges(): Promise<Challenge[]> {
-  return prisma.challenge.findMany();
+export async function listChallenges(groupId: string): Promise<Challenge[]> {
+  return prisma.challenge.findMany({
+    where: { groupId },
+  });
 }
 
 /**
@@ -32,18 +35,22 @@ export async function listChallenges(): Promise<Challenge[]> {
  * @returns list of challenges
  */
 export async function getChallengeListItems(
+  groups?: Group[],
   published?: boolean
 ): Promise<Pick<Challenge, "id" | "name">[]> {
   return prisma.challenge.findMany({
     select: { id: true, name: true },
     orderBy: { name: "asc" },
-    where: published ? { status: "PUBLISHED" } : undefined,
+    where: {
+      groupId: groups ? { in: groups.map((group) => group.id) } : undefined,
+      status: published ? ChallengeStatus.PUBLISHED : undefined,
+    },
   });
 }
 
-export async function getChallenge({ id }: Pick<Challenge, "id">) {
+export async function getChallenge({ id, groups }: { id: Challenge["id"], groups?: Group[] }) {
   const challenge = await prisma.challenge.findFirst({
-    where: { id },
+    where: { id, groupId: groups ? { in: groups.map((group) => group.id) } : undefined },
     include: {
       createdBy: true,
       updatedBy: true,
@@ -61,10 +68,11 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
   });
 
   if (!challenge) {
-    throw new Error("Challenge not found");
+    throw new Response("Not Found", {
+      status: 404,
+    });
   }
 
-  console.log("challenge introduction", challenge.introduction);
   const introHtml = generateHTML(challenge.introduction);
 
   // generate HTML for each section description

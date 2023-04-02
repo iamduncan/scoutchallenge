@@ -1,5 +1,7 @@
 export { default as UserMenu } from "./UserMenu";
 export * from "./Alerts";
+export * from "./Form";
+export * from "./Questions";
 export { default as ProgressCircular } from "./ProgressCircular";
 
 export { default as ChallengeCard } from "./ChallengeCard";
