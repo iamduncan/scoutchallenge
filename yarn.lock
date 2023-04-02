@@ -6850,10 +6850,10 @@ levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-lexical@0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.9.0.tgz#9c67b624b19a521b2515721b65a12e7fdc806980"
-  integrity sha512-UHMvjRVqrpBLJkCRytVxAvy3PftRnlhZIqKcY1Uiugf6KjzP0GQTwWhxxcltJJ0sZCjZcVYgiib+m08R5KXz0g==
+lexical@0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/lexical/-/lexical-0.9.1.tgz#0e8a3df9e3d4cb8399b39a52693cc0251620ed82"
+  integrity sha512-I7m8u717rqjdGZaRCZ3/EW+IwJWA78nX2kaTYQyua6mLlFDvcnHtX1bFXDZA+flNpPcnAuaI8HMA4xgajdFgHw==
 
 lilconfig@^2.0.5, lilconfig@^2.0.6:
   version "2.0.6"
