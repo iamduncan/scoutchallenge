@@ -37,7 +37,7 @@
     "/public/build"
   ],
   "dependencies": {
-    "@heroicons/react": "2.0.16",
+    "@heroicons/react": "2.0.18",
     "@lexical/code": "0.9.1",
     "@lexical/hashtag": "0.9.1",
     "@lexical/headless": "0.9.1",
