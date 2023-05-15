@@ -1,14 +1,17 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type { User } from "@prisma/client";
-import { Link, useLoaderData } from "@remix-run/react";
+import { RoleType, ChallengeStatus } from "@prisma/client";
+import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react";
 import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { ChallengeHero, SectionOverview } from "~/components/ui";
+import { ChallengeHero } from "~/components/ui";
 import { getChallenge } from "~/models/challenge.server";
 import { getUser } from "~/session.server";
 
 const isAdmin = (role: User["role"]) =>
-  role === "ADMIN" || role === "GROUPADMIN" || role === "SECTIONADMIN";
+  role === RoleType.ADMIN ||
+  role === RoleType.GROUPADMIN ||
+  role === RoleType.SECTIONADMIN;
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   const user = await getUser(request);
@@ -23,7 +26,8 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   if (
     user &&
     !isAdmin(user.role) &&
-    (challenge.status === "DRAFT" || challenge.status === "DELETED")
+    (challenge.status === ChallengeStatus.DRAFT ||
+      challenge.status === ChallengeStatus.DELETED)
   ) {
     return redirect("../");
   }
@@ -37,6 +41,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 
 const ChallengeView = () => {
   const { user, challenge } = useLoaderData<typeof loader>();
+  const [searchParams] = useSearchParams();
 
   return (
     <div>
@@ -45,51 +50,20 @@ const ChallengeView = () => {
         userProgress={0}
         endDate={challenge.closeDate}
       />
-      {isAdmin(user.role) && challenge.status === "DRAFT" && (
+      {isAdmin(user.role) && challenge.status === ChallengeStatus.DRAFT && (
         <div className="mx-auto mt-6 flex w-11/12 items-center justify-center gap-2 rounded border border-red-500 bg-red-100 py-3 text-xl font-semibold text-red-600 md:w-10/12">
-          <ExclamationTriangleIcon className="h-6 w-6" /> Challenge is not published.
+          <ExclamationTriangleIcon className="h-6 w-6" /> Challenge is not
+          published.
         </div>
       )}
-      {challenge.introductionHtml && (
-        <div className="my-6 px-4">
-          <h3 className="text-2xl font-semibold">Introduction</h3>
-          <div
-            dangerouslySetInnerHTML={{ __html: challenge.introductionHtml }}
-            className="text-lg"
-          />
+
+      <Outlet />
+
+      {searchParams.get("debug") === "true" && (
+        <div className="container overflow-x-auto">
+          <pre>{JSON.stringify(challenge, null, 2)}</pre>
         </div>
       )}
-      <div className="flex flex-col gap-3 p-4">
-        {challenge.challengeSections.map((section) => (
-          <SectionOverview
-            key={section.id}
-            title={section.title}
-            description={section.descriptionHtml}
-            questions={section.questions}
-            challengeId={challenge.id}
-            sectionId={section.id}
-          />
-        ))}
-      </div>
-      {isAdmin(user.role) && (
-        <div className="flex gap-3 p-4">
-          <Link
-            to={`/admin/challenges/${challenge.id}`}
-            className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Admin
-          </Link>
-          <Link
-            to={`/admin/challenges/${challenge.id}/edit`}
-            className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Edit
-          </Link>
-        </div>
-      )}
-      <div className="container overflow-x-auto">
-        <pre>{JSON.stringify(challenge, null, 2)}</pre>
-      </div>
     </div>
   );
 };

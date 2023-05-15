@@ -1,4 +1,10 @@
-import type { Challenge, ChallengeSection, Group, Prisma } from "@prisma/client";
+import type {
+  Challenge,
+  ChallengeSection,
+  Group,
+  Prisma,
+  Question,
+} from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 
 import { prisma } from "~/db.server";
@@ -48,9 +54,18 @@ export async function getChallengeListItems(
   });
 }
 
-export async function getChallenge({ id, groups }: { id: Challenge["id"], groups?: Group[] }) {
+export async function getChallenge({
+  id,
+  groups,
+}: {
+  id: Challenge["id"];
+  groups?: Group[];
+}) {
   const challenge = await prisma.challenge.findFirst({
-    where: { id, groupId: groups ? { in: groups.map((group) => group.id) } : undefined },
+    where: {
+      id,
+      groupId: groups ? { in: groups.map((group) => group.id) } : undefined,
+    },
     include: {
       createdBy: true,
       updatedBy: true,
@@ -59,7 +74,14 @@ export async function getChallenge({ id, groups }: { id: Challenge["id"], groups
         include: {
           questions: {
             orderBy: { order: "asc" },
-            select: { id: true, title: true, description: true },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              hint: true,
+              data: true,
+              type: true,
+            },
           },
         },
         orderBy: { order: "asc" },
@@ -87,6 +109,26 @@ export async function getChallenge({ id, groups }: { id: Challenge["id"], groups
           challenge.challengeSections[section].description || ""
         ),
       });
+
+      // generate HTML for each question description
+      let questions = [];
+      for (const question in challenge.challengeSections[section].questions) {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            challenge.challengeSections[section].questions,
+            question
+          )
+        ) {
+          questions.push({
+            ...challenge.challengeSections[section].questions[question],
+            descriptionHtml: generateHTML(
+              challenge.challengeSections[section].questions[question]
+                .description || ""
+            ),
+          });
+        }
+      }
+      challengeSections[section].questions = questions;
     }
   }
 
@@ -162,6 +204,7 @@ export async function getChallengeSection({
   });
 }
 
+/* --------------------------- Question Functions --------------------------- */
 export async function addQuestion(
   challengeSectionId: string,
   questionData: Prisma.QuestionCreateWithoutChallengeSectionInput
@@ -175,5 +218,11 @@ export async function addQuestion(
         },
       },
     },
+  });
+}
+
+export async function deleteQuestion({ id }: Pick<Question, "id">) {
+  return prisma.question.delete({
+    where: { id },
   });
 }

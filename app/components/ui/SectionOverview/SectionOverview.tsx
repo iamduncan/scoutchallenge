@@ -4,9 +4,10 @@ import {
   ChevronUpIcon,
   Bars3Icon,
   PencilIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import type { Question } from "@prisma/client";
-import { Link } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 import type { MouseEvent } from "react";
 import { useState } from "react";
 
@@ -39,6 +40,7 @@ const SectionOverview = (props: SectionOverviewProps) => {
           {title}
         </h1>
         <div className="flex items-center gap-2">
+          {!admin && <Link to={`./section/${sectionId}`}>Start</Link>}
           {admin && <AdminMenu sectionId={sectionId} />}
           {expanded ? (
             <ChevronUpIcon className="h-8 w-8 rounded-full border-2 border-gray-400 text-gray-600" />
@@ -64,11 +66,21 @@ const SectionOverview = (props: SectionOverviewProps) => {
                 {question.title}
               </h3>
               {admin && (
-                <Link
-                  to={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
-                >
-                  <PencilIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
-                </Link>
+                <div className="flex">
+                  <Form
+                    method="delete"
+                    action={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
+                  >
+                    <button type="submit">
+                      <TrashIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
+                    </button>
+                  </Form>
+                  <Link
+                    to={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
+                  >
+                    <PencilIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
+                  </Link>
+                </div>
               )}
               {question.userStatus && (
                 <QuestionUserStatus status={question.userStatus} />
@@ -132,7 +144,7 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
           <li className="flex items-center hover:bg-gray-100">
             <Link
               to={`./sections/${sectionId}`}
-              className="m-1 whitespace-nowrap py-2 px-3"
+              className="m-1 whitespace-nowrap px-3 py-2"
             >
               Edit Section
             </Link>
@@ -140,7 +152,7 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
           <li className="flex items-center hover:bg-gray-100">
             <Link
               to={`./sections/${sectionId}/questions/add`}
-              className="m-1 whitespace-nowrap py-2 px-3"
+              className="m-1 whitespace-nowrap px-3 py-2"
             >
               New Question
             </Link>

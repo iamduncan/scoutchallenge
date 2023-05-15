@@ -13,7 +13,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import tailwindStylesheetUrl from "./styles/tailwind.css";
+import tailwindStylesheetUrl from "./styles/app.css";
 import editorStylesheetUrl from "./components/ui/Editor/styles.css";
 
 import { getUser } from "./session.server";
@@ -35,7 +35,7 @@ export const links: LinksFunction = () => {
     {
       rel: "manifest",
       href: "/app.webmanifest",
-    }
+    },
   ];
 };
 
@@ -62,7 +62,10 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="h-full max-w-full overflow-y-auto">
+      <body
+        className="h-full max-w-full overflow-y-auto"
+        suppressHydrationWarning
+      >
         <Outlet />
         <ScrollRestoration />
         <Scripts />

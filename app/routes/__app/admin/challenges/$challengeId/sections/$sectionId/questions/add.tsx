@@ -5,8 +5,7 @@ import { useRef, useState } from "react";
 import Editor from "~/components/ui/Editor/Editor";
 import type { EditorState, LexicalEditor } from "lexical";
 import type { ActionFunction } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
+import { redirect, json } from "@remix-run/server-runtime";
 import { addQuestion } from "~/models/challenge.server";
 import { CreateMultipleChoice } from "~/components/ui";
 
@@ -107,6 +106,12 @@ export default function NewQuestionPage() {
               questionData={questionData}
               handleUpdate={setQuestionData}
             />
+            <input
+              type="hidden"
+              name="question_data"
+              value={JSON.stringify(questionData)}
+            />
+            <input type="hidden" name="question_type" value={questionType} />
           </div>
 
           <div>
@@ -116,7 +121,7 @@ export default function NewQuestionPage() {
           <div className="text-right">
             <button
               type="submit"
-              className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
             >
               Save
             </button>
@@ -147,7 +152,8 @@ export const action: ActionFunction = async ({ request, params }) => {
   const formData = await request.formData();
   const title = formData.get("title");
   const description = formData.get("description");
-  const type = formData.get("questionType") as QuestionType;
+  const type = formData.get("question_type") as QuestionType;
+  const questionAnswerData = formData.get("question_data");
   const errors: ActionData["errors"] = {};
 
   if (typeof title !== "string" || title.length === 0) {
@@ -162,13 +168,15 @@ export const action: ActionFunction = async ({ request, params }) => {
     });
   }
 
-  const question = await addQuestion(challengeSectionId, {
+  const questionData = {
     title: title as string,
     description: description as string,
     hint: "",
     type,
+    data: JSON.parse(questionAnswerData as string),
     order: 0,
-  });
+  };
+  const question = await addQuestion(challengeSectionId, questionData);
 
   if (!question) {
     return badRequest({
