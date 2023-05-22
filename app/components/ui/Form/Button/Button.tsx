@@ -3,16 +3,21 @@ import type { ReactNode } from "react";
 /**
  * Button component
  */
-const Button = ({
-  children,
-  onClick,
-  varient = "primary",
-}: {
-  children: ReactNode;
-  onClick: () => void;
-  varient?: "primary" | "secondary";
-}) => {
-  const buttonClass = (varient: "primary" | "secondary") => {
+const Button = (
+  props:
+    | {
+        children: ReactNode;
+        onClick?: () => void;
+        varient?: "primary" | "secondary";
+      }
+    | {
+        children: ReactNode;
+        varient?: "primary" | "secondary";
+        submit?: true;
+      }
+) => {
+  const { children, varient } = props;
+  const buttonClass = (varient: "primary" | "secondary" = "primary") => {
     switch (varient) {
       case "primary":
         return "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded";
@@ -21,7 +26,12 @@ const Button = ({
     }
   };
   return (
-    <button onClick={onClick} className={buttonClass(varient)}>
+    <button
+      {...("onClick" in props
+        ? { onClick: props.onClick }
+        : { type: "submit" })}
+      className={buttonClass(varient)}
+    >
       {children}
     </button>
   );

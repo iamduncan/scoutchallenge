@@ -4,7 +4,16 @@ import type {
   Question,
   User,
 } from "@prisma/client";
-import { Link, useParams } from "@remix-run/react";
+import { Form, Link, useParams, useSearchParams } from "@remix-run/react";
+import type { ActionArgs } from "@remix-run/server-runtime";
+import { json } from "@remix-run/server-runtime";
+import {
+  AnswerCipher,
+  AnswerFillInTheBlank,
+  AnswerMultipleChoice,
+  Button,
+} from "~/components/ui";
+import type { QuestionData } from "~/components/ui/Questions/types";
 import { useMatchesData } from "~/utils";
 
 export default function ChallengeSectionView() {
@@ -21,6 +30,7 @@ export default function ChallengeSectionView() {
     };
     user: User;
   };
+  const [searchParams] = useSearchParams();
   const section = challenge.challengeSections.find(
     (section) => section.id === sectionId
   );
@@ -34,23 +44,65 @@ export default function ChallengeSectionView() {
           className="text-lg"
         />
       )}
-      {section &&
-        section.questions.map((question) => (
-          <div key={question.id}>
-            <p>{question.title}</p>
-            {question.descriptionHtml && (
-              <div
-                dangerouslySetInnerHTML={{ __html: question.descriptionHtml }}
-              />
-            )}
-            <p>{question.type}</p>
-          </div>
-        ))}
+      <Form method="post">
+        {section &&
+          section.questions.map((question) => (
+            <div key={question.id}>
+              <p>{question.title}</p>
+              {question.descriptionHtml && (
+                <div
+                  dangerouslySetInnerHTML={{ __html: question.descriptionHtml }}
+                />
+              )}
+              <QuestionComponent question={question} />
+            </div>
+          ))}
+        <Button submit>Submit</Button>
+      </Form>
       <div>
         <Link to="../" className="btn btn-blue mt-8">
           Back to Challenge
         </Link>
       </div>
+      {searchParams.get("debug") === "true" && user.role.includes("ADMIN") && (
+        <pre className="text-sm">{JSON.stringify(section, null, 2)}</pre>
+      )}
     </div>
   );
 }
+
+export const action = async ({ request }: ActionArgs) => {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData.entries());
+  console.log(data);
+  return json({ data });
+};
+
+const QuestionComponent = ({ question }: { question: Question }) => {
+  switch (question.type) {
+    case "MULTIPLECHOICE":
+      return (
+        <AnswerMultipleChoice
+          questionData={question.data as QuestionData<"MULTIPLECHOICE">}
+          handleUpdate={() => {}}
+          name={question.id}
+        />
+      );
+    case "FILLINTHEBLANK":
+      return (
+        <AnswerFillInTheBlank
+          questionData={question.data as QuestionData<"FILLINTHEBLANK">}
+          handleUpdate={() => {}}
+        />
+      );
+    case "CIPHER":
+      return (
+        <AnswerCipher
+          questionData={question.data as QuestionData<"CIPHER">}
+          handleUpdate={() => {}}
+        />
+      );
+    default:
+      return null;
+  }
+};
