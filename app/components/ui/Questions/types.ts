@@ -32,8 +32,14 @@ type FileUploadQuestion = {
   answer: string;
 };
 
+export enum CipherType {
+  PIGPEN = "PIGPEN",
+  SHIFT = "SHIFT",
+}
 type CipherQuestion = {
   answer: string;
+  type: CipherType;
+  shiftValue?: number;
 };
 
 export type QuestionData<T extends QuestionType> = T extends "TEXT"

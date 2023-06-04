@@ -4,8 +4,8 @@ const Cipher = ({
   questionData,
   handleUpdate,
 }: {
-  questionData: QuestionData;
-  handleUpdate: (data: QuestionData) => void;
+  questionData: QuestionData<"CIPHER">;
+  handleUpdate: (data: QuestionData<"CIPHER">) => void;
 }) => {
   return <div className="cipher">Cipher Component</div>;
 };
