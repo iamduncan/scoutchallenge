@@ -7,7 +7,7 @@ import type { EditorState, LexicalEditor } from "lexical";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { redirect, json } from "@remix-run/server-runtime";
 import { addQuestion } from "~/models/challenge.server";
-import { CreateMultipleChoice } from "~/components/ui";
+import { CreateMultipleChoice, CreateTrueFalse } from "~/components/ui";
 
 export default function NewQuestionPage() {
   const [description, setDescription] = useState<string>();
@@ -79,9 +79,9 @@ export default function NewQuestionPage() {
               <select
                 name="questionType"
                 defaultValue={questionType}
-                onChange={(e) =>
-                  setQuestionType(e.target.value as QuestionType)
-                }
+                onChange={(e) => {
+                  setQuestionType(e.target.value as QuestionType);
+                }}
                 className="flex-1 rounded-md border-2 border-slate-700 px-2 text-lg leading-loose focus:border-blue-500 active:border-blue-500"
               >
                 <option value={QuestionType.MULTIPLECHOICE}>
@@ -204,7 +204,12 @@ const QuestionTypeContent = ({
         />
       );
     case QuestionType.TRUEFALSE:
-      return <TrueFalse />;
+      return (
+        <CreateTrueFalse
+          questionData={questionData}
+          handleUpdate={handleUpdate}
+        />
+      );
     case QuestionType.TEXT:
       return <ShortAnswer />;
     case QuestionType.FILLINTHEBLANK:
@@ -220,15 +225,6 @@ const QuestionTypeContent = ({
     default:
       return <>Question title</>;
   }
-};
-
-const TrueFalse = () => {
-  return (
-    <>
-      <p>Question title</p>
-      <p>True/False</p>
-    </>
-  );
 };
 
 const ShortAnswer = () => {
