@@ -57,8 +57,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function App() {
   return (
-    <html lang="en" className="">
-      <head>
+    <html lang="en" className="" suppressHydrationWarning>
+      <head suppressHydrationWarning>
         <Meta />
         <Links />
       </head>
@@ -74,3 +74,5 @@ export default function App() {
     </html>
   );
 }
+
+
