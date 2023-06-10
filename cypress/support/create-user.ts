@@ -53,4 +53,9 @@ async function createAndLogin(
   );
 }
 
-createAndLogin(process.argv[2], process.argv[3], process.argv[4]);
+createAndLogin(process.argv[2], process.argv[3], process.argv[4]).catch(
+  (error) => {
+    console.error(error);
+    process.exit(1);
+  }
+);
