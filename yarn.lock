@@ -1545,10 +1545,10 @@
   dependencies:
     "@lexical/utils" "0.10.0"
 
-"@lexical/headless@0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.10.0.tgz#33b327034de088a7cf635b250e90a839436300e3"
-  integrity sha512-2uC92WLxB760/KdGz4sdlCE7H08Sog4pXV9D0B6uS0/EgG1pFMLkAvRCqMXCKzlr6h3sZBjjzaSeGdAfiRyaGQ==
+"@lexical/headless@0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.12.2.tgz#300d5399d5d45e6f0bdc677c9ccaaf287d372572"
+  integrity sha512-fgAPcNG8z/uL++eplR5u5RZQU62n/aOf/znEnMn0toM73yzZQm3+V9Jx/Q5U/QfFuWVwQddVLZ32DGqMCW1/8w==
 
 "@lexical/history@0.10.0":
   version "0.10.0"
