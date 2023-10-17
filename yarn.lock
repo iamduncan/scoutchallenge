@@ -1640,6 +1640,13 @@
   dependencies:
     "@lexical/utils" "0.10.0"
 
+"@lexical/hashtag@0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@lexical/hashtag/-/hashtag-0.12.2.tgz#d9c0f872b4a662b0393b289fa84515ec2c7cd624"
+  integrity sha512-2vYzIu5Ldf+eYdUrNA2m80c3N3MF3vJ0fIJzpl5QyX8OdViggEWl1bh+lKtw1Ju0H0CUyDIXdDLZ2apW3WDkTA==
+  dependencies:
+    "@lexical/utils" "0.12.2"
+
 "@lexical/headless@0.10.0":
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/@lexical/headless/-/headless-0.10.0.tgz#33b327034de088a7cf635b250e90a839436300e3"
