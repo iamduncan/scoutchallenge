@@ -38,7 +38,7 @@
   ],
   "dependencies": {
     "@heroicons/react": "2.0.18",
-    "@lexical/code": "0.10.0",
+    "@lexical/code": "0.12.2",
     "@lexical/hashtag": "0.10.0",
     "@lexical/headless": "0.10.0",
     "@lexical/html": "0.10.0",
