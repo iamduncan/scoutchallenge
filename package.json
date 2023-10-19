@@ -147,6 +147,9 @@
   "config": {
     "commitizen": {
       "path": "cz-customizable"
+    },
+    "cz-customizable": {
+      "config": ".cz-config.cjs"
     }
   },
   "packageManager": "yarn@3.6.4"

@@ -56,10 +56,16 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   const fields: Prisma.ChallengeUpdateInput = {
     name,
-    openDate: openDate !== null ? new Date(openDate) : null,
-    closeDate: closeDate !== null ? new Date(closeDate) : null,
-    introduction: introduction !== null ? introduction : null,
-    status: (status as ChallengeStatus) || "OPEN",
+    openDate:
+      typeof openDate === "string" && openDate !== ""
+        ? new Date(openDate)
+        : undefined,
+    closeDate:
+      typeof closeDate === "string" && closeDate !== ""
+        ? new Date(closeDate)
+        : undefined,
+    introduction: introduction ?? null,
+    status: status || "OPEN",
     createdBy: {
       connect: {
         id: user.id,
@@ -208,13 +214,13 @@ export default function ViewChallengePage() {
         <div className="text-right">
           <button
             type="submit"
-            className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+            className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
           >
             Save
           </button>
           <Link
             to=".."
-            className="ml-2 mr-1 mb-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
+            className="mb-1 ml-2 mr-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
           >
             Cancel
           </Link>

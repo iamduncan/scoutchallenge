@@ -28,9 +28,15 @@ export async function updateChallenge(
   });
 }
 
-export async function listChallenges(groupId: string): Promise<Challenge[]> {
+export async function listChallenges({
+  groupId,
+  isAdmin,
+}: {
+  groupId: string;
+  isAdmin?: boolean;
+}): Promise<Challenge[]> {
   return prisma.challenge.findMany({
-    where: { groupId },
+    where: isAdmin ? undefined : { groupId },
   });
 }
 
@@ -40,15 +46,20 @@ export async function listChallenges(groupId: string): Promise<Challenge[]> {
  * @param published true to return only published challenges
  * @returns list of challenges
  */
-export async function getChallengeListItems(
-  groups?: Group[],
-  published?: boolean
-): Promise<Pick<Challenge, "id" | "name">[]> {
+export async function getChallengeListItems({
+  groups,
+  published,
+}: {
+  groups?: Group[];
+  published?: boolean;
+}): Promise<Pick<Challenge, "id" | "name">[]> {
   return prisma.challenge.findMany({
     select: { id: true, name: true },
     orderBy: { name: "asc" },
     where: {
-      groupId: groups ? { in: groups.map((group) => group.id) } : undefined,
+      groupId: groups?.length
+        ? { in: groups.map((group) => group.id) }
+        : undefined,
       status: published ? ChallengeStatus.PUBLISHED : undefined,
     },
   });
@@ -64,7 +75,9 @@ export async function getChallenge({
   const challenge = await prisma.challenge.findFirst({
     where: {
       id,
-      groupId: groups ? { in: groups.map((group) => group.id) } : undefined,
+      groupId: groups?.length
+        ? { in: groups.map((group) => group.id) }
+        : undefined,
     },
     include: {
       createdBy: true,

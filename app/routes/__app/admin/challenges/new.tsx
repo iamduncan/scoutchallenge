@@ -77,11 +77,13 @@ export const action: ActionFunction = async ({ request }) => {
 
   const fields: Prisma.ChallengeCreateInput = {
     name,
-    openDate: openDate !== null ? new Date(openDate) : null,
-    closeDate: closeDate !== null ? new Date(closeDate) : null,
-    introduction: introduction !== null ? introduction : null,
-    type: type !== null ? type : "STANDARD",
-    status: (status as ChallengeStatus) || "OPEN",
+    openDate:
+      typeof openDate === "string" && openDate !== "" ? openDate : undefined,
+    closeDate:
+      typeof closeDate === "string" && closeDate !== "" ? closeDate : undefined,
+    introduction: introduction ?? null,
+    type: type ?? "STANDARD",
+    status: status || "OPEN",
     group: { connect: { id: group } },
     createdBy: {
       connect: {
@@ -233,13 +235,13 @@ export default function NewChallenge() {
       <div className="text-right">
         <button
           type="submit"
-          className="mr-1 mb-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
+          className="mb-1 mr-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
         >
           Save
         </button>
         <Link
           to=".."
-          className="ml-2 mr-1 mb-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
+          className="mb-1 ml-2 mr-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
         >
           Cancel
         </Link>
