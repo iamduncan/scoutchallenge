@@ -1,13 +1,14 @@
-import React from "react";
-import { hydrateRoot } from "react-dom/client";
 import { RemixBrowser } from "@remix-run/react";
+import { startTransition } from "react";
+import { hydrateRoot } from "react-dom/client";
 
-hydrateRoot(
-  document,
-  <React.StrictMode>
-    <RemixBrowser />
-  </React.StrictMode>
-);
+if (ENV.MODE === "production" && ENV.SENTRY_DSN) {
+  import("./utils/monitoring.client.tsx").then(({ init }) => init());
+}
+
+startTransition(() => {
+  hydrateRoot(document, <RemixBrowser />);
+});
 
 // if the browser supports SW (all modern browsers do it)
 if ("serviceWorker" in navigator) {
@@ -18,7 +19,7 @@ if ("serviceWorker" in navigator) {
       .then(function (registration) {
         console.log(
           "Service worker registered with scope:",
-          registration.scope
+          registration.scope,
         );
       })
       .catch(function (error) {
