@@ -2,9 +2,9 @@ import { Bars3Icon } from "@heroicons/react/24/outline";
 import type { Group, User } from "@prisma/client";
 import { Form, Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
-import { Logo } from "~/components/icons";
-import { UserMenu } from "~/components/ui";
-import { menuItems } from "~/config";
+import { Logo } from "#app/components/icons/index.js";
+import { UserMenu } from "#app/components/ui/index.js";
+import { menuItems } from "#app/config.js";
 
 type Props = {
   user: User & { groups: Group[] };
