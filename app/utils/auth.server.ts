@@ -1,6 +1,9 @@
 import { redirect } from "@remix-run/node";
 import { prisma } from "./db.server.ts";
 import { authSessionStorage } from "./session.server.ts";
+import { Authenticator } from "remix-auth";
+import { type ProviderUser } from "./providers/provider.ts";
+import { connectionSessionStorage, providers } from "./connections.server.ts";
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30;
 export const getSessionExpirationDate = () =>
@@ -8,13 +11,13 @@ export const getSessionExpirationDate = () =>
 
 export const sessionKey = "sessionId";
 
-// export const authenticator = new Authenticator<ProviderUser>(
-//   connectionSessionStorage,
-// );
+export const authenticator = new Authenticator<ProviderUser>(
+  connectionSessionStorage,
+);
 
-// for (const [providerName, provider] of Object.entries(providers)) {
-//   authenticator.use(provider.getAuthStrategy(), providerName);
-// }
+for (const [providerName, provider] of Object.entries(providers)) {
+  authenticator.use(provider.getAuthStrategy(), providerName);
+}
 
 export async function getUserId(request: Request) {
   const authSession = await authSessionStorage.getSession(

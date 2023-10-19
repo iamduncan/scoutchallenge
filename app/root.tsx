@@ -1,6 +1,5 @@
 import type {
   LinksFunction,
-  LoaderFunction,
   LoaderFunctionArgs,
   MetaFunction,
 } from "@remix-run/node";
@@ -13,13 +12,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { cssBundleHref } from "@remix-run/css-bundle";
 
 import tailwindStylesheetUrl from "./styles/app.css";
 import editorStylesheetUrl from "./components/ui/Editor/styles.css";
 
-import { useOptionalUser } from "#app/utils/user.ts";
 import { makeTimings, time } from "./utils/timing.server.ts";
+import { getUserId } from "./utils/auth.server.ts";
+import { prisma } from "./utils/db.server.ts";
 
 export const links: LinksFunction = () => {
   return [
