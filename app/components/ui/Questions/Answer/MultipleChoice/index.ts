@@ -1,1 +1,1 @@
-export { default } from "./MultipleChoice";
+export { default } from "./MultipleChoice.tsx";

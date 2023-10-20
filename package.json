@@ -6,8 +6,7 @@
   "sideEffects": false,
   "type": "module",
   "imports": {
-    "#*": "./*",
-    "~/*": "./app/*"
+    "#*": "./*"
   },
   "scripts": {
     "build": "run-s \"build:*\"",
@@ -15,6 +14,7 @@
     "build:remix": "remix build --sourcemap",
     "build:server": "tsx ./other/build-server.ts",
     "dev": "remix dev -c \"node ./server/dev-server.js\" --manual",
+    "prisma:studio": "prisma studio",
     "docker": "docker-compose up -d",
     "format": "prettier --write .",
     "generate:css": "postcss ./app/styles/index.css --config ./postcss.config.js --output ./app/styles/index.css",

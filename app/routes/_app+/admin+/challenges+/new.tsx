@@ -4,14 +4,15 @@ import { useRef, useState } from "react";
 import type { Prisma, User } from "@prisma/client";
 import { ChallengeType } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
-import { createChallenge } from "~/models/challenge.server";
-import { getUser } from "~/session.server";
-import Editor from "~/components/ui/Editor/Editor";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import type { EditorState, LexicalEditor } from "lexical";
-import { getGroupListItems } from "~/models/group.server";
-import { useUser } from "~/utils";
+import { createChallenge } from "#app/models/challenge.server.ts";
+import Editor from "#app/components/ui/Editor/Editor.tsx";
+import { getGroupListItems } from "#app/models/group.server.ts";
+import { requireUserId } from '#app/utils/auth.server.ts';
+import { getUserById } from '#app/models/user.server.ts';
+import { useUser } from '#app/utils/user.ts';
 
 type LoaderData = {
   groups: { id: string; name: string }[];
@@ -28,12 +29,6 @@ function validateName(content: string) {
   }
 }
 
-function validateGroup(groupId: string | null, user: User) {
-  if (user.role === "ADMIN" && groupId === null) {
-    return "You must select a group";
-  }
-}
-
 type ActionData = {
   errors?: {
     name?: string;
@@ -46,7 +41,8 @@ type ActionData = {
 const badRequest = (data: ActionData) => json(data, { status: 400 });
 
 export const action: ActionFunction = async ({ request }) => {
-  const user = await getUser(request);
+  const userId = await requireUserId(request);
+  const user = userId ? await getUserById(userId) : null;
   if (!user) {
     return badRequest({
       formError: "You must be logged in to create a challenge",
@@ -61,9 +57,11 @@ export const action: ActionFunction = async ({ request }) => {
   const status = formData.get("status") as ChallengeStatus;
   let group = formData.get("group") as string | null;
 
-  if (validateGroup(group, user)) {
+  if (!group && user.roles.find(
+    (role) => role.name === "ADMIN"
+  )) {
     return badRequest({
-      formError: validateGroup(group, user),
+      formError: "If you are an admin, you must select a group"
     });
   }
 
@@ -72,7 +70,7 @@ export const action: ActionFunction = async ({ request }) => {
   };
 
   if (group === null) {
-    group = user.groups[0].id;
+    group = user.groups[ 0 ].id;
   }
 
   const fields: Prisma.ChallengeCreateInput = {
@@ -112,7 +110,7 @@ export default function NewChallenge() {
 
   const nameRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<ActionData>();
-  const [introduction, setIntroduction] = useState<string>();
+  const [ introduction, setIntroduction ] = useState<string>();
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
       const editorState = editor.getEditorState();
@@ -207,7 +205,7 @@ export default function NewChallenge() {
         </label>
       </div>
 
-      {user?.role === "ADMIN" && (
+      {user?.roles.find((role) => role.name === "ADMIN") && (
         <div>
           <label className="flex w-full flex-col gap-1">
             <span>Group: </span>

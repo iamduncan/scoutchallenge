@@ -2,19 +2,22 @@ import type {
   Challenge,
   ChallengeSection,
   Question,
+  Role,
   User,
 } from "@prisma/client";
 import { Link, useRouteLoaderData } from "@remix-run/react";
-import { SectionOverview } from "~/components/ui/index.ts";
+import { SectionOverview } from "#app/components/ui/index.ts";
 import { loader as challengeLoader } from "../$challengeId.tsx";
 
-const isAdmin = (role: User["role"]) =>
-  role === "ADMIN" || role === "GROUPADMIN" || role === "SECTIONADMIN";
+const isAdmin = (roles: Pick<Role, 'name'>[]) =>
+  roles.find((role) => role.name === "ADMIN");
 
 export default function ChallengeIndex() {
-  const { challenge, user } = useRouteLoaderData<typeof challengeLoader>(
+  const data = useRouteLoaderData<typeof challengeLoader>(
     "routes/__app/challenges/$challengeId",
   );
+  if (!data) throw new Error("No data");
+  const { challenge, user } = data;
 
   return (
     <>
@@ -39,7 +42,7 @@ export default function ChallengeIndex() {
           />
         ))}
       </div>
-      {isAdmin(user.role) && (
+      {isAdmin(user.roles) && (
         <div className="flex gap-3 p-4">
           <Link
             to={`/admin/challenges/${challenge.id}`}

@@ -1,3 +1,3 @@
-export * from "./useEventListener";
-export * from "./useClickOutside";
-export * from "./useScreen";
+export * from "./useEventListener.ts";
+export * from "./useClickOutside.ts";
+export * from "./useScreen.ts";

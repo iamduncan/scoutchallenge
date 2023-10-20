@@ -1,20 +1,21 @@
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import * as React from "react";
-import { getGroupListItems } from "~/models/group.server";
-import { createSection } from "~/models/section.server";
-import { getUser } from "~/session.server";
-import { useUser } from "~/utils";
+import { getGroupListItems } from "#app/models/group.server.ts";
+import { createSection } from "#app/models/section.server.ts";
+import { getUserId, requireUserId } from '#app/utils/auth.server.ts';
+import { getUserById } from '#app/models/user.server.ts';
+import { useUser } from '#app/utils/user.ts';
 
 type LoaderData = {
   groups: { id: string; name: string }[];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const groups = await getGroupListItems();
-  return json<LoaderData>({ groups });
+  return json({ groups });
 };
 
 function validateName(content: string) {
@@ -41,12 +42,12 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const name = formData.get("name");
   const group = formData.get("group");
-  const user = await getUser(request);
+  const userId = await getUserId(request);
   if (typeof name !== "string") {
     return badRequest({ formError: "Form not submitted correctly" });
   }
 
-  if (!user) {
+  if (!userId) {
     return badRequest({
       formError: "You must be logged in to create a section",
     });
@@ -56,7 +57,8 @@ export const action: ActionFunction = async ({ request }) => {
     name: validateName(name),
     group: group === "" ? "You must select a group" : undefined,
   };
-  const groupId = group !== null ? (group as string) : user?.groups[0]?.id;
+  const user = await getUserById(userId);
+  const groupId = group !== null ? (group as string) : user?.groups[ 0 ]?.id;
   const fields = { name, group: groupId };
   if (Object.values(errors).some(Boolean)) {
     return badRequest({ errors, fields });
@@ -64,7 +66,7 @@ export const action: ActionFunction = async ({ request }) => {
   const section = await createSection({
     name,
     group: groupId,
-    userId: user.id,
+    userId,
   });
 
   return redirect(`/admin/sections/${section.id}`);
@@ -82,7 +84,7 @@ export default function NewSectionPage() {
     if (actionData?.errors?.name) {
       nameRef.current?.focus();
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <Form
@@ -114,7 +116,7 @@ export default function NewSectionPage() {
         )}
       </div>
 
-      {user?.role === "ADMIN" && (
+      {user?.roles.find((role) => role.name === 'ADMIN') && (
         <div>
           <label className="flex w-full flex-col gap-1">
             <span>Group: </span>

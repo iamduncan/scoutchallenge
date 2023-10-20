@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 
-import { useEventListener } from "./useEventListener";
+import { useEventListener } from "./useEventListener.ts";
 
 export function useScreen() {
   const getScreen = () => {

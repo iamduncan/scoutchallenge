@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import { Header } from "~/components/common";
-import { useUser } from "~/utils";
+import { Header } from "#app/components/common/index.ts";
+import { useUser } from "#app/utils/user.ts";
 
 interface InputProps {
   children: React.ReactElement;

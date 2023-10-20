@@ -1,5 +1,5 @@
 import { Outlet } from "@remix-run/react";
-import { AppLayout } from "~/layouts";
+import { AppLayout } from "#app/layouts/index.ts";
 
 export default function ChallengesPage() {
   return (

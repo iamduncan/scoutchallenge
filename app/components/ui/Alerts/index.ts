@@ -1,1 +1,1 @@
-export { default as SuccessAlert } from "./Success";
+export { default as SuccessAlert } from "./Success/index.ts";

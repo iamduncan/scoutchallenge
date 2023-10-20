@@ -147,7 +147,10 @@ export async function getChallenge({
 
   return {
     ...challenge,
-    challengeSections,
+    challengeSections: challengeSections as (ChallengeSection & {
+      descriptionHtml?: string;
+      questions: (Question & { descriptionHtml?: string })[];
+    })[],
     introductionHtml: introHtml,
   };
 }

@@ -1,14 +1,13 @@
-import { UserIcon } from "@heroicons/react/24/outline";
-import type { Group } from "~/models/group.server";
 import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
-import type { User } from "~/models/user.server";
-import { listUsers } from "~/models/user.server";
-import { requireAdmin } from "~/session.server";
-import { AdminList } from "~/components/ui";
+import type { LoaderFunction } from "@remix-run/node";
+import type { Group } from "#app/models/group.server.ts";
+import type { User } from "#app/models/user.server.ts";
+import { listUsers } from "#app/models/user.server.ts";
+import { AdminList } from "#app/components/ui/index.ts";
+import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  requireAdmin(request);
+  await requireUserWithRole(request, 'ADMIN');
   const users = await listUsers();
   return {
     users,
@@ -22,8 +21,8 @@ export default function AdminUsers() {
       title="User"
       route="users"
       listItems={users.map((user) => ({
-        name: `${user.firstName} ${user.lastName}`,
-        subName: user.groups.length > 0 ? user.groups[0]?.name : undefined,
+        name: user.name ?? user.username,
+        subName: user.groups.length > 0 ? user.groups[ 0 ]?.name : undefined,
         id: user.id,
       }))}
       hideDelete

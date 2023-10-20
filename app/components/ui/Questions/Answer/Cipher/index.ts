@@ -1,1 +1,1 @@
-export { default } from "./Cipher";
+export { default } from "./Cipher.tsx";

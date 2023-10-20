@@ -1,11 +1,10 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import type { User } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react";
 import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { ChallengeHero } from "~/components/ui/index.ts";
-import { getChallenge } from "~/models/challenge.server.ts";
+import { ChallengeHero } from "#app/components/ui/index.ts";
+import { getChallenge } from "#app/models/challenge.server.ts";
 import { useUser } from "#app/utils/user.ts";
 
 const isAdmin = (role: string) =>
@@ -21,11 +20,11 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const challenge = await getChallenge({ id: challengeId });
   if (
     user &&
-    !isAdmin(user.roles[0].name) &&
+    !isAdmin(user.roles[ 0 ].name) &&
     (challenge.status === ChallengeStatus.DRAFT ||
       challenge.status === ChallengeStatus.DELETED)
   ) {
-    return redirect("../");
+    throw redirect("../");
   }
   return json({
     challenge: {
@@ -37,7 +36,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 const ChallengeView = () => {
   const { user, challenge } = useLoaderData<typeof loader>();
-  const [searchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
 
   return (
     <div>
@@ -46,7 +45,7 @@ const ChallengeView = () => {
         userProgress={0}
         endDate={challenge.closeDate}
       />
-      {isAdmin(user.roles[0].name) &&
+      {isAdmin(user.roles[ 0 ].name) &&
         challenge.status === ChallengeStatus.DRAFT && (
           <div className="mx-auto mt-6 flex w-11/12 items-center justify-center gap-2 rounded border border-red-500 bg-red-100 py-3 text-xl font-semibold text-red-600 md:w-10/12">
             <ExclamationTriangleIcon className="h-6 w-6" /> Challenge is not

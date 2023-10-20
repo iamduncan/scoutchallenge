@@ -1,5 +1,5 @@
 import { $getListDepth, $isListItemNode, $isListNode } from "@lexical/list";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
 import type { RangeSelection, NodeSelection, GridSelection } from "lexical";
 import {
   $getSelection,
@@ -61,7 +61,7 @@ function isIndentPermitted(maxDepth: number) {
 }
 
 export default function ListMaxIndentLevelPlugin({ maxDepth }: any) {
-  const [editor] = useLexicalComposerContext();
+  const [ editor ] = useLexicalComposerContext();
 
   useEffect(() => {
     return editor.registerCommand(
@@ -69,7 +69,7 @@ export default function ListMaxIndentLevelPlugin({ maxDepth }: any) {
       () => !isIndentPermitted(maxDepth ?? 7),
       COMMAND_PRIORITY_HIGH
     );
-  }, [editor, maxDepth]);
+  }, [ editor, maxDepth ]);
 
   return null;
 }

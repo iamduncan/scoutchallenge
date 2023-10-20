@@ -1,7 +1,6 @@
 import type { ChangeEvent } from "react";
-import type { QuestionData } from "../../types";
-import { CipherType } from "../../types";
-import { Input } from "~/components/ui";
+import type { QuestionData } from "../../types.ts";
+import { CipherType } from "../../types.ts";
 
 export default function Cipher({
   questionData,

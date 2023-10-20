@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Input } from "~/components/ui";
-import type { QuestionData } from "../../types";
+import { Button, Input } from "#app/components/ui/index.ts";
+import type { QuestionData } from "../../types.ts";
 
 /**
  * Create a Multiple Choice question component
@@ -12,19 +12,19 @@ const MultipleChoice = ({
   questionData: QuestionData<"MULTIPLECHOICE">;
   handleUpdate: (data: QuestionData<"MULTIPLECHOICE">) => void;
 }) => {
-  const [options, setOptions] = useState([
+  const [ options, setOptions ] = useState([
     { id: "1", option: "" },
     { id: "2", option: "" },
   ]);
-  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [ correctAnswer, setCorrectAnswer ] = useState("");
 
   useEffect(() => {
     handleUpdate({ ...questionData, question: options, answer: correctAnswer });
-  }, [options, correctAnswer, handleUpdate, questionData]);
+  }, [ options, correctAnswer, handleUpdate, questionData ]);
 
   const handleAddOption = () => {
-    const newId = (parseInt(options[options.length - 1].id) + 1).toString();
-    const newOptions = [...options, { id: newId, option: "" }];
+    const newId = (parseInt(options[ options.length - 1 ].id) + 1).toString();
+    const newOptions = [ ...options, { id: newId, option: "" } ];
     setOptions(newOptions);
     handleUpdate({ ...questionData, question: newOptions });
   };

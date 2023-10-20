@@ -1,4 +1,4 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
 import type { MutableRefObject, RefObject } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
@@ -92,9 +92,9 @@ function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
   const editorRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mouseDownRef = useRef(false);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [isEditMode, setEditMode] = useState(false);
-  const [lastSelection, setLastSelection] = useState<
+  const [ linkUrl, setLinkUrl ] = useState("");
+  const [ isEditMode, setEditMode ] = useState(false);
+  const [ lastSelection, setLastSelection ] = useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
 
@@ -151,7 +151,7 @@ function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
     }
 
     return true;
-  }, [editor]);
+  }, [ editor ]);
 
   useEffect(() => {
     return mergeRegister(
@@ -170,19 +170,19 @@ function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
         LowPriority
       )
     );
-  }, [editor, updateLinkEditor]);
+  }, [ editor, updateLinkEditor ]);
 
   useEffect(() => {
     editor.getEditorState().read(() => {
       updateLinkEditor();
     });
-  }, [editor, updateLinkEditor]);
+  }, [ editor, updateLinkEditor ]);
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isEditMode]);
+  }, [ isEditMode ]);
 
   return (
     <div ref={editorRef} className="link-editor">
@@ -282,7 +282,7 @@ function BlockOptionsDropdownList({
       dropDown.style.top = `${top + 8}px`;
       dropDown.style.left = `${left + 50}px`;
     }
-  }, [dropDownRef, toolbarRef]);
+  }, [ dropDownRef, toolbarRef ]);
 
   useEffect(() => {
     const dropDown = dropDownRef.current;
@@ -302,7 +302,7 @@ function BlockOptionsDropdownList({
         document.removeEventListener("click", handle);
       };
     }
-  }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
+  }, [ dropDownRef, setShowBlockOptionsDropDown, toolbarRef ]);
 
   const formatParagraph = () => {
     if (blockType !== "paragraph") {
@@ -437,25 +437,25 @@ const command = () => {
 };
 
 export default function ToolbarPlugin() {
-  const [editor] = useLexicalComposerContext();
+  const [ editor ] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
-  const [canUndo, setCanUndo] = useState<boolean | unknown>(false);
-  const [canRedo, setCanRedo] = useState<boolean | unknown>(false);
-  const [blockType, setBlockType] =
+  const [ canUndo, setCanUndo ] = useState<boolean | unknown>(false);
+  const [ canRedo, setCanRedo ] = useState<boolean | unknown>(false);
+  const [ blockType, setBlockType ] =
     useState<keyof typeof blockTypeToBlockName>("paragraph");
-  const [selectedElementKey, setSelectedElementKey] = useState<string | null>(
+  const [ selectedElementKey, setSelectedElementKey ] = useState<string | null>(
     null
   );
-  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] =
+  const [ showBlockOptionsDropDown, setShowBlockOptionsDropDown ] =
     useState(false);
-  const [codeLanguage, setCodeLanguage] = useState("");
-  const [isRTL, setIsRTL] = useState(false);
-  const [isLink, setIsLink] = useState(false);
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
-  const [isStrikethrough, setIsStrikethrough] = useState(false);
-  const [isCode, setIsCode] = useState(false);
+  const [ codeLanguage, setCodeLanguage ] = useState("");
+  const [ isRTL, setIsRTL ] = useState(false);
+  const [ isLink, setIsLink ] = useState(false);
+  const [ isBold, setIsBold ] = useState(false);
+  const [ isItalic, setIsItalic ] = useState(false);
+  const [ isUnderline, setIsUnderline ] = useState(false);
+  const [ isStrikethrough, setIsStrikethrough ] = useState(false);
+  const [ isCode, setIsCode ] = useState(false);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -501,7 +501,7 @@ export default function ToolbarPlugin() {
         setIsLink(false);
       }
     }
-  }, [editor]);
+  }, [ editor ]);
 
   useEffect(() => {
     return mergeRegister(
@@ -535,7 +535,7 @@ export default function ToolbarPlugin() {
         LowPriority
       )
     );
-  }, [editor, updateToolbar]);
+  }, [ editor, updateToolbar ]);
 
   const codeLanguges = useMemo(() => getCodeLanguages(), []);
   const onCodeLanguageSelect = useCallback(
@@ -549,7 +549,7 @@ export default function ToolbarPlugin() {
         }
       });
     },
-    [editor, selectedElementKey]
+    [ editor, selectedElementKey ]
   );
 
   const insertLink = useCallback(() => {
@@ -558,7 +558,7 @@ export default function ToolbarPlugin() {
     } else {
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
-  }, [editor, isLink]);
+  }, [ editor, isLink ]);
 
   return (
     <div className="toolbar" ref={toolbarRef}>
@@ -596,7 +596,7 @@ export default function ToolbarPlugin() {
             type="button"
           >
             <span className={"icon block-type " + blockType} />
-            <span className="text">{blockTypeToBlockName[blockType]}</span>
+            <span className="text">{blockTypeToBlockName[ blockType ]}</span>
             <i className="chevron-down" />
           </button>
           {showBlockOptionsDropDown &&

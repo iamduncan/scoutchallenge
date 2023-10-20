@@ -1,1 +1,1 @@
-export { default } from "./FillInTheBlank";
+export { default } from "./FillInTheBlank.tsx";

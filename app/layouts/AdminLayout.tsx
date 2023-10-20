@@ -10,67 +10,67 @@ import {
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { Header } from "~/components/common";
-import { useUser } from "~/utils";
+import { Header } from "#app/components/common/index.ts";
+import { useUser } from "#app/utils/user.ts";
 
 const menuItems: {
   icon: React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
     title?: string;
     titleId?: string;
-} & React.RefAttributes<SVGSVGElement>>;
+  } & React.RefAttributes<SVGSVGElement>>;
   label: string;
   to: string;
   level?: "super" | "group" | "section";
 }[] = [
-  {
-    icon: UserGroupIcon,
-    label: "Sections",
-    to: "/admin/sections",
-    level: "group",
-  },
-  {
-    icon: PuzzlePieceIcon,
-    label: "Challenges",
-    to: "/admin/challenges",
-    level: "section",
-  },
-  {
-    icon: InboxArrowDownIcon,
-    label: "Responses",
-    to: "/admin/responses",
-    level: "section",
-  },
-  {
-    icon: ChatBubbleOvalLeftEllipsisIcon,
-    label: "Messages",
-    to: "/admin/messages",
-    level: "section",
-  },
-  {
-    icon: CogIcon,
-    label: "Settings",
-    to: "/admin/settings",
-    level: "group",
-  },
-  {
-    icon: UserIcon,
-    label: "Users",
-    to: "/admin/users",
-    level: "super",
-  },
-  {
-    icon: RectangleStackIcon,
-    label: "Mail List",
-    to: "/admin/mailing-list",
-    level: "super",
-  },
-  {
-    icon: TicketIcon,
-    label: "Tokens",
-    to: "/admin/tokens",
-    level: "super",
-  },
-];
+    {
+      icon: UserGroupIcon,
+      label: "Sections",
+      to: "/admin/sections",
+      level: "group",
+    },
+    {
+      icon: PuzzlePieceIcon,
+      label: "Challenges",
+      to: "/admin/challenges",
+      level: "section",
+    },
+    {
+      icon: InboxArrowDownIcon,
+      label: "Responses",
+      to: "/admin/responses",
+      level: "section",
+    },
+    {
+      icon: ChatBubbleOvalLeftEllipsisIcon,
+      label: "Messages",
+      to: "/admin/messages",
+      level: "section",
+    },
+    {
+      icon: CogIcon,
+      label: "Settings",
+      to: "/admin/settings",
+      level: "group",
+    },
+    {
+      icon: UserIcon,
+      label: "Users",
+      to: "/admin/users",
+      level: "super",
+    },
+    {
+      icon: RectangleStackIcon,
+      label: "Mail List",
+      to: "/admin/mailing-list",
+      level: "super",
+    },
+    {
+      icon: TicketIcon,
+      label: "Tokens",
+      to: "/admin/tokens",
+      level: "super",
+    },
+  ];
 
 interface InputProps {
   children: React.ReactElement;
@@ -90,9 +90,9 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
                 if (!level) {
                   return true;
                 }
-                const userLevel = user?.role;
+                const userRoles = user?.roles;
                 if (
-                  userLevel === "ADMIN" &&
+                  userRoles.some((role) => role.name === "ADMIN") &&
                   (level === "super" ||
                     level === "group" ||
                     level === "section")
@@ -100,12 +100,12 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
                   return true;
                 }
                 if (
-                  userLevel === "GROUPADMIN" &&
+                  userRoles.some((role) => role.name === "GROUPADMIN") &&
                   (level === "group" || level === "section")
                 ) {
                   return true;
                 }
-                if (userLevel === "SECTIONADMIN" && level === "section") {
+                if (userRoles.some((role) => role.name === "SECTIONADMIN") && level === "section") {
                   return true;
                 }
                 return false;
@@ -118,8 +118,7 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
                   <NavLink
                     to={to}
                     className={({ isActive }) =>
-                      `flex flex-col items-center justify-center py-2 px-1 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 md:flex-row md:px-4 md:text-base ${
-                        isActive && "bg-indigo-100"
+                      `flex flex-col items-center justify-center py-2 px-1 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 md:flex-row md:px-4 md:text-base ${isActive && "bg-indigo-100"
                       }`
                     }
                   >

@@ -1,31 +1,34 @@
-import { RoleType } from "@prisma/client";
 import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
-import { useUser } from "~/utils";
-
-import avatarPlaceholder from "~/assets/images/avatar-placeholder.gif";
+import type { ActionFunction, LoaderFunction, LoaderFunctionArgs } from "@remix-run/server-runtime";
+import { json, redirect } from "@remix-run/server-runtime";
 import {
   RectangleGroupIcon,
   PuzzlePieceIcon,
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { AppLayout } from "~/layouts";
-import { updateUser } from "~/models/user.server";
-import { getUserId } from "~/session.server";
+import { useUser } from "#app/utils/user.ts";
+import avatarPlaceholder from "#app/assets/images/avatar-placeholder.gif";
+import { AppLayout } from "#app/layouts/index.ts";
+import { getUserById, updateUser } from "#app/models/user.server.ts";
+import { getUserId, requireUserId } from "#app/utils/auth.server.ts";
 
 type LoaderData = {
   adminSecret: boolean;
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const adminSecretQuery = url.searchParams.get("adminSecret");
   const adminSecret =
     process.env.ADMIN_SECRET !== undefined &&
     adminSecretQuery === process.env.ADMIN_SECRET;
-  return json<LoaderData>({ adminSecret });
+  const userId = await requireUserId(request);
+  const user = await getUserById(userId);
+  if (!user) {
+    throw redirect("/login");
+  }
+  return json({ adminSecret, user });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -44,33 +47,25 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
   const formData = await request.formData();
-  const role = formData.get("role") as RoleType;
-  if (!Object.values(RoleType).includes(role)) {
-    return json({ status: "error", message: "Invalid role" }, 400);
-  }
+  const role = formData.get("role") as string;
   const userId = await getUserId(request);
   if (!userId) {
     return json({ status: "error", message: "No user id" }, 400);
   }
-  await updateUser(userId, { role });
+  await updateUser(userId, {
+    roles: {
+      connectOrCreate: {
+        where: { name: role },
+        create: { name: role },
+      },
+    }
+  });
   return json({ status: "success" });
 };
 
 export default function ProfilePage() {
-  const user = useUser();
-  const { adminSecret } = useLoaderData<LoaderData>();
-  const roleOptions = [];
-  for (const role in RoleType) {
-    if (Object.prototype.hasOwnProperty.call(RoleType, role)) {
-      const element = role;
-      roleOptions.push(
-        <option key={role} value={element}>
-          {element}
-        </option>
-      );
-    }
-  }
-  const [searchParams] = useSearchParams();
+  const { adminSecret, user } = useLoaderData<typeof loader>();
+  const [ searchParams ] = useSearchParams();
 
   return (
     <AppLayout>
@@ -85,7 +80,7 @@ export default function ProfilePage() {
               />
             </div>
             <h1 className="my-1 text-xl font-bold leading-8 text-gray-900">
-              {user.firstName} {user.lastName}
+              {user.name}
             </h1>
             {/* <h3 className="font-lg text-semibold leading-6 text-gray-600">
               Owner at Her Company Inc.
@@ -131,15 +126,7 @@ export default function ProfilePage() {
                     >
                       Role
                     </label>
-                    <select
-                      id="role"
-                      name="role"
-                      className="focus:shadow-outline-blue mt-1 block w-full rounded-md border border-gray-300 py-2 px-3 shadow-sm transition duration-150 ease-in-out focus:border-blue-300 focus:outline-none sm:text-sm sm:leading-5"
-                      defaultValue={user.role}
-                    >
-                      <option value="">Select a role</option>
-                      {roleOptions}
-                    </select>
+                    {/* TODO: re-implement role picker */}
                   </div>
                   <div className="mt-3 flex flex-col">
                     <button
@@ -166,11 +153,7 @@ export default function ProfilePage() {
               <div className="grid text-sm md:grid-cols-2">
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">First Name</div>
-                  <div className="px-4 py-2">{user.firstName}</div>
-                </div>
-                <div className="grid grid-cols-2">
-                  <div className="px-4 py-2 font-semibold">Last Name</div>
-                  <div className="px-4 py-2">{user.lastName}</div>
+                  <div className="px-4 py-2">{user.name}</div>
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">Email.</div>

@@ -1,10 +1,10 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { Link, useLoaderData } from "@remix-run/react";
-import type { LoaderArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
-import { getUserById } from "~/models/user.server";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { getUserById } from "#app/models/user.server.ts";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const userId = params.userId;
   if (!userId) {
     throw new Error("No userId provided");
@@ -25,7 +25,7 @@ export default function AdminUser() {
       <main className="h-full bg-white">
         <div className="h-full bg-gray-50 p-4">
           <div className="mb-6 block text-xl text-blue-500">
-            {user.firstName} {user.lastName}
+            {user.name}
           </div>
           {user.groups.length > 0 && (
             <div className="mb-6">

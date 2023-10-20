@@ -13,6 +13,9 @@ async function seed() {
   await prisma.user.deleteMany({}).catch(() => {
     // no worries if it doesn't exist yet
   });
+  await prisma.role.deleteMany({}).catch(() => {
+    // no worries if it doesn't exist yet
+  });
   await prisma.group.deleteMany({}).catch(() => {
     // no worries if it doesn't exist yet
   });
@@ -55,8 +58,8 @@ async function seed() {
           hash: groupHashedPassword,
         },
       },
-      name: "Duncan Brown",
-      username: "duncanbrown",
+      name: "Duncan Brown - GROUP USER",
+      username: "duncanbrown-group-user",
       roles: {
         create: {
           name: "GROUPADMIN",

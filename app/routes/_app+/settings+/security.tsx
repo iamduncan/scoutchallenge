@@ -2,8 +2,8 @@ import { Form, useActionData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { useEffect, useRef } from "react";
-import { updateUserPassword } from "~/models/user.server";
-import { getUserId } from "~/session.server";
+import { updateUserPassword } from "#app/models/user.server.ts";
+import { getUserId } from "#app/utils/auth.server.ts";
 
 interface ActionData {
   errors: {
@@ -81,7 +81,7 @@ export default function SettingsSecurityPage() {
     ) {
       confirmPasswordRef.current.value = "";
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <>
@@ -94,11 +94,10 @@ export default function SettingsSecurityPage() {
         <Form method="post">
           {actionData?.formMessage && (
             <div
-              className={`mb-2 w-1/2 ${
-                actionData.formMessage.type === "success"
+              className={`mb-2 w-1/2 ${actionData.formMessage.type === "success"
                   ? "border-l-4 border-green-500 bg-green-100 px-4 py-2 text-green-700"
                   : "border-l-4 border-red-500 bg-red-100 px-4 py-2 text-red-700"
-              }`}
+                }`}
             >
               <p className="font-medium">{actionData.formMessage.message}</p>
             </div>

@@ -4,12 +4,12 @@ import type { ActionFunction } from "@remix-run/server-runtime";
 import { json, redirect } from "@remix-run/server-runtime";
 import type { EditorState, LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
-import Editor from "~/components/ui/Editor/Editor";
-import { createChallengeSection } from "~/models/challenge.server";
+import Editor from "#app/components/ui/Editor/Editor.tsx";
+import { createChallengeSection } from "#app/models/challenge.server.ts";
 
 const AddChallengeSection = () => {
   const titleRef = useRef<HTMLInputElement>(null);
-  const [description, setDescription] = useState<string>();
+  const [ description, setDescription ] = useState<string>();
 
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {

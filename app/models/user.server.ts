@@ -9,7 +9,7 @@ export type { User, Token } from "@prisma/client";
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({
     where: { id },
-    include: { groups: true, sections: true },
+    include: { groups: true, sections: true, roles: true },
   });
 }
 
@@ -194,6 +194,7 @@ export const listTokens = async () => {
       expiresAt: true,
       user: {
         select: {
+          username: true,
           name: true,
           email: true,
         },

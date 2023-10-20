@@ -1,7 +1,7 @@
 import type { ChallengeSection, Question } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
-import { getChallengeSection } from "~/models/challenge.server";
+import type { LoaderFunction } from "@remix-run/node";
+import { getChallengeSection } from "#app/models/challenge.server.ts";
 
 type LoaderData = {
   challengeSection: ChallengeSection & { questions: Question[] };

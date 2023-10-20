@@ -1,5 +1,5 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import type { Group, User } from "@prisma/client";
+import type { Group, Role, User } from "@prisma/client";
 import { Form, Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
 import { Logo } from "#app/components/icons/index.js";
@@ -7,18 +7,36 @@ import { UserMenu } from "#app/components/ui/index.js";
 import { menuItems } from "#app/config.js";
 
 type Props = {
-  user: User & { groups: Group[] };
+  user: {
+    id: string;
+    username: string;
+    name: string | null;
+    image: {
+      id: string;
+    } | null;
+    groups: {
+      id: string;
+      name: string;
+    }[];
+    roles: {
+      name: string;
+      permissions: {
+        action: string;
+        entity: string;
+        access: string;
+      }[];
+    }[];
+  }
   admin?: boolean;
 };
 
 export default function Header(props: Props) {
   const { user, admin } = props;
-  const [isOpen, setIsOpen] = useState(false);
+  const [ isOpen, setIsOpen ] = useState(false);
   return (
     <header
-      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
-        !admin && "md:pb-16"
-      }`}
+      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${!admin && "md:pb-16"
+        }`}
     >
       <div className="flex w-full items-center justify-between">
         <Link to="/" className="title-font text-gray-100 md:mb-0">
@@ -35,9 +53,8 @@ export default function Header(props: Props) {
         </div>
       </div>
       <nav
-        className={`${
-          !isOpen && "hidden"
-        } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
+        className={`${!isOpen && "hidden"
+          } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
       >
         <div className="flex- flex items-center justify-between px-3 py-2">
           <Logo className="h-12 w-12 rounded-full bg-purple-600 p-2 text-gray-100" />
@@ -59,11 +76,7 @@ export default function Header(props: Props) {
               if (!item.forAdmin) {
                 return true;
               }
-              return (
-                user.role === "ADMIN" ||
-                user.role === "GROUPADMIN" ||
-                user.role === "SECTIONADMIN"
-              );
+              return user.roles.some((role) => role.name === "ADMIN" || role.name === "GROUPADMIN" || role.name === "SECTIONADMIN");
             })
             .map((item) => (
               <li key={item.id} className="w-full">
@@ -115,8 +128,7 @@ const old = () => (
           key={item.id}
           to={item.path}
           className={({ isActive }) =>
-            `mr-5 font-semibold text-gray-50 hover:text-gray-200 md:p-1 ${
-              isActive && "rounded bg-purple-200 !text-gray-800"
+            `mr-5 font-semibold text-gray-50 hover:text-gray-200 md:p-1 ${isActive && "rounded bg-purple-200 !text-gray-800"
             }`
           }
         >

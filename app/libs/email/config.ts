@@ -8,7 +8,7 @@ export const mg = () => {
   const mailGunKey = process.env.MAILGUN_API_KEY;
   const mailGunDomain = process.env.MAILGUN_DOMAIN;
   if (mailGunKey && mailGunDomain) {
-    const mg = new Mailgun(formData);
+    const mg = new Mailgun.default(formData);
     return mg.client({
       key: mailGunKey,
       username: "api",

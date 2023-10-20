@@ -1,24 +1,24 @@
 import { Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
-import { AdminList } from "~/components/ui";
-import type { User, Token } from "~/models/user.server";
-import { listTokens } from "~/models/user.server";
+import { json, type LoaderFunctionArgs } from "@remix-run/server-runtime";
+import { AdminList } from "#app/components/ui/index.ts";
+import type { User, Token } from "#app/models/user.server.ts";
+import { listTokens } from "#app/models/user.server.ts";
 
-export const loader: LoaderFunction = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const tokens = await listTokens();
-  return {
+  return json({
     tokens,
-  };
+  });
 };
 
 export default function AdminTokens() {
-  const { tokens } = useLoaderData<{ tokens: (Token & { user: User })[] }>();
+  const { tokens } = useLoaderData<typeof loader>();
   return (
     <AdminList
       title="Token"
       route="tokens"
       listItems={tokens.map((t) => ({
-        name: `${t.user.firstName} ${t.user.lastName}`,
+        name: t.user.name || t.user.username,
         subName: t.user.email,
         id: t.id,
       }))}

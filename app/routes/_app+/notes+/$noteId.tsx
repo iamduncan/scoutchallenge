@@ -1,18 +1,19 @@
-import type { ActionFunction, LoaderArgs } from "@remix-run/node";
+import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useCatch, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import type { Note } from "~/models/note.server";
-import { deleteNote } from "~/models/note.server";
-import { getNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import type { Note } from "#app/models/note.server.ts";
+import { deleteNote } from "#app/models/note.server.ts";
+import { getNote } from "#app/models/note.server.ts";
+import { requireUserId } from "#app/utils/auth.server.ts";
+import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx';
 
 type LoaderData = {
   note: Note;
 };
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
   invariant(params.noteId, "noteId not found");
 
@@ -52,18 +53,12 @@ export default function NoteDetailsPage() {
   );
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-  console.error(error);
-
-  return <div>An unexpected error occurred: {error.message}</div>;
-}
-
-export function CatchBoundary() {
-  const caught = useCatch();
-
-  if (caught.status === 404) {
-    return <div>Note not found</div>;
-  }
-
-  throw new Error(`Unexpected caught response with status: ${caught.status}`);
+export function ErrorBoundary() {
+  return (
+    <GeneralErrorBoundary
+      statusHandlers={{
+        404: () => <p>Note not found</p>,
+      }}
+    />
+  )
 }

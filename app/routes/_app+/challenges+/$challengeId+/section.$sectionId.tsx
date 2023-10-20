@@ -4,34 +4,27 @@ import type {
   Question,
   User,
 } from "@prisma/client";
-import { Form, Link, useParams, useSearchParams } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
+import { Form, Link, useParams, useRouteLoaderData, useSearchParams } from "@remix-run/react";
+import type { ActionFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import {
   AnswerCipher,
   AnswerFillInTheBlank,
   AnswerMultipleChoice,
   AnswerTrueFalse,
   Button,
-} from "~/components/ui";
-import type { QuestionData } from "~/components/ui/Questions/types";
-import { useMatchesData } from "~/utils";
+} from "#app/components/ui/index.ts";
+import { type loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
+import type { QuestionData } from "#app/components/ui/Questions/types.ts";
 
 export default function ChallengeSectionView() {
   const { sectionId } = useParams();
-  const { challenge, user } = useMatchesData(
-    "routes/__app/challenges/$challengeId"
-  ) as {
-    challenge: Challenge & {
-      introductionHtml?: string;
-      challengeSections: (ChallengeSection & {
-        descriptionHtml?: string;
-        questions: (Question & { descriptionHtml?: string })[];
-      })[];
-    };
-    user: User;
-  };
-  const [searchParams] = useSearchParams();
+  const data = useRouteLoaderData<typeof challengeLoader>(
+    "routes/_app+/challenges+/$challengeId"
+  );
+  if (!data) throw new Error("No data");
+  const { challenge, user } = data;
+  const [ searchParams ] = useSearchParams();
   const section = challenge.challengeSections.find(
     (section) => section.id === sectionId
   );
@@ -64,27 +57,27 @@ export default function ChallengeSectionView() {
           Back to Challenge
         </Link>
       </div>
-      {searchParams.get("debug") === "true" && user.role.includes("ADMIN") && (
+      {searchParams.get("debug") === "true" && user.roles.find((role) => role.name === 'ADMIN') && (
         <pre className="text-sm">{JSON.stringify(section, null, 2)}</pre>
       )}
     </div>
   );
 }
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const data = Object.fromEntries(formData.entries());
   console.log(data);
   return json({ data });
 };
 
-const QuestionComponent = ({ question }: { question: Question }) => {
+const QuestionComponent = ({ question }: { question: Omit<Question, 'createdAt' | 'updatedAt'> }) => {
   switch (question.type) {
     case "MULTIPLECHOICE":
       return (
         <AnswerMultipleChoice
           questionData={question.data as QuestionData<"MULTIPLECHOICE">}
-          handleUpdate={() => {}}
+          handleUpdate={() => { }}
           name={question.id}
         />
       );
@@ -92,7 +85,7 @@ const QuestionComponent = ({ question }: { question: Question }) => {
       return (
         <AnswerTrueFalse
           questionData={question.data as QuestionData<"TRUEFALSE">}
-          handleUpdate={() => {}}
+          handleUpdate={() => { }}
           name={question.id}
         />
       );
@@ -100,14 +93,14 @@ const QuestionComponent = ({ question }: { question: Question }) => {
       return (
         <AnswerFillInTheBlank
           questionData={question.data as QuestionData<"FILLINTHEBLANK">}
-          handleUpdate={() => {}}
+          handleUpdate={() => { }}
         />
       );
     case "CIPHER":
       return (
         <AnswerCipher
           questionData={question.data as QuestionData<"CIPHER">}
-          handleUpdate={() => {}}
+          handleUpdate={() => { }}
         />
       );
     default:

@@ -1,1 +1,1 @@
-export { default } from "./ProgressCircular";
+export { default } from "./ProgressCircular.tsx";

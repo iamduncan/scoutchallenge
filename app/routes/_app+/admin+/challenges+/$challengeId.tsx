@@ -1,33 +1,35 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderArgs } from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useState } from "react";
-import { SectionOverview } from "~/components/ui";
+import { SectionOverview } from "#app/components/ui/index.ts";
 import {
   addSectionToChallenge,
   deleteChallenge,
   getChallenge,
-} from "~/models/challenge.server";
-import { getSectionListItems } from "~/models/section.server";
-import { getUser } from "~/session.server";
+} from "#app/models/challenge.server.ts";
+import { getSectionListItems } from "#app/models/section.server.ts";
+import { getUserId } from '#app/utils/auth.server.ts';
+import { getUserById } from '#app/models/user.server.ts';
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const challengeId = params.challengeId;
-  const user = await getUser(request);
+  const userId = await getUserId(request);
+  const user = userId ? await getUserById(userId) : null;
   if (!challengeId) {
     return redirect("/admin/challenges");
   }
-  const [challenge, sections] = await Promise.all([
+  const [ challenge, sections ] = await Promise.all([
     getChallenge({ id: challengeId, groups: user?.groups }),
-    getSectionListItems({ groupId: user?.groups[0]?.id }),
+    getSectionListItems({ groupId: user?.groups[ 0 ]?.id }),
   ]);
   return json({ challenge, sections });
 };
 
 export default function ViewChallengePage() {
   const { challenge, sections } = useLoaderData<typeof loader>();
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [ confirmDelete, setConfirmDelete ] = useState(false);
   return (
     <div>
       <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">

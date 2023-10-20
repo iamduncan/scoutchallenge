@@ -1,14 +1,14 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Form, useLoaderData } from "@remix-run/react";
 import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
-import { mg } from "~/libs/email/config";
-import { removeSubscriber } from "~/models/user.server";
+import { mg } from "#app/libs/email/config.ts";
+import { removeSubscriber } from "#app/models/user.server.ts";
 
 type Subscriber = {
   address: string;
   name: string;
   subscribed: boolean;
-  vars: { [key: string]: string };
+  vars: { [ key: string ]: string };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -79,7 +79,7 @@ export default function MailingList() {
                   <small>
                     {Object.keys(subscriber.vars).map((key) => (
                       <div key={key}>
-                        <strong>{key}</strong>: {subscriber.vars[key]}
+                        <strong>{key}</strong>: {subscriber.vars[ key ]}
                       </div>
                     ))}
                   </small>

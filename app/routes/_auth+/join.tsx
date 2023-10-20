@@ -14,7 +14,7 @@ import { useUser, validateEmail } from "#app/utils/utils.ts";
 
 import FleurDeLisPurple from "~/assets/images/fleur-de-lis-marque-purple.png";
 import { redirectWithToast } from "#app/utils/toast.server.ts";
-import { requireAnonymous } from "~/utils/auth.server.ts";
+import { requireAnonymous } from "#app/utils/auth.server.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireAnonymous(request);
@@ -126,7 +126,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Join() {
-  const [searchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData() as ActionData;
   const emailRef = useRef<HTMLInputElement>(null);
@@ -144,7 +144,7 @@ export default function Join() {
     } else if (actionData?.errors?.group) {
       groupRef.current?.focus();
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <div

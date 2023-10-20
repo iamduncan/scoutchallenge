@@ -1,12 +1,11 @@
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useOptionalUser, validateEmail } from "~/utils/utils.ts";
 import * as React from "react";
-
-import ExploringNewPlacesImg from "~/assets/images/exploring-new-places.jpg";
-import type { ActionFunction } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
-import { addSubscriber } from "~/models/user.server.ts";
-import { SuccessAlert } from "~/components/ui/index.ts";
+import type { ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { useOptionalUser, validateEmail } from "#app/utils/utils.ts";
+import ExploringNewPlacesImg from "#app/assets/images/exploring-new-places.jpg";
+import { addSubscriber } from "#app/models/user.server.ts";
+import { SuccessAlert } from "#app/components/ui/index.ts";
 
 interface ActionData {
   errors: {
@@ -57,7 +56,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const [searchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const denied = searchParams.get("denied");
   const user = useOptionalUser();
   const actionData = useActionData<ActionData>();
@@ -74,7 +73,7 @@ export default function Index() {
       nameRef.current.value = "";
       emailRef.current.value = "";
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <main className="relative min-h-screen bg-white sm:items-center sm:justify-center">

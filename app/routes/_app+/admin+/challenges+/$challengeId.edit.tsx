@@ -1,16 +1,16 @@
 import type { Prisma } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderArgs } from "@remix-run/server-runtime";
+import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/server-runtime";
 import { redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import type { EditorState, LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
-import Editor from "~/components/ui/Editor/Editor";
-import { getChallenge, updateChallenge } from "~/models/challenge.server";
-import { getUser } from "~/session.server";
+import Editor from "#app/components/ui/Editor/Editor.tsx";
+import { getChallenge, updateChallenge } from "#app/models/challenge.server.ts";
+import { getUserId } from '#app/utils/auth.server.ts';
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const challengeId = params.challengeId;
   if (!challengeId) {
     return redirect("/admin/challenges");
@@ -37,8 +37,8 @@ const badRequest = (data: ActionData) => json(data, { status: 400 });
 
 export const action: ActionFunction = async ({ request, params }) => {
   const challengeId = params.challengeId;
-  const user = await getUser(request);
-  if (!user || !challengeId) {
+  const userId = await getUserId(request);
+  if (!userId || !challengeId) {
     return badRequest({
       formError: "You must be logged in to update a challenge",
     });
@@ -68,12 +68,12 @@ export const action: ActionFunction = async ({ request, params }) => {
     status: status || "OPEN",
     createdBy: {
       connect: {
-        id: user.id,
+        id: userId,
       },
     },
     updatedBy: {
       connect: {
-        id: user.id,
+        id: userId,
       },
     },
   };
@@ -88,7 +88,7 @@ export default function ViewChallengePage() {
   const { challenge } = useLoaderData<typeof loader>();
   const nameRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<ActionData>();
-  const [introduction, setIntroduction] = useState<string>();
+  const [ introduction, setIntroduction ] = useState<string>();
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
       const editorState = editor.getEditorState();
@@ -99,12 +99,12 @@ export default function ViewChallengePage() {
 
   const openDate =
     typeof challenge?.openDate === "string"
-      ? new Date(challenge?.openDate).toISOString().split("T")[0]
+      ? new Date(challenge?.openDate).toISOString().split("T")[ 0 ]
       : undefined;
 
   const closeDate =
     typeof challenge?.closeDate === "string"
-      ? new Date(challenge?.closeDate).toISOString().split("T")[0]
+      ? new Date(challenge?.closeDate).toISOString().split("T")[ 0 ]
       : undefined;
 
   const introductionHtml = challenge?.introduction || "";

@@ -3,8 +3,8 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import * as React from "react";
 
-import { createNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import { createNote } from "#app/models/note.server.ts";
+import { requireUserId } from "#app/utils/auth.server.ts";
 
 type ActionData = {
   errors?: {
@@ -50,7 +50,7 @@ export default function NewNotePage() {
     } else if (actionData?.errors?.body) {
       bodyRef.current?.focus();
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <Form

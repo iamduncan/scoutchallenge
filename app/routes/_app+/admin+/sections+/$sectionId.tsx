@@ -1,15 +1,15 @@
+import { useState } from "react";
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { Section } from "@prisma/client";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
-import { useState } from "react";
-import { getSection } from "~/models/section.server";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { getSection } from "#app/models/section.server.ts";
 
 type LoaderData = {
   section: Section;
 };
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const sectionId = params.sectionId;
   if (!sectionId) {
     return {};
@@ -20,7 +20,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export default function ViewSectionPage() {
   const { section } = useLoaderData<LoaderData>();
-  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [ confirmDelete, setConfirmDelete ] = useState(false);
   return (
     <div>
       <div>{section?.name}</div>

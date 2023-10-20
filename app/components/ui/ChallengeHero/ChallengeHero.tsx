@@ -1,5 +1,5 @@
-import CampingAdventure from "~/assets/images/camping-adventure.png";
-import ProgressCircular from "../ProgressCircular";
+import CampingAdventure from "#app/assets/images/camping-adventure.png";
+import ProgressCircular from "../ProgressCircular/index.ts";
 
 type ChallengeHeroProps = {
   title: string;

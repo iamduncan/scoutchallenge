@@ -7,9 +7,9 @@ import {
 } from "@heroicons/react/24/outline";
 import { NavLink, Outlet } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
-import { AppLayout } from "~/layouts";
-import { requireUserId } from "~/session.server";
-import { useUser } from "~/utils";
+import { AppLayout } from "#app/layouts/index.ts";
+import { requireUserId } from "#app/utils/auth.server.ts";
+import { useUser } from "#app/utils/user.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserId(request);
@@ -59,15 +59,14 @@ export default function SettingsPage() {
         <div className="basis-1/5 border-r">
           {settingsMenu
             .filter((item) =>
-              item.enabled !== false ? true : user.role === "ADMIN"
+              item.enabled !== false ? true : user.roles.find((role) => role.name === "ADMIN")
             )
             .map((menuItem) => (
               <NavLink
                 to={menuItem.to}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 border-l-4 border-transparent py-3 px-2 ${
-                    isActive &&
-                    "border-purple-600 bg-purple-200 font-semibold text-purple-700"
+                  `flex items-center gap-3 border-l-4 border-transparent py-3 px-2 ${isActive &&
+                  "border-purple-600 bg-purple-200 font-semibold text-purple-700"
                   }`
                 }
                 key={menuItem.key}

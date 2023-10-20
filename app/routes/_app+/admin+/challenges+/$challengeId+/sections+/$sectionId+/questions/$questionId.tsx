@@ -1,18 +1,15 @@
 import type { Challenge, ChallengeSection, Question } from "@prisma/client";
-import { Link, useParams } from "@remix-run/react";
-import type { ActionArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
-import { deleteQuestion } from "~/models/challenge.server";
-import { requireSectionAdmin } from "~/session.server";
-import { useMatchesData } from "~/utils";
+import { Link, useParams, useRouteLoaderData } from "@remix-run/react";
+import { type ActionFunctionArgs, json } from "@remix-run/node";
+import { deleteQuestion } from "#app/models/challenge.server.ts";
+import type { loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
+import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export default function QuestionPage() {
   const params = useParams();
-  const data = useMatchesData("routes/__app/admin/challenges/$challengeId") as {
-    challenge: Challenge & {
-      challengeSections: (ChallengeSection & { questions: Question[] })[];
-    };
-  };
+  const data = useRouteLoaderData<typeof challengeLoader>(
+    "routes/_app+/challenges+/$challengeId"
+  );
   const { sectionId, questionId } = params;
   const section = data?.challenge?.challengeSections.find(
     (section) => section.id === sectionId
@@ -34,10 +31,10 @@ export default function QuestionPage() {
   );
 }
 
-export const action = async ({ request, params }: ActionArgs) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { challengeId, sectionId, questionId } = params;
   if (request.method === "DELETE" && questionId) {
-    await requireSectionAdmin(request);
+    await requireUserWithRole(request, "SECTIONADMIN");
     try {
       await deleteQuestion({ id: questionId });
       return json({ success: true });

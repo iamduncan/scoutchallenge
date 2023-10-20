@@ -1,1 +1,1 @@
-export { default } from "./SectionOverview";
+export { default } from "./SectionOverview.tsx";

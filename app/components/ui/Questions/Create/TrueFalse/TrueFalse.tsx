@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { QuestionData } from "../../types";
+import type { QuestionData } from "../../types.ts";
 
 /**
  * Create a True or False question component
@@ -18,7 +18,7 @@ const TrueFalse = ({
     }
   };
 
-  useEffect(setDefaultValues, [handleUpdate, questionData]);
+  useEffect(setDefaultValues, [ handleUpdate, questionData ]);
 
   return (
     <div className="true-false">

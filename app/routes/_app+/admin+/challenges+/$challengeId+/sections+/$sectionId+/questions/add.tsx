@@ -1,17 +1,15 @@
-import type { Prisma } from "@prisma/client";
-import { QuestionType } from "@prisma/client";
-import { Form, Link, useActionData } from "@remix-run/react";
 import { useRef, useState } from "react";
-import Editor from "~/components/ui/Editor/Editor";
+import { type Prisma, QuestionType } from "@prisma/client";
+import { Form, Link, useActionData } from "@remix-run/react";
 import type { EditorState, LexicalEditor } from "lexical";
-import type { ActionFunction } from "@remix-run/server-runtime";
-import { redirect, json } from "@remix-run/server-runtime";
-import { addQuestion } from "~/models/challenge.server";
-import { CreateMultipleChoice, CreateTrueFalse } from "~/components/ui";
+import Editor from "#app/components/ui/Editor/Editor.tsx";
+import { type ActionFunctionArgs, redirect, json } from "@remix-run/node";
+import { addQuestion } from "#app/models/challenge.server.ts";
+import { CreateMultipleChoice, CreateTrueFalse } from "#app/components/ui/index.ts";
 
 export default function NewQuestionPage() {
-  const [description, setDescription] = useState<string>();
-  const [questionType, setQuestionType] = useState<QuestionType>(
+  const [ description, setDescription ] = useState<string>();
+  const [ questionType, setQuestionType ] = useState<QuestionType>(
     QuestionType.MULTIPLECHOICE
   );
   function onChange(editorState: EditorState, editor: LexicalEditor) {
@@ -22,7 +20,7 @@ export default function NewQuestionPage() {
     });
   }
   const titleRef = useRef<HTMLInputElement>(null);
-  const [questionData, setQuestionData] = useState<{
+  const [ questionData, setQuestionData ] = useState<{
     question?: any;
     answer?: any;
   }>();
@@ -143,7 +141,7 @@ type ActionData = {
 
 const badRequest = (data: ActionData) => json(data, { status: 400 });
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action = async ({ request, params }: ActionFunctionArgs) => {
   const challengeSectionId = params.sectionId;
   const challengeId = params.challengeId;
   if (!challengeSectionId) {
@@ -154,7 +152,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   const description = formData.get("description");
   const type = formData.get("question_type") as QuestionType;
   const questionAnswerData = formData.get("question_data");
-  const errors: ActionData["errors"] = {};
+  const errors: ActionData[ "errors" ] = {};
 
   if (typeof title !== "string" || title.length === 0) {
     errors.title = "Title is required";
@@ -173,7 +171,7 @@ export const action: ActionFunction = async ({ request, params }) => {
     description: description as string,
     hint: "",
     type,
-    data: JSON.parse(questionAnswerData as string),
+    data: JSON.parse(questionAnswerData as string) as any,
     order: 0,
   };
   const question = await addQuestion(challengeSectionId, questionData);
