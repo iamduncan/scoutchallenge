@@ -2,7 +2,7 @@ import { HashtagNode } from "@lexical/hashtag";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { JSDOM } from "jsdom";
-import exampleTheme from "./components/ui/Editor/themes/ExampleTheme.ts";
+import exampleTheme from "#app/components/ui/Editor/themes/ExampleTheme.ts";
 
 export const generateHTML = (editorState?: string | null) => {
   if (!editorState) {

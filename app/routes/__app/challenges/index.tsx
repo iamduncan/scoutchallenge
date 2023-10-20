@@ -1,17 +1,19 @@
 import type { Challenge } from "@prisma/client";
 import { Link, useLoaderData } from "@remix-run/react";
 import type { LoaderFunction } from "@remix-run/server-runtime";
-import { ChallengeCard } from "~/components/ui";
-import { getChallengeListItems } from "~/models/challenge.server";
-import { getUser } from '~/session.server';
+import { ChallengeCard } from "#app/components/ui/index.ts";
+import { getChallengeListItems } from "#app/models/challenge.server.ts";
+import { useUser } from "#app/utils/user.ts";
 
 type LoaderData = {
   challenges: Challenge[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const user = await getUser(request);
-  const challenges = await getChallengeListItems(user?.groups);
+  const user = useUser();
+  const challenges = await getChallengeListItems({
+    groups: user?.groups,
+  });
 
   return {
     challenges,

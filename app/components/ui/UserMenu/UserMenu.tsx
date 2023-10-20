@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Link, Form } from "@remix-run/react";
-import { useClickOutside } from "~/hooks/useClickOutside";
-import { useUser } from "~/utils";
+import { useClickOutside } from "~/hooks/useClickOutside.ts";
+import { useUser } from "~/utils/user.ts";
 
 import avatarPlaceholder from "~/assets/images/avatar-placeholder.gif";
 
@@ -20,7 +20,7 @@ const showUserImg = (picture?: string) => {
 const UserMenu = () => {
   const [open, setOpen] = useState(false);
   const userData = useUser();
-  const userRole = userData.role;
+  const userRole = userData.roles[0].name;
   const userMenuRef = useRef<HTMLDivElement>(null);
   useClickOutside(userMenuRef, () => setOpen(false));
   return userData !== null ? (
@@ -32,9 +32,7 @@ const UserMenu = () => {
         <div className="user-menu__avatar px-3">{showUserImg()}</div>
         <div className="user-menu__info hidden flex-col justify-center text-gray-50 md:flex">
           <div className="user-menu__info-name text-base font-semibold">
-            <span>
-              {userData.firstName} {userData.lastName}
-            </span>
+            <span>{userData.name}</span>
           </div>
         </div>
       </button>

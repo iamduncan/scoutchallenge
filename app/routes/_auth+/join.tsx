@@ -7,16 +7,17 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 
-import { getUserId, createUserSession } from "~/session.server";
+import { authSessionStorage } from "#app/utils/session.server.ts";
 
-import { createUser, getUserByEmail } from "~/models/user.server";
-import { validateEmail } from "~/utils";
+import { createUser, getUserByEmail } from "#app/models/user.server.ts";
+import { useUser, validateEmail } from "#app/utils/utils.ts";
 
 import FleurDeLisPurple from "~/assets/images/fleur-de-lis-marque-purple.png";
+import { redirectWithToast } from "#app/utils/toast.server.ts";
+import { requireAnonymous } from "~/utils/auth.server.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  await requireAnonymous(request);
   return json({});
 };
 
@@ -44,28 +45,28 @@ export const action: ActionFunction = async ({ request }) => {
   if (!validateEmail(email)) {
     return json<ActionData>(
       { errors: { email: "Email is invalid" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof password !== "string") {
     return json<ActionData>(
       { errors: { password: "Password is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
       { errors: { password: "Password is too short" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (password !== confirmPassword) {
     return json<ActionData>(
       { errors: { confirmPassword: "Passwords do not match" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -73,28 +74,28 @@ export const action: ActionFunction = async ({ request }) => {
   if (existingUser) {
     return json<ActionData>(
       { errors: { email: "A user already exists with this email" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof first_name !== "string") {
     return json<ActionData>(
       { errors: { first_name: "First name is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof last_name !== "string") {
     return json<ActionData>(
       { errors: { last_name: "Last name is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof group !== "string") {
     return json<ActionData>(
       { errors: { group: "Group is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -104,21 +105,24 @@ export const action: ActionFunction = async ({ request }) => {
     first_name,
     last_name,
     group,
-    "GROUPADMIN"
+    "GROUPADMIN",
   );
 
-  return createUserSession({
-    request,
-    userId: user.id,
-    remember: false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
-  });
+  return redirect("/login");
+  // return createUserSession({
+  //   request,
+  //   userId: user.id,
+  //   remember: false,
+  //   redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
+  // });
 };
 
 export const meta: MetaFunction = () => {
-  return {
-    title: "Sign Up",
-  };
+  return [
+    {
+      title: "Sign Up",
+    },
+  ];
 };
 
 export default function Join() {
@@ -143,7 +147,10 @@ export default function Join() {
   }, [actionData]);
 
   return (
-    <div className="flex min-h-full flex-col justify-center" suppressHydrationWarning>
+    <div
+      className="flex min-h-full flex-col justify-center"
+      suppressHydrationWarning
+    >
       <div className="mx-auto w-full max-w-4xl px-8">
         <div className="flex justify-center">
           <img

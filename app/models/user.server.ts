@@ -1,8 +1,8 @@
 import type { Group, Password, Prisma, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-import { prisma } from "~/db.server";
-import { mg } from "~/libs/email/config";
+import { prisma } from "#app/utils/db.server.ts";
+import { mg } from "#app/libs/email/config.ts";
 
 export type { User, Token } from "@prisma/client";
 
@@ -35,8 +35,7 @@ export async function listUsers({
     where,
     select: {
       id: true,
-      firstName: true,
-      lastName: true,
+      name: true,
       groups: {
         select: {
           name: true,
@@ -47,12 +46,12 @@ export async function listUsers({
 }
 
 export async function createUser(
+  username: User["username"],
   email: User["email"],
   password: string,
-  firstName: User["firstName"],
-  lastName: User["lastName"],
+  name: User["name"],
   group?: Group["name"],
-  role?: User["role"]
+  role?: string,
 ) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -64,17 +63,19 @@ export async function createUser(
           hash: hashedPassword,
         },
       },
-      firstName,
-      lastName,
+      username,
+      name,
       groups: group ? { create: { name: group } } : undefined,
-      role,
+      roles: {
+        create: role ? { name: role } : undefined,
+      },
     },
   });
 }
 
 export async function updateUser(
   id: User["id"],
-  data: Prisma.UserUpdateWithoutPasswordInput
+  data: Prisma.UserUpdateWithoutPasswordInput,
 ) {
   return prisma.user.update({
     where: { id },
@@ -85,7 +86,7 @@ export async function updateUser(
 export async function updateUserPassword(
   id: User["id"],
   password: string,
-  tokenId?: string
+  tokenId?: string,
 ) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -117,7 +118,7 @@ export async function deleteToken(id: string) {
 
 export async function verifyLogin(
   email: User["email"],
-  password: Password["hash"]
+  password: Password["hash"],
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
@@ -132,7 +133,7 @@ export async function verifyLogin(
 
   const isValid = await bcrypt.compare(
     password,
-    userWithPassword.password.hash
+    userWithPassword.password.hash,
   );
 
   if (!isValid) {
@@ -193,8 +194,7 @@ export const listTokens = async () => {
       expiresAt: true,
       user: {
         select: {
-          firstName: true,
-          lastName: true,
+          name: true,
           email: true,
         },
       },
@@ -255,7 +255,7 @@ export const removeSubscriber = async (address: string) => {
   try {
     const subscriber = await mg().lists.members.destroyMember(
       subscriberList,
-      address
+      address,
     );
     return subscriber;
   } catch (error) {

@@ -7,12 +7,12 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 
-import { createUserSession, getUserId } from "~/session.server";
-import { verifyLogin } from "~/models/user.server";
-import { validateEmail } from "~/utils";
+import { authSessionStorage } from "#app/utils/session.server.ts";
+import { verifyLogin } from "#app/models/user.server.ts";
+import { useUser, validateEmail } from "#app/utils/utils.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
+  const userId = useUser();
   if (userId) return redirect("/");
   return json({});
 };
@@ -34,21 +34,21 @@ export const action: ActionFunction = async ({ request }) => {
   if (!validateEmail(email)) {
     return json<ActionData>(
       { errors: { email: "Email is invalid" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof password !== "string") {
     return json<ActionData>(
       { errors: { password: "Password is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
       { errors: { password: "Password is too short" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -57,22 +57,25 @@ export const action: ActionFunction = async ({ request }) => {
   if (!user) {
     return json<ActionData>(
       { errors: { email: "Invalid email or password" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  return createUserSession({
-    request,
-    userId: user.id,
-    remember: remember === "on" ? true : false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/challenges",
-  });
+  return redirect("/");
+  // return createUserSession({
+  //   request,
+  //   userId: user.id,
+  //   remember: remember === "on" ? true : false,
+  //   redirectTo: typeof redirectTo === "string" ? redirectTo : "/challenges",
+  // });
 };
 
 export const meta: MetaFunction = () => {
-  return {
-    title: "Login",
-  };
+  return [
+    {
+      title: "Login",
+    },
+  ];
 };
 
 export default function LoginPage() {

@@ -4,26 +4,17 @@ import type {
   Question,
   User,
 } from "@prisma/client";
-import { Link } from "@remix-run/react";
-import { SectionOverview } from "~/components/ui";
-import { useMatchesData } from "~/utils";
+import { Link, useRouteLoaderData } from "@remix-run/react";
+import { SectionOverview } from "~/components/ui/index.ts";
+import { loader as challengeLoader } from "../$challengeId.tsx";
 
 const isAdmin = (role: User["role"]) =>
   role === "ADMIN" || role === "GROUPADMIN" || role === "SECTIONADMIN";
 
 export default function ChallengeIndex() {
-  const { challenge, user } = useMatchesData(
-    "routes/__app/challenges/$challengeId"
-  ) as {
-    challenge: Challenge & {
-      introductionHtml?: string;
-      challengeSections: (ChallengeSection & {
-        descriptionHtml?: string;
-        questions: Question[];
-      })[];
-    };
-    user: User;
-  };
+  const { challenge, user } = useRouteLoaderData<typeof challengeLoader>(
+    "routes/__app/challenges/$challengeId",
+  );
 
   return (
     <>

@@ -22,6 +22,7 @@ import { prisma } from "./utils/db.server.ts";
 
 export const links: LinksFunction = () => {
   return [
+    { rel: "preload", href: tailwindStylesheetUrl, as: "style" },
     { rel: "stylesheet", href: tailwindStylesheetUrl },
     { rel: "stylesheet", href: editorStylesheetUrl },
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -71,6 +72,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
                   permissions: {
                     select: { entity: true, action: true, access: true },
                   },
+                },
+              },
+              groups: {
+                select: {
+                  id: true,
+                  name: true,
                 },
               },
             },

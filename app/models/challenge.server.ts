@@ -7,11 +7,11 @@ import type {
 } from "@prisma/client";
 import { ChallengeStatus } from "@prisma/client";
 
-import { prisma } from "~/db.server";
-import { generateHTML } from "~/utils.server";
+import { prisma } from "#app/utils/db.server.ts";
+import { generateHTML } from "#app/utils/editor.server.ts";
 
 export async function createChallenge(
-  data: Prisma.ChallengeCreateInput
+  data: Prisma.ChallengeCreateInput,
 ): Promise<Challenge> {
   return prisma.challenge.create({
     data,
@@ -20,7 +20,7 @@ export async function createChallenge(
 
 export async function updateChallenge(
   id: string,
-  data: Prisma.ChallengeUpdateInput
+  data: Prisma.ChallengeUpdateInput,
 ): Promise<Challenge> {
   return prisma.challenge.update({
     where: { id },
@@ -50,7 +50,7 @@ export async function getChallengeListItems({
   groups,
   published,
 }: {
-  groups?: Group[];
+  groups?: { id: string; name: string }[];
   published?: boolean;
 }): Promise<Pick<Challenge, "id" | "name">[]> {
   return prisma.challenge.findMany({
@@ -119,7 +119,7 @@ export async function getChallenge({
       challengeSections.push({
         ...challenge.challengeSections[section],
         descriptionHtml: generateHTML(
-          challenge.challengeSections[section].description || ""
+          challenge.challengeSections[section].description || "",
         ),
       });
 
@@ -129,14 +129,14 @@ export async function getChallenge({
         if (
           Object.prototype.hasOwnProperty.call(
             challenge.challengeSections[section].questions,
-            question
+            question,
           )
         ) {
           questions.push({
             ...challenge.challengeSections[section].questions[question],
             descriptionHtml: generateHTML(
               challenge.challengeSections[section].questions[question]
-                .description || ""
+                .description || "",
             ),
           });
         }
@@ -154,7 +154,7 @@ export async function getChallenge({
 
 export async function addSectionToChallenge(
   challengeId: string,
-  sectionId: string
+  sectionId: string,
 ) {
   return prisma.challenge.update({
     where: { id: challengeId },
@@ -170,7 +170,7 @@ export async function addSectionToChallenge(
 
 export async function removeSectionFromChallenge(
   challengeId: string,
-  sectionId: string
+  sectionId: string,
 ) {
   return prisma.challenge.update({
     where: { id: challengeId },
@@ -192,7 +192,7 @@ export async function deleteChallenge({ id }: Pick<Challenge, "id">) {
 
 export async function createChallengeSection(
   challengeId: string,
-  data: Prisma.ChallengeSectionCreateWithoutChallengeInput
+  data: Prisma.ChallengeSectionCreateWithoutChallengeInput,
 ): Promise<Challenge> {
   return prisma.challenge.update({
     where: { id: challengeId },
@@ -220,7 +220,7 @@ export async function getChallengeSection({
 /* --------------------------- Question Functions --------------------------- */
 export async function addQuestion(
   challengeSectionId: string,
-  questionData: Prisma.QuestionCreateWithoutChallengeSectionInput
+  questionData: Prisma.QuestionCreateWithoutChallengeSectionInput,
 ) {
   return prisma.question.create({
     data: {

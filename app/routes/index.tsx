@@ -1,12 +1,12 @@
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useOptionalUser, validateEmail } from "~/utils";
+import { useOptionalUser, validateEmail } from "~/utils/utils.ts";
 import * as React from "react";
 
 import ExploringNewPlacesImg from "~/assets/images/exploring-new-places.jpg";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
-import { addSubscriber } from "~/models/user.server";
-import { SuccessAlert } from "~/components/ui";
+import { addSubscriber } from "~/models/user.server.ts";
+import { SuccessAlert } from "~/components/ui/index.ts";
 
 interface ActionData {
   errors: {
@@ -34,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
       {
         errors: { email: "Please enter a valid email address" },
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -46,7 +46,7 @@ export const action: ActionFunction = async ({ request }) => {
           email: "Subscriber already registered",
         },
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
