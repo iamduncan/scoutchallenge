@@ -14,7 +14,6 @@ const ChallengeHero = ({
   startDate,
   endDate,
 }: ChallengeHeroProps) => {
-  const startDateObj = new Date(startDate || "");
   const endDateObj = new Date(endDate || "");
   const currentDate = new Date();
   const daysLeft = Math.ceil(

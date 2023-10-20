@@ -1,5 +1,4 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
+import  { type ActionFunction, type LoaderFunction , redirect } from "@remix-run/node";
 
 import { logout } from "#app/utils/auth.server.ts";
 

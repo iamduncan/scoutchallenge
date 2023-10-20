@@ -1,5 +1,5 @@
-import ProgressCircular from "../ProgressCircular/index.ts";
 import CampingAdventure from "#app/assets/images/camping-adventure.png";
+import ProgressCircular from "../ProgressCircular/index.ts";
 
 type ChallengeCardProps = {
   title: string;

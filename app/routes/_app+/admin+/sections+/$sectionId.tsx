@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
-import type { Section } from "@prisma/client";
+import  { type Section } from "@prisma/client";
+import  { type LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import { useState } from "react";
 import { getSection } from "#app/models/section.server.ts";
 
 type LoaderData = {

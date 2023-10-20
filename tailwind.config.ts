@@ -1,5 +1,5 @@
 import { type Config } from "tailwindcss";
-import { PluginCreator } from "tailwindcss/types/config.js";
+import { type PluginCreator } from "tailwindcss/types/config.js";
 
 const tailwindScrollbar: PluginCreator = function ({ addVariant }) {
   addVariant("supports-scrollbars", "@supports selector(::-webkit-scrollbar)");

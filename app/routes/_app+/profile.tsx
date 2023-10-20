@@ -1,21 +1,15 @@
-import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction, LoaderFunctionArgs } from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
 import {
   RectangleGroupIcon,
   PuzzlePieceIcon,
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { useUser } from "#app/utils/user.ts";
+import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
+import { json, redirect, type ActionFunction, type LoaderFunctionArgs } from "@remix-run/server-runtime";
 import avatarPlaceholder from "#app/assets/images/avatar-placeholder.gif";
 import { AppLayout } from "#app/layouts/index.ts";
 import { getUserById, updateUser } from "#app/models/user.server.ts";
 import { getUserId, requireUserId } from "#app/utils/auth.server.ts";
-
-type LoaderData = {
-  adminSecret: boolean;
-};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -113,6 +107,7 @@ export default function ProfilePage() {
             {adminSecret && searchParams.get("adminSecret") && (
               <div className="mt-3">
                 <Form
+                  // eslint-disable-next-line remix-react-routes/require-valid-paths
                   action={`/profile?adminSecret=${searchParams.get(
                     "adminSecret"
                   )}`}
@@ -158,6 +153,7 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">Email.</div>
                   <div className="px-4 py-2">
+                    {/* eslint-disable-next-line remix-react-routes/use-link-for-routes */}
                     <a className="text-blue-800" href={`mailto:${user.email}`}>
                       {user.email}
                     </a>

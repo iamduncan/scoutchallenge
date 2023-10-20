@@ -1,4 +1,4 @@
-import type { User, Section, Group } from "@prisma/client";
+import  { type User, type Section, type Group } from "@prisma/client";
 
 import { prisma } from "#app/utils/db.server.ts";
 

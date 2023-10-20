@@ -1,10 +1,9 @@
+import  { type ActionFunction , json } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { useEffect, useRef } from "react";
 import { updateUser } from "#app/models/user.server.ts";
-import { useUser } from "#app/utils/user.ts";
 import { requireUserId } from "#app/utils/auth.server.ts";
+import { useUser } from "#app/utils/user.ts";
 
 interface ActionData {
   errors?: {

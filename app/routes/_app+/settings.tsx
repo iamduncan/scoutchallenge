@@ -6,7 +6,7 @@ import {
   SquaresPlusIcon,
 } from "@heroicons/react/24/outline";
 import { NavLink, Outlet } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/server-runtime";
+import  { type LoaderFunction } from "@remix-run/server-runtime";
 import { AppLayout } from "#app/layouts/index.ts";
 import { requireUserId } from "#app/utils/auth.server.ts";
 import { useUser } from "#app/utils/user.ts";

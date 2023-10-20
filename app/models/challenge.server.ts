@@ -1,11 +1,10 @@
-import type {
-  Challenge,
-  ChallengeSection,
-  Group,
-  Prisma,
-  Question,
-} from "@prisma/client";
-import { ChallengeStatus } from "@prisma/client";
+import  {
+  type Challenge,
+  type ChallengeSection,
+  type Group,
+  type Prisma,
+  type Question,
+ ChallengeStatus } from "@prisma/client";
 
 import { prisma } from "#app/utils/db.server.ts";
 import { generateHTML } from "#app/utils/editor.server.ts";

@@ -1,4 +1,4 @@
-import type { QuestionData } from "../../types.ts";
+import  { type QuestionData } from "../../types.ts";
 
 const TrueFalse = ({
   questionData,

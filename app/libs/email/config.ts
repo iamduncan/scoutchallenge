@@ -1,5 +1,5 @@
-import Mailgun from "mailgun.js";
 import formData from "form-data";
+import Mailgun from "mailgun.js";
 export const config = {
   baseURL: "https://api.sendinblue.com/v3",
 };

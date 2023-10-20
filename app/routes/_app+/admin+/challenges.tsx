@@ -1,10 +1,9 @@
 import { Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
+import { type LoaderFunctionArgs, json } from "@remix-run/server-runtime";
 import { AdminList } from "#app/components/ui/index.ts";
 import { getChallengeListItems } from "#app/models/challenge.server.ts";
-import { getUserId, requireUserId } from '#app/utils/auth.server.ts';
 import { getUserById } from '#app/models/user.server.ts';
+import { requireUserId } from '#app/utils/auth.server.ts';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);

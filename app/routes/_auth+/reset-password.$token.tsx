@@ -1,9 +1,8 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
+import {
+  type ActionFunction,
+  type LoaderFunction,
+  json, redirect
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
 import * as React from "react";
 import { tokenIsValid, updateUserPassword } from "#app/models/user.server.ts";
@@ -77,7 +76,7 @@ export default function ResetPassword() {
     } else if (actionData?.errors?.confirmPassword) {
       confirmPasswordRef.current?.focus();
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <div className="flex min-h-full flex-col justify-center">

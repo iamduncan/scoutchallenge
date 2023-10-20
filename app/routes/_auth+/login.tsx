@@ -1,19 +1,18 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
+import {
+  type ActionFunction,
+  type LoaderFunction,
+  type MetaFunction,
+  json, redirect
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 
-import { authSessionStorage } from "#app/utils/session.server.ts";
 import { verifyLogin } from "#app/models/user.server.ts";
-import { useUser, validateEmail } from "#app/utils/utils.ts";
+import { requireUserId } from '#app/utils/auth.server.ts';
+import { validateEmail } from "#app/utils/utils.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = useUser();
-  if (userId) return redirect("/");
+  await requireUserId(request);
   return json({});
 };
 
@@ -28,8 +27,6 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
-  const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
     return json<ActionData>(
@@ -79,7 +76,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function LoginPage() {
-  const [searchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/challenges";
   const actionData = useActionData() as ActionData;
   const emailRef = React.useRef<HTMLInputElement>(null);
@@ -91,7 +88,7 @@ export default function LoginPage() {
     } else if (actionData?.errors?.password) {
       passwordRef.current?.focus();
     }
-  }, [actionData]);
+  }, [ actionData ]);
 
   return (
     <div className="flex min-h-full flex-col justify-center">

@@ -1,11 +1,10 @@
-import * as React from "react";
-import type { ActionFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import  { type ActionFunction , json } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useOptionalUser, validateEmail } from "#app/utils/utils.ts";
+import * as React from "react";
 import ExploringNewPlacesImg from "#app/assets/images/exploring-new-places.jpg";
-import { addSubscriber } from "#app/models/user.server.ts";
 import { SuccessAlert } from "#app/components/ui/index.ts";
+import { addSubscriber } from "#app/models/user.server.ts";
+import { useOptionalUser, validateEmail } from "#app/utils/utils.ts";
 
 interface ActionData {
   errors: {

@@ -1,9 +1,8 @@
-import type {
-  LinksFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/node";
-import { json } from "@remix-run/node";
+import  {
+  type LinksFunction,
+  type LoaderFunctionArgs,
+  type MetaFunction,
+ json } from "@remix-run/node";
 import {
   Links,
   LiveReload,
@@ -13,12 +12,12 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import tailwindStylesheetUrl from "./styles/app.css";
 import editorStylesheetUrl from "./components/ui/Editor/styles.css";
+import tailwindStylesheetUrl from "./styles/app.css";
 
-import { makeTimings, time } from "./utils/timing.server.ts";
 import { getUserId } from "./utils/auth.server.ts";
 import { prisma } from "./utils/db.server.ts";
+import { makeTimings, time } from "./utils/timing.server.ts";
 
 export const links: LinksFunction = () => {
   return [

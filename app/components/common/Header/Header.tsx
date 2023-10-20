@@ -1,9 +1,7 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
-import type { Group, Role, User } from "@prisma/client";
 import { Form, Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
 import { Logo } from "#app/components/icons/index.js";
-import { UserMenu } from "#app/components/ui/index.js";
 import { menuItems } from "#app/config.js";
 
 type Props = {
@@ -92,7 +90,7 @@ export default function Header(props: Props) {
           <li className="w-full">
             <Link
               className="block w-full border-t border-gray-200 py-3 text-lg"
-              to="/contact"
+              to="/support"
             >
               Contact
             </Link>
@@ -112,30 +110,3 @@ export default function Header(props: Props) {
     </header>
   );
 }
-
-const old = () => (
-  <div className="container mx-auto flex flex-col flex-wrap items-center p-5 md:flex-row">
-    <Link
-      to="/"
-      className="title-font mb-4 flex items-center text-gray-100 md:mb-0"
-    >
-      <Logo className="h-10 w-10 rounded-full bg-purple-600 p-2" />
-      <span className="ml-3 text-xl font-semibold">Scout Challenge</span>
-    </Link>
-    <nav className="flex flex-wrap items-center justify-center text-base md:mr-auto	md:ml-4 md:border-l md:border-gray-200 md:pl-4">
-      {menuItems.map((item) => (
-        <NavLink
-          key={item.id}
-          to={item.path}
-          className={({ isActive }) =>
-            `mr-5 font-semibold text-gray-50 hover:text-gray-200 md:p-1 ${isActive && "rounded bg-purple-200 !text-gray-800"
-            }`
-          }
-        >
-          {item.label}
-        </NavLink>
-      ))}
-    </nav>
-    <UserMenu />
-  </div>
-);

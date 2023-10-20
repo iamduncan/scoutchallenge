@@ -1,9 +1,8 @@
-import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunction } from "@remix-run/node";
-import type { Group } from "#app/models/group.server.ts";
-import type { User } from "#app/models/user.server.ts";
-import { listUsers } from "#app/models/user.server.ts";
+import { type LoaderFunction } from "@remix-run/node";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { AdminList } from "#app/components/ui/index.ts";
+import { type Group } from "#app/models/group.server.ts";
+import { type User, listUsers } from "#app/models/user.server.ts";
 import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export const loader: LoaderFunction = async ({ request }) => {

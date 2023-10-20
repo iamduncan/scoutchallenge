@@ -1,10 +1,7 @@
-import type { Prisma } from "@prisma/client";
-import { ChallengeStatus } from "@prisma/client";
+import { type Prisma, ChallengeStatus } from "@prisma/client";
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
-import type { EditorState, LexicalEditor } from "lexical";
+import { type ActionFunction, type LoaderFunctionArgs, redirect, json } from "@remix-run/server-runtime";
+import { type EditorState, type LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
 import Editor from "#app/components/ui/Editor/Editor.tsx";
 import { getChallenge, updateChallenge } from "#app/models/challenge.server.ts";
@@ -107,8 +104,6 @@ export default function ViewChallengePage() {
       ? new Date(challenge?.closeDate).toISOString().split("T")[ 0 ]
       : undefined;
 
-  const introductionHtml = challenge?.introduction || "";
-
   return (
     <div>
       <div className="flex justify-between">
@@ -185,7 +180,7 @@ export default function ViewChallengePage() {
           <label htmlFor="introduction" className="flex w-full flex-col gap-1">
             <span>Introduction: </span>
             <Editor
-              initialContent={challenge.introduction || undefined}
+              initialContent={challenge.introduction || introduction || undefined}
               onChange={onChange}
             />
             <input

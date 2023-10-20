@@ -1,7 +1,7 @@
 import { Outlet } from "@remix-run/react";
-import type { LinksFunction, LoaderFunction } from "@remix-run/server-runtime";
-import layoutStyles from "#app/assets/styles/layout.css";
+import  { type LinksFunction, type LoaderFunction } from "@remix-run/server-runtime";
 import { requireUserId } from "#app/utils/auth.server.ts";
+import layoutStyles from "#app/assets/styles/layout.css";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: layoutStyles },

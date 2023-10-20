@@ -1,8 +1,7 @@
-import type { Prisma } from "@prisma/client";
+import  { type Prisma } from "@prisma/client";
 import { Form, Link } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/server-runtime";
-import { json, redirect } from "@remix-run/server-runtime";
-import type { EditorState, LexicalEditor } from "lexical";
+import  { type ActionFunction , json, redirect } from "@remix-run/server-runtime";
+import  { type EditorState, type LexicalEditor } from "lexical";
 import { useRef, useState } from "react";
 import Editor from "#app/components/ui/Editor/Editor.tsx";
 import { createChallengeSection } from "#app/models/challenge.server.ts";

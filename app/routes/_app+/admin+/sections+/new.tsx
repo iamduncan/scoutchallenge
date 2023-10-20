@@ -1,17 +1,11 @@
 import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/server-runtime";
-import { redirect } from "@remix-run/server-runtime";
-import { json } from "@remix-run/server-runtime";
+import { type ActionFunction, type LoaderFunctionArgs, redirect, json } from "@remix-run/server-runtime";
 import * as React from "react";
 import { getGroupListItems } from "#app/models/group.server.ts";
 import { createSection } from "#app/models/section.server.ts";
-import { getUserId, requireUserId } from '#app/utils/auth.server.ts';
 import { getUserById } from '#app/models/user.server.ts';
+import { getUserId } from '#app/utils/auth.server.ts';
 import { useUser } from '#app/utils/user.ts';
-
-type LoaderData = {
-  groups: { id: string; name: string }[];
-};
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const groups = await getGroupListItems();
@@ -75,7 +69,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function NewSectionPage() {
   const user = useUser();
 
-  const { groups } = useLoaderData<LoaderData>();
+  const { groups } = useLoaderData<typeof loader>();
 
   const actionData = useActionData() as ActionData;
   const nameRef = React.useRef<HTMLInputElement>(null);

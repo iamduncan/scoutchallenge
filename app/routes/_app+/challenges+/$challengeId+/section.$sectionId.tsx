@@ -1,12 +1,8 @@
-import type {
-  Challenge,
-  ChallengeSection,
-  Question,
-  User,
+import {
+  type Question,
 } from "@prisma/client";
+import { type ActionFunctionArgs, json } from "@remix-run/node";
 import { Form, Link, useParams, useRouteLoaderData, useSearchParams } from "@remix-run/react";
-import type { ActionFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import {
   AnswerCipher,
   AnswerFillInTheBlank,
@@ -14,8 +10,8 @@ import {
   AnswerTrueFalse,
   Button,
 } from "#app/components/ui/index.ts";
+import { type QuestionData } from "#app/components/ui/Questions/types.ts";
 import { type loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
-import type { QuestionData } from "#app/components/ui/Questions/types.ts";
 
 export default function ChallengeSectionView() {
   const { sectionId } = useParams();

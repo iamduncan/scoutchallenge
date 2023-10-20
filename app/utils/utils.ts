@@ -1,7 +1,7 @@
-import type { Group } from "@prisma/client";
+import  { type Group } from "@prisma/client";
 import { useRouteLoaderData } from "@remix-run/react";
-import { loader as rootLoader } from "#app/root.tsx";
-import type { User } from "#app/models/user.server.ts";
+import  { type User } from "#app/models/user.server.ts";
+import { type loader as rootLoader } from "#app/root.tsx";
 
 function isUser(user: any): user is User & { groups: Group[] } {
   return user && typeof user === "object" && typeof user.email === "string";

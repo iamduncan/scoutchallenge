@@ -97,7 +97,7 @@ async function seed() {
     },
   });
 
-  const section = await prisma.section.create({
+  await prisma.section.create({
     data: {
       name: sectionName,
       group: {

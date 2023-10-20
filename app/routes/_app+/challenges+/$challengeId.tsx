@@ -1,17 +1,19 @@
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { ChallengeStatus } from "@prisma/client";
+import { ChallengeStatus, type Role } from "@prisma/client";
+import { type LoaderFunctionArgs, json, redirect } from "@remix-run/node";
 import { Outlet, useLoaderData, useSearchParams } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { ChallengeHero } from "#app/components/ui/index.ts";
 import { getChallenge } from "#app/models/challenge.server.ts";
-import { useUser } from "#app/utils/user.ts";
+import { getUserById } from '#app/models/user.server.ts';
+import { requireUserId } from '#app/utils/auth.server.ts';
 
-const isAdmin = (role: string) =>
-  role === "ADMIN" || role === "GROUPADMIN" || role === "SECTIONADMIN";
+const isAdminRole = (role: Pick<Role, 'name'>) => (role.name === "ADMIN" || role.name === "GROUPADMIN" || role.name === "SECTIONADMIN");
+const isAdmin = (roles: Pick<Role, 'name'>[]) => roles.some(isAdminRole);
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const user = useUser();
+  const userId = await requireUserId(request);
+  const user = await getUserById(userId);
+  if (!user) throw redirect("/login");
 
   const challengeId = params.challengeId;
   if (!challengeId) {
@@ -20,7 +22,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const challenge = await getChallenge({ id: challengeId });
   if (
     user &&
-    !isAdmin(user.roles[ 0 ].name) &&
+    !isAdmin(user.roles) &&
     (challenge.status === ChallengeStatus.DRAFT ||
       challenge.status === ChallengeStatus.DELETED)
   ) {
@@ -45,7 +47,7 @@ const ChallengeView = () => {
         userProgress={0}
         endDate={challenge.closeDate}
       />
-      {isAdmin(user.roles[ 0 ].name) &&
+      {isAdmin(user.roles) &&
         challenge.status === ChallengeStatus.DRAFT && (
           <div className="mx-auto mt-6 flex w-11/12 items-center justify-center gap-2 rounded border border-red-500 bg-red-100 py-3 text-xl font-semibold text-red-600 md:w-10/12">
             <ExclamationTriangleIcon className="h-6 w-6" /> Challenge is not

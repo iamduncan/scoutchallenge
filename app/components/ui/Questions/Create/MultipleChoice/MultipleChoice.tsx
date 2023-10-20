@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Input } from "#app/components/ui/index.ts";
-import type { QuestionData } from "../../types.ts";
+import  { type QuestionData } from "../../types.ts";
 
 /**
  * Create a Multiple Choice question component

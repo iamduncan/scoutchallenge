@@ -1,6 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Form, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import  { type ActionFunction, type LoaderFunction } from "@remix-run/server-runtime";
 import { mg } from "#app/libs/email/config.ts";
 import { removeSubscriber } from "#app/models/user.server.ts";
 

@@ -1,28 +1,28 @@
-import ExampleTheme from "./themes/ExampleTheme.ts";
+import { CodeHighlightNode, CodeNode } from "@lexical/code";
+import { HashtagNode } from "@lexical/hashtag";
+import { AutoLinkNode, LinkNode } from "@lexical/link";
+import { ListItemNode, ListNode } from "@lexical/list";
+import { TRANSFORMERS } from "@lexical/markdown";
 import { LexicalComposer } from "@lexical/react/LexicalComposer.js";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin.js";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable.js";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary.js";
+import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin.js";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin.js";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin.js";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin.js";
-import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin.js";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary.js";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin.js";
-import TreeViewPlugin from "./plugins/TreeViewPlugin.tsx";
-import ToolbarPlugin from "./plugins/ToolbarPlugin.tsx";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin.js";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin.js";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import { ListItemNode, ListNode } from "@lexical/list";
-import { CodeHighlightNode, CodeNode } from "@lexical/code";
-import { AutoLinkNode, LinkNode } from "@lexical/link";
-import { HashtagNode } from "@lexical/hashtag";
-import { TRANSFORMERS } from "@lexical/markdown";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin.js";
-import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin.tsx";
-import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin.tsx";
-import AutoLinkPlugin from "./plugins/AutoLinkPlugin.tsx";
 
-import type { EditorState, LexicalEditor } from "lexical";
+import { type EditorState, type LexicalEditor } from "lexical";
+import AutoLinkPlugin from "./plugins/AutoLinkPlugin.tsx";
+import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin.tsx";
+import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin.tsx";
+import ToolbarPlugin from "./plugins/ToolbarPlugin.tsx";
+import TreeViewPlugin from "./plugins/TreeViewPlugin.tsx";
+import ExampleTheme from "./themes/ExampleTheme.ts";
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some text...</div>;

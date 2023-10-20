@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import  { type FC } from "react";
 import { Header } from "#app/components/common/index.ts";
 import { useUser } from "#app/utils/user.ts";
 

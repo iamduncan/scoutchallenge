@@ -1,7 +1,6 @@
 import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+import  { type ActionFunction, type LoaderFunctionArgs , json, redirect } from "@remix-run/node";
 import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
-import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { useState } from "react";
 import { SectionOverview } from "#app/components/ui/index.ts";
 import {
@@ -10,8 +9,8 @@ import {
   getChallenge,
 } from "#app/models/challenge.server.ts";
 import { getSectionListItems } from "#app/models/section.server.ts";
-import { getUserId } from '#app/utils/auth.server.ts';
 import { getUserById } from '#app/models/user.server.ts';
+import { getUserId } from '#app/utils/auth.server.ts';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const challengeId = params.challengeId;

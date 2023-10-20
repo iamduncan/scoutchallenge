@@ -1,8 +1,7 @@
-import type { Challenge, ChallengeSection, Question } from "@prisma/client";
-import { Link, useParams, useRouteLoaderData } from "@remix-run/react";
 import { type ActionFunctionArgs, json } from "@remix-run/node";
+import { Link, useParams, useRouteLoaderData } from "@remix-run/react";
 import { deleteQuestion } from "#app/models/challenge.server.ts";
-import type { loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
+import { type loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
 import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export default function QuestionPage() {
@@ -47,7 +46,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const description = formData.get("description");
   const answer = formData.get("answer");
   const correctAnswer = formData.get("correctAnswer");
-  const questionType = formData.get("questionType");
   const questionData = { title, description, answer, correctAnswer };
   console.log(questionData);
   return json({ challengeId, sectionId, questionId, questionData });

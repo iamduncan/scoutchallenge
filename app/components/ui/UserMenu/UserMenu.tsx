@@ -1,8 +1,8 @@
-import { useRef, useState } from "react";
 import { Link, Form } from "@remix-run/react";
+import { useRef, useState } from "react";
+import avatarPlaceholder from "#app/assets/images/avatar-placeholder.gif";
 import { useClickOutside } from "#app/hooks/useClickOutside.ts";
 import { useUser } from "#app/utils/user.ts";
-import avatarPlaceholder from "#app/assets/images/avatar-placeholder.gif";
 
 const showUserImg = (picture?: string) => {
   return picture ? (

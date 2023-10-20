@@ -1,7 +1,6 @@
 import { $getListDepth, $isListItemNode, $isListNode } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
-import type { RangeSelection, NodeSelection, GridSelection } from "lexical";
-import {
+import  { type RangeSelection, type NodeSelection, type GridSelection ,
   $getSelection,
   $isElementNode,
   $isRangeSelection,

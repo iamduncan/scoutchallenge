@@ -1,13 +1,10 @@
-import type { ActionFunction, LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import  { type ActionFunction, type LoaderFunctionArgs , json, redirect } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import type { Note } from "#app/models/note.server.ts";
-import { deleteNote } from "#app/models/note.server.ts";
-import { getNote } from "#app/models/note.server.ts";
-import { requireUserId } from "#app/utils/auth.server.ts";
 import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx';
+import  { type Note , deleteNote , getNote } from "#app/models/note.server.ts";
+import { requireUserId } from "#app/utils/auth.server.ts";
 
 type LoaderData = {
   note: Note;

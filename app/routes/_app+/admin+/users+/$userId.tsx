@@ -1,7 +1,6 @@
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import  { type LoaderFunctionArgs , json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import { getUserById } from "#app/models/user.server.ts";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {

@@ -1,11 +1,11 @@
-type MenuItem = {
+export type MenuItem = {
   id: string;
   label: string;
   path: string;
   forAdmin?: boolean;
 };
 
-export const menuItems = [
+export const menuItems: MenuItem[] = [
   {
     id: "home",
     label: "Home",

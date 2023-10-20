@@ -1,10 +1,9 @@
+import  { type LoaderFunctionArgs , json, redirect } from "@remix-run/node";
 import { Outlet, useLoaderData } from "@remix-run/react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { getSectionListItems } from "#app/models/section.server.ts";
 import { AdminList } from "#app/components/ui/index.ts";
-import { requireUserId } from '#app/utils/auth.server.ts';
+import { getSectionListItems } from "#app/models/section.server.ts";
 import { getUserById } from '#app/models/user.server.ts';
+import { requireUserId } from '#app/utils/auth.server.ts';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);

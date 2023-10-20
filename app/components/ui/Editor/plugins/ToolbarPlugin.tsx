@@ -1,13 +1,33 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
-import type { MutableRefObject, RefObject } from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type {
-  GridSelection,
-  LexicalEditor,
-  NodeSelection,
-  RangeSelection,
-} from "lexical";
 import {
+  $createCodeNode,
+  $isCodeNode,
+  getDefaultCodeLanguage,
+  getCodeLanguages,
+} from "@lexical/code";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+import {
+  INSERT_ORDERED_LIST_COMMAND,
+  INSERT_UNORDERED_LIST_COMMAND,
+  REMOVE_LIST_COMMAND,
+  $isListNode,
+} from "@lexical/list";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
+import {
+  $createHeadingNode,
+  $createQuoteNode,
+  $isHeadingNode,
+} from "@lexical/rich-text";
+import {
+  $wrapNodes,
+  $isAtNodeEnd,
+} from "@lexical/selection";
+import { mergeRegister } from "@lexical/utils";
+import {
+  type GridSelection,
+  type LexicalEditor,
+  type NodeSelection,
+  type RangeSelection,
+
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   REDO_COMMAND,
@@ -18,34 +38,10 @@ import {
   $getSelection,
   $isRangeSelection,
   $createParagraphNode,
-  $getNodeByKey,
+  $getNodeByKey
 } from "lexical";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import {
-  $isParentElementRTL,
-  $wrapNodes,
-  $isAtNodeEnd,
-} from "@lexical/selection";
-import { $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
-import {
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-  REMOVE_LIST_COMMAND,
-  $isListNode,
-  ListNode,
-} from "@lexical/list";
+import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import {
-  $createHeadingNode,
-  $createQuoteNode,
-  $isHeadingNode,
-} from "@lexical/rich-text";
-import {
-  $createCodeNode,
-  $isCodeNode,
-  getDefaultCodeLanguage,
-  getCodeLanguages,
-} from "@lexical/code";
 
 const LowPriority = 1;
 
@@ -88,7 +84,7 @@ function positionEditorElement(editor: HTMLDivElement, rect: DOMRect | null) {
   }
 }
 
-function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
+export function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
   const editorRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mouseDownRef = useRef(false);
@@ -449,7 +445,6 @@ export default function ToolbarPlugin() {
   const [ showBlockOptionsDropDown, setShowBlockOptionsDropDown ] =
     useState(false);
   const [ codeLanguage, setCodeLanguage ] = useState("");
-  const [ isRTL, setIsRTL ] = useState(false);
   const [ isLink, setIsLink ] = useState(false);
   const [ isBold, setIsBold ] = useState(false);
   const [ isItalic, setIsItalic ] = useState(false);
@@ -490,7 +485,6 @@ export default function ToolbarPlugin() {
       setIsUnderline(selection.hasFormat("underline"));
       setIsStrikethrough(selection.hasFormat("strikethrough"));
       setIsCode(selection.hasFormat("code"));
-      setIsRTL($isParentElementRTL(selection));
 
       // Update links
       const node = getSelectedNode(selection);
@@ -676,16 +670,16 @@ export default function ToolbarPlugin() {
           >
             <i className="format code" />
           </button>
-          {/* <button
+          {<button
             onClick={insertLink}
             className={"toolbar-item spaced " + (isLink ? "active" : "")}
             aria-label="Insert Link"
             type="button"
           >
             <i className="format link" />
-          </button> */}
-          {/* isLink &&
-            createPortal(<FloatingLinkEditor editor={editor} />, document.body) */}
+          </button>}
+          {isLink &&
+            createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
           <Divider />
           <button
             onClick={() => {

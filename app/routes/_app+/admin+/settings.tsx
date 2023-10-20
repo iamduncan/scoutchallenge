@@ -5,7 +5,7 @@ export default function SettingsPage() {
     <div className="flex h-full flex-col">
       <main className="flex h-full bg-white">
         <div className="h-full w-80 border-r bg-gray-50">
-          <Link to="new" className="block p-4 text-xl text-blue-500">
+          <Link to="./" className="block p-4 text-xl text-blue-500">
             + New Setting
           </Link>
 
@@ -17,7 +17,7 @@ export default function SettingsPage() {
                 className={({ isActive }) =>
                   `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
                 }
-                to="/admin/settings/1"
+                to="./"
               >
                 📝 Setting 1
               </NavLink>

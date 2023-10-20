@@ -1,5 +1,3 @@
-import type { FC } from "react";
-import { NavLink } from "@remix-run/react";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
@@ -10,6 +8,8 @@ import {
   UserGroupIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
+import { NavLink } from "@remix-run/react";
+import  { type FC } from "react";
 import { Header } from "#app/components/common/index.ts";
 import { useUser } from "#app/utils/user.ts";
 

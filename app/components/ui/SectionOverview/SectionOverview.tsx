@@ -6,10 +6,9 @@ import {
   PencilIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import type { Question } from "@prisma/client";
+import { type Question } from "@prisma/client";
 import { Form, Link } from "@remix-run/react";
-import type { MouseEvent } from "react";
-import { useState } from "react";
+import { type MouseEvent, useState } from "react";
 
 type SectionOverviewProps = {
   title: string;
@@ -26,15 +25,14 @@ const SectionOverview = (props: SectionOverviewProps) => {
   const { title, description, questions, challengeId, sectionId, admin } =
     props;
 
-  const [expanded, setExpanded] = useState(false);
+  const [ expanded, setExpanded ] = useState(false);
 
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border-2 bg-white">
       <div
         onClick={() => setExpanded(!expanded)}
-        className={`flex w-full cursor-pointer items-center justify-between bg-gray-50 px-3 py-2 ${
-          expanded ? "border-b border-gray-200" : ""
-        }`}
+        className={`flex w-full cursor-pointer items-center justify-between bg-gray-50 px-3 py-2 ${expanded ? "border-b border-gray-200" : ""
+          }`}
       >
         <h1 className="rounded-lg text-xl font-semibold text-gray-800 md:text-3xl">
           {title}
@@ -69,13 +67,15 @@ const SectionOverview = (props: SectionOverviewProps) => {
                 <div className="flex">
                   <Form
                     method="delete"
-                    action={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
+                    // eslint-disable-next-line remix-react-routes/require-valid-paths
+                    action={`/admin/challenges/${challengeId}/sections+/${sectionId}/questions/${question.id}`}
                   >
                     <button type="submit">
                       <TrashIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
                     </button>
                   </Form>
                   <Link
+                    // eslint-disable-next-line remix-react-routes/require-valid-paths
                     to={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
                   >
                     <PencilIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
@@ -125,7 +125,7 @@ const QuestionUserStatus = (props: {
 };
 
 const AdminMenu = ({ sectionId }: { sectionId: string }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [ menuOpen, setMenuOpen ] = useState(false);
   const onClick = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -136,9 +136,8 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
     <div onClick={onClick} className="relative">
       <Bars3Icon className="h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
       <div
-        className={`absolute right-0 z-50 mt-2 rounded border bg-white ${
-          menuOpen ? "block" : "hidden"
-        }`}
+        className={`absolute right-0 z-50 mt-2 rounded border bg-white ${menuOpen ? "block" : "hidden"
+          }`}
       >
         <ul className="flex flex-col">
           <li className="flex items-center hover:bg-gray-100">

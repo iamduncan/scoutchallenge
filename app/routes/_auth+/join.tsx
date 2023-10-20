@@ -1,20 +1,18 @@
-import { useEffect, useRef } from "react";
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
+import {
+  type ActionFunction,
+  type LoaderFunction,
+  type MetaFunction,
+  json, redirect
 } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { useEffect, useRef } from "react";
 
-import { authSessionStorage } from "#app/utils/session.server.ts";
 
 import { createUser, getUserByEmail } from "#app/models/user.server.ts";
-import { useUser, validateEmail } from "#app/utils/utils.ts";
-
-import FleurDeLisPurple from "~/assets/images/fleur-de-lis-marque-purple.png";
-import { redirectWithToast } from "#app/utils/toast.server.ts";
 import { requireAnonymous } from "#app/utils/auth.server.ts";
+
+import { validateEmail } from '#app/utils/utils.ts';
+import FleurDeLisPurple from "~/assets/images/fleur-de-lis-marque-purple.png";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireAnonymous(request);
@@ -40,7 +38,6 @@ export const action: ActionFunction = async ({ request }) => {
   const first_name = formData.get("first_name");
   const last_name = formData.get("last_name");
   const group = formData.get("group");
-  const redirectTo = formData.get("redirectTo");
 
   if (!validateEmail(email)) {
     return json<ActionData>(
@@ -99,7 +96,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await createUser(
+  await createUser(
     email,
     password,
     first_name,

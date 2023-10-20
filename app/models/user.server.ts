@@ -1,8 +1,8 @@
-import type { Group, Password, Prisma, User } from "@prisma/client";
+import  { type Group, type Password, type Prisma, type User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
-import { prisma } from "#app/utils/db.server.ts";
 import { mg } from "#app/libs/email/config.ts";
+import { prisma } from "#app/utils/db.server.ts";
 
 export type { User, Token } from "@prisma/client";
 

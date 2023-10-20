@@ -1,13 +1,9 @@
-import type {
-  Challenge,
-  ChallengeSection,
-  Question,
-  Role,
-  User,
+import {
+  type Role,
 } from "@prisma/client";
 import { Link, useRouteLoaderData } from "@remix-run/react";
 import { SectionOverview } from "#app/components/ui/index.ts";
-import { loader as challengeLoader } from "../$challengeId.tsx";
+import { type loader as challengeLoader } from "../$challengeId.tsx";
 
 const isAdmin = (roles: Pick<Role, 'name'>[]) =>
   roles.find((role) => role.name === "ADMIN");

@@ -1,26 +1,19 @@
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import { useRef, useState } from "react";
 
-import type { Prisma, User } from "@prisma/client";
-import { ChallengeType } from "@prisma/client";
-import { ChallengeStatus } from "@prisma/client";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import type { EditorState, LexicalEditor } from "lexical";
-import { createChallenge } from "#app/models/challenge.server.ts";
+import { type Prisma, ChallengeType, ChallengeStatus } from "@prisma/client";
+import { type ActionFunction, json, redirect } from "@remix-run/node";
+import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
+import { type EditorState, type LexicalEditor } from "lexical";
+import { useRef, useState } from "react";
 import Editor from "#app/components/ui/Editor/Editor.tsx";
+import { createChallenge } from "#app/models/challenge.server.ts";
 import { getGroupListItems } from "#app/models/group.server.ts";
-import { requireUserId } from '#app/utils/auth.server.ts';
 import { getUserById } from '#app/models/user.server.ts';
+import { requireUserId } from '#app/utils/auth.server.ts';
 import { useUser } from '#app/utils/user.ts';
 
-type LoaderData = {
-  groups: { id: string; name: string }[];
-};
-
-export const loader: LoaderFunction = async () => {
+export const loader = async () => {
   const groups = await getGroupListItems();
-  return json<LoaderData>({ groups });
+  return json({ groups });
 };
 
 function validateName(content: string) {
@@ -106,7 +99,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewChallenge() {
   const user = useUser();
-  const { groups } = useLoaderData<LoaderData>();
+  const { groups } = useLoaderData<typeof loader>();
 
   const nameRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<ActionData>();

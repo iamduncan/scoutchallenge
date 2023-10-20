@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { QuestionData } from "../../types.ts";
+import  { type QuestionData } from "../../types.ts";
 
 /**
  * Create a True or False question component
