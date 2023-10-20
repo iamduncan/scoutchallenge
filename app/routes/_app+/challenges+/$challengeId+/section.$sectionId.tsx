@@ -11,6 +11,7 @@ import {
   AnswerCipher,
   AnswerFillInTheBlank,
   AnswerMultipleChoice,
+  AnswerTrueFalse,
   Button,
 } from "~/components/ui";
 import type { QuestionData } from "~/components/ui/Questions/types";
@@ -45,18 +46,17 @@ export default function ChallengeSectionView() {
         />
       )}
       <Form method="post">
-        {section &&
-          section.questions.map((question) => (
-            <div key={question.id}>
-              <p>{question.title}</p>
-              {question.descriptionHtml && (
-                <div
-                  dangerouslySetInnerHTML={{ __html: question.descriptionHtml }}
-                />
-              )}
-              <QuestionComponent question={question} />
-            </div>
-          ))}
+        {section?.questions.map((question) => (
+          <div key={question.id}>
+            <p>{question.title}</p>
+            {question.descriptionHtml && (
+              <div
+                dangerouslySetInnerHTML={{ __html: question.descriptionHtml }}
+              />
+            )}
+            <QuestionComponent question={question} />
+          </div>
+        ))}
         <Button submit>Submit</Button>
       </Form>
       <div>
@@ -84,6 +84,14 @@ const QuestionComponent = ({ question }: { question: Question }) => {
       return (
         <AnswerMultipleChoice
           questionData={question.data as QuestionData<"MULTIPLECHOICE">}
+          handleUpdate={() => {}}
+          name={question.id}
+        />
+      );
+    case "TRUEFALSE":
+      return (
+        <AnswerTrueFalse
+          questionData={question.data as QuestionData<"TRUEFALSE">}
           handleUpdate={() => {}}
           name={question.id}
         />

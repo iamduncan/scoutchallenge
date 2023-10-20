@@ -23,7 +23,7 @@ export default function NewQuestionPage() {
   }
   const titleRef = useRef<HTMLInputElement>(null);
   const [questionData, setQuestionData] = useState<{
-    question: any;
+    question?: any;
     answer?: any;
   }>();
 
@@ -82,7 +82,7 @@ export default function NewQuestionPage() {
                 onChange={(e) => {
                   setQuestionType(e.target.value as QuestionType);
                 }}
-                className="flex-1 rounded-md border-2 border-slate-700 px-2 text-lg leading-loose focus:border-blue-500 active:border-blue-500"
+                className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
               >
                 <option value={QuestionType.MULTIPLECHOICE}>
                   Multiple Choice
@@ -193,7 +193,7 @@ const QuestionTypeContent = ({
 }: {
   questionType: QuestionType;
   questionData: any;
-  handleUpdate: (data: { question: any; answer?: any }) => void;
+  handleUpdate: (data: { question?: any; answer?: any }) => void;
 }) => {
   switch (questionType) {
     case QuestionType.MULTIPLECHOICE:

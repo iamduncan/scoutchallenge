@@ -225,9 +225,10 @@ model Question {
 }
 
 model Answer {
-  id        String  @id @default(cuid())
-  response  String
-  isCorrect Boolean
+  id                 String   @id @default(cuid())
+  response           String
+  isCorrect          Boolean?
+  requiresValidation Boolean  @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

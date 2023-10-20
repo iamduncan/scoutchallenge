@@ -13,7 +13,6 @@ type MultipleChoiceQuestion = {
 };
 
 type TrueFalseQuestion = {
-  question: string;
   answer: boolean;
 };
 
