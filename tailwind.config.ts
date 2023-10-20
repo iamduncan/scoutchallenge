@@ -1,4 +1,14 @@
-module.exports = {
+import { type Config } from "tailwindcss";
+import { PluginCreator } from "tailwindcss/types/config.js";
+
+const tailwindScrollbar: PluginCreator = function ({ addVariant }) {
+  addVariant("supports-scrollbars", "@supports selector(::-webkit-scrollbar)");
+  addVariant("scrollbar", "&::-webkit-scrollbar");
+  addVariant("scrollbar-track", "&::-webkit-scrollbar-track");
+  addVariant("scrollbar-thumb", "&::-webkit-scrollbar-thumb");
+};
+
+export default {
   content: ["./app/**/*.{ts,tsx,jsx,js}"],
   theme: {
     fontFamily: {
@@ -10,15 +20,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    function ({ addVariant }) {
-      addVariant(
-        "supports-scrollbars",
-        "@supports selector(::-webkit-scrollbar)"
-      );
-      addVariant("scrollbar", "&::-webkit-scrollbar");
-      addVariant("scrollbar-track", "&::-webkit-scrollbar-track");
-      addVariant("scrollbar-thumb", "&::-webkit-scrollbar-thumb");
-    },
-  ],
-};
+  plugins: [tailwindScrollbar],
+} satisfies Config;

@@ -26,27 +26,37 @@ export class GoogleProvider implements AuthProvider {
   getAuthStrategy() {
     return new GoogleStrategy(
       {
-        clientID: "YOUR_CLIENT_ID",
-        clientSecret: "YOUR_CLIENT_SECRET",
-        callbackURL: "https://example.com/auth/google/callback",
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/auth/google/callback",
       },
       async ({ accessToken, refreshToken, extraParams, profile }) => {
         // Get the user data from your DB or API using the tokens and profile
-        return prisma.user.upsert({
+        const user = await prisma.user.upsert({
           create: {
             email: profile.emails[0].value,
-            firstName: profile.name.givenName,
-            lastName: profile.name.familyName,
+            name: profile.displayName,
+            username: profile.displayName.toLowerCase().replace(/\s/g, "-"),
           },
           update: {
             email: profile.emails[0].value,
-            firstName: profile.name.givenName,
-            lastName: profile.name.familyName,
+            name: profile.displayName,
+            username: profile.displayName.toLowerCase().replace(/\s/g, "-"),
           },
           where: {
             email: profile.emails[0].value,
           },
         });
+        if (!user) {
+          throw new Error("Unable to create user");
+        }
+        return {
+          email: user.email,
+          id: profile.id,
+          username: user.username,
+          name: profile.name.givenName,
+          imageUrl: profile.photos[0].value,
+        };
       },
     );
   }

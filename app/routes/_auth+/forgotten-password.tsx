@@ -2,8 +2,8 @@ import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
-import { sendPasswordReset } from "~/models/user.server";
-import { validateEmail } from "~/utils";
+import { sendPasswordReset } from "#app/models/user.server.ts";
+import { validateEmail } from "#app/utils/utils.ts";
 
 interface ActionData {
   errors?: {
@@ -19,7 +19,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (!validateEmail(email)) {
     return json<ActionData>(
       { errors: { email: "Email is invalid" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -28,7 +28,7 @@ export const action: ActionFunction = async ({ request }) => {
   if (!user) {
     return json<ActionData>(
       { errors: { email: "Invalid email" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

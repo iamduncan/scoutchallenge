@@ -2,9 +2,9 @@ import { Form, useActionData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { useEffect, useRef } from "react";
-import { updateUser } from "~/models/user.server";
-import { getUserId } from "~/session.server";
-import { useUser } from "~/utils";
+import { updateUser } from "#app/models/user.server.ts";
+import { useUser } from "#app/utils/user.ts";
+import { requireUserId } from "~/utils/auth.server.ts";
 
 interface ActionData {
   errors?: {
@@ -29,29 +29,29 @@ export const action: ActionFunction = async ({ request }) => {
   if (typeof firstName !== "string") {
     return json<ActionData>(
       { errors: { firstName: "First name is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (typeof lastName !== "string") {
     return json<ActionData>(
       { errors: { lastName: "Last name is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const userId = await getUserId(request);
+  const userId = await requireUserId(request);
   if (typeof userId !== "string") {
     return json<ActionData>(
       {
         formMessage: { type: "error", message: "User is not logged in" },
         errors: {},
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  await updateUser(userId, { firstName, lastName });
+  await updateUser(userId, { name: `${firstName} ${lastName}` });
   return json<ActionData>({
     formMessage: { type: "success", message: "Profile updated" },
   });
@@ -100,7 +100,7 @@ export default function SettingsProfilePage() {
                 type="text"
                 autoComplete="given-name"
                 placeholder="Jane"
-                defaultValue={user.firstName}
+                defaultValue={user.name || ""}
                 aria-invalid={actionData?.errors?.firstName ? true : undefined}
                 aria-describedby="firstName-error"
                 className="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"
@@ -122,7 +122,7 @@ export default function SettingsProfilePage() {
                 type="text"
                 autoComplete="family-name"
                 placeholder="Doe"
-                defaultValue={user.lastName}
+                defaultValue={user.name || ""}
                 aria-invalid={actionData?.errors?.lastName ? true : undefined}
                 aria-describedby="lastName-error"
                 className="focus:shadow-outline w-full appearance-none rounded border py-2 px-3 leading-tight text-gray-700 shadow focus:outline-none"

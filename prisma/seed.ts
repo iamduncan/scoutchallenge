@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
@@ -38,9 +37,13 @@ async function seed() {
           hash: adminHashedPassword,
         },
       },
-      firstName: "Duncan",
-      lastName: "Brown",
-      role: "ADMIN",
+      name: "Duncan Brown",
+      username: "duncanbrown",
+      roles: {
+        create: {
+          name: "ADMIN",
+        },
+      },
     },
   });
 
@@ -52,9 +55,13 @@ async function seed() {
           hash: groupHashedPassword,
         },
       },
-      firstName: "Duncan",
-      lastName: "Brown",
-      role: "GROUPADMIN",
+      name: "Duncan Brown",
+      username: "duncanbrown",
+      roles: {
+        create: {
+          name: "GROUPADMIN",
+        },
+      },
     },
   });
 

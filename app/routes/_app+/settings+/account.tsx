@@ -2,9 +2,10 @@ import { Form, useActionData } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/server-runtime";
 import { useEffect, useRef } from "react";
-import { updateUser } from "~/models/user.server";
-import { getUserId } from "~/session.server";
-import { useUser, validateEmail } from "~/utils";
+import { updateUser } from "#app/models/user.server.ts";
+// import { getUserId } from "~/session.server";
+import { useUser, validateEmail } from "#app/utils/utils.ts";
+import { requireUserId } from "~/utils/auth.server.ts";
 
 interface ActionData {
   errors?: {
@@ -26,15 +27,15 @@ export const action: ActionFunction = async ({ request }) => {
   if (!validateEmail(email)) {
     return json<ActionData>(
       { errors: { email: "Email is invalid" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const userId = await getUserId(request);
+  const userId = await requireUserId(request);
   if (typeof userId !== "string") {
     return json<ActionData>(
       { formMessage: { type: "error", message: "User is not logged in" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

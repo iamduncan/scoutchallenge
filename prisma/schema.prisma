@@ -29,7 +29,7 @@ model User {
   updatedChallenges Challenge[]  @relation(name: "updatedChallenges")
   Session           Session[]
   roles             Role[]
-  connection        Connection[]
+  connections       Connection[]
 }
 
 model UserImage {

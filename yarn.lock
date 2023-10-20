@@ -711,6 +711,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@epic-web/totp@npm:1.1.1":
+  version: 1.1.1
+  resolution: "@epic-web/totp@npm:1.1.1"
+  dependencies:
+    thirty-two: ^1.0.2
+  checksum: caea3d77cfcea3cf876fb1341ce9dc3f68b0a2115d183d2beb676c78ad53074c25b0bf247668d9523b0b57bf45085602a10bb09971477adc3b9b3058144d144a
+  languageName: node
+  linkType: hard
+
 "@esbuild/android-arm64@npm:0.17.6":
   version: 0.17.6
   resolution: "@esbuild/android-arm64@npm:0.17.6"
@@ -1838,6 +1847,17 @@ __metadata:
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
   checksum: 6ad6a00fc4f2f2cfc6bff76fb1d88b8ee20bc0601e18ebb01b6d4be583733a860239a521a7fbca73b612e66705078809483549d2b18f370eb346c5155c8e4a0f
+  languageName: node
+  linkType: hard
+
+"@playwright/test@npm:1.39.0":
+  version: 1.39.0
+  resolution: "@playwright/test@npm:1.39.0"
+  dependencies:
+    playwright: 1.39.0
+  bin:
+    playwright: cli.js
+  checksum: e93e58fc1af4239f239b890374f066c9a758e2492d25e2c1a532f3f00782ab8e7706956a07540fd14882c74e75f5de36273621adce9b79afb8e36e6c15f1d539
   languageName: node
   linkType: hard
 
@@ -3337,6 +3357,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/fs-extra@npm:11.0.3":
+  version: 11.0.3
+  resolution: "@types/fs-extra@npm:11.0.3"
+  dependencies:
+    "@types/jsonfile": "*"
+    "@types/node": "*"
+  checksum: f196bc216906e7016a6c9c549dbe204fe7e1e87515c7e961f741309e25f8e2f8c268dba3dbf0ca7f3ddab5911d39888472f8624ac0c11a461f1b2d05377e38fa
+  languageName: node
+  linkType: hard
+
 "@types/hast@npm:^2.0.0":
   version: 2.3.7
   resolution: "@types/hast@npm:2.3.7"
@@ -3389,6 +3419,15 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/jsonfile@npm:*":
+  version: 6.1.3
+  resolution: "@types/jsonfile@npm:6.1.3"
+  dependencies:
+    "@types/node": "*"
+  checksum: 3f2d0060a567f78b5d666971d5371e72f37294cbfc19069912c76ba9585d209ceb5aac421658f2b3ab922f96b8df53081e9f51d09aef34f2b4882b813a0e0c38
   languageName: node
   linkType: hard
 
@@ -3545,6 +3584,15 @@ __metadata:
     "@types/mime": "*"
     "@types/node": "*"
   checksum: e2e71916d262cac05fa36c3178c3bcc5c0f2fb801f9dc3c4ee58864b7b2bd69b6fb0e312f60e3f19e0ba7206ea57964652a4a3251125121a463acb34dfc9f636
+  languageName: node
+  linkType: hard
+
+"@types/set-cookie-parser@npm:2.4.5":
+  version: 2.4.5
+  resolution: "@types/set-cookie-parser@npm:2.4.5"
+  dependencies:
+    "@types/node": "*"
+  checksum: e07992be515f42634ae618bec3bf1c3a6e9829e38ac1e31158f6fea4bc6e6d297ce5f8074e2066af3554ee724dd87359450a48e2fae0bac5d64367ea9fa04f96
   languageName: node
   linkType: hard
 
@@ -6045,6 +6093,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"enforce-unique@npm:1.2.0":
+  version: 1.2.0
+  resolution: "enforce-unique@npm:1.2.0"
+  checksum: e109ad2e07cc069ee7c7561e2111b441eebb21c76016f827a495a7a57e267ccd411708b835b9891b8bc161fc20a85a95a21706c6085d419211c20e6903a37a8d
+  languageName: node
+  linkType: hard
+
 "enhanced-resolve@npm:^5.12.0":
   version: 5.15.0
   resolution: "enhanced-resolve@npm:5.15.0"
@@ -7538,12 +7593,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fsevents@npm:2.3.2":
+  version: 2.3.2
+  resolution: "fsevents@npm:2.3.2"
+  dependencies:
+    node-gyp: latest
+  checksum: 97ade64e75091afee5265e6956cb72ba34db7819b4c3e94c431d4be2b19b8bb7a2d4116da417950c3425f17c8fe693d25e20212cac583ac1521ad066b77ae31f
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
 "fsevents@npm:~2.3.2, fsevents@npm:~2.3.3":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
     node-gyp: latest
   checksum: 11e6ea6fea15e42461fc55b4b0e4a0a3c654faa567f1877dbd353f39156f69def97a69936d1746619d656c4b93de2238bf731f6085a03a50cabf287c9d024317
+  conditions: os=darwin
+  languageName: node
+  linkType: hard
+
+"fsevents@patch:fsevents@2.3.2#~builtin<compat/fsevents>":
+  version: 2.3.2
+  resolution: "fsevents@patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"
+  dependencies:
+    node-gyp: latest
   conditions: os=darwin
   languageName: node
   linkType: hard
@@ -11340,6 +11414,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.39.0":
+  version: 1.39.0
+  resolution: "playwright-core@npm:1.39.0"
+  bin:
+    playwright-core: cli.js
+  checksum: 556e78dee4f9890facf2af8249972e0d6e01a5ae98737b0f6b0166c660a95ffee4cb79350335b1ef96430a0ef01d3669daae9099fa46c8d403d11c623988238b
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.39.0":
+  version: 1.39.0
+  resolution: "playwright@npm:1.39.0"
+  dependencies:
+    fsevents: 2.3.2
+    playwright-core: 1.39.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 96d8ca5aa25465c1c5d554d0d6071981d55e22477800ff8f5d47a53ca75193d60ece2df538a01b7165b3277dd5493c67603a5acda713029df7fbd95ce2417bc9
+  languageName: node
+  linkType: hard
+
 "postcss-discard-duplicates@npm:^5.1.0":
   version: 5.1.0
   resolution: "postcss-discard-duplicates@npm:5.1.0"
@@ -12653,6 +12751,7 @@ __metadata:
     "@conform-to/react": 0.9.0
     "@conform-to/zod": 0.9.0
     "@epic-web/remember": 1.0.2
+    "@epic-web/totp": 1.1.1
     "@faker-js/faker": 8.2.0
     "@heroicons/react": 2.0.18
     "@lexical/code": 0.12.2
@@ -12669,6 +12768,7 @@ __metadata:
     "@lexical/utils": 0.12.2
     "@nasa-gcn/remix-seo": 2.0.0
     "@paralleldrive/cuid2": 2.2.2
+    "@playwright/test": 1.39.0
     "@prisma/client": 5.4.2
     "@radix-ui/react-checkbox": 1.0.4
     "@radix-ui/react-dropdown-menu": 2.0.6
@@ -12697,11 +12797,13 @@ __metadata:
     "@types/compression": 1.7.4
     "@types/eslint": 8.44.6
     "@types/express": 4.17.20
+    "@types/fs-extra": 11.0.3
     "@types/jsdom": 21.1.4
     "@types/morgan": 1.9.7
     "@types/node": 20.8.7
     "@types/react": 18.2.29
     "@types/react-dom": 18.2.14
+    "@types/set-cookie-parser": 2.4.5
     "@types/source-map-support": 0.5.9
     "@vitejs/plugin-react": 4.1.0
     "@vitest/coverage-c8": 0.33.0
@@ -12725,6 +12827,7 @@ __metadata:
     cz-conventional-changelog: 3.3.0
     cz-customizable: 7.0.0
     dotenv: 16.3.1
+    enforce-unique: 1.2.0
     esbuild: 0.19.5
     eslint: 8.51.0
     eslint-config-prettier: 9.0.0
@@ -12760,6 +12863,7 @@ __metadata:
     remix-auth-google: 1.3.0
     remix-flat-routes: 0.6.1
     remix-utils: 7.1.0
+    set-cookie-parser: 2.6.0
     spin-delay: 1.2.0
     start-server-and-test: 2.0.1
     tailwind-merge: 1.14.0
@@ -12845,7 +12949,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-cookie-parser@npm:^2.4.8":
+"set-cookie-parser@npm:2.6.0, set-cookie-parser@npm:^2.4.8":
   version: 2.6.0
   resolution: "set-cookie-parser@npm:2.6.0"
   checksum: bf11ebc594c53d84588f1b4c04f1b8ce14e0498b1c011b3d76b5c6d5aac481bbc3f7c5260ec4ce99bdc1d9aed19f9fc315e73166a36ca74d0f12349a73f6bdc9
@@ -13653,6 +13757,13 @@ __metadata:
   dependencies:
     any-promise: ^1.0.0
   checksum: 84e1b804bfec49f3531215f17b4a6e50fd4397b5f7c1bccc427b9c656e1ecfb13ea79d899930184f78bc2f57285c54d9a50a590c8868f4f0cef5c1d9f898b05e
+  languageName: node
+  linkType: hard
+
+"thirty-two@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "thirty-two@npm:1.0.2"
+  checksum: f6700b31d16ef942fdc0d14daed8a2f69ea8b60b0e85db8b83adf58d84bbeafe95a17d343ab55efaae571bb5148b62fc0ee12b04781323bf7af7d7e9693eec76
   languageName: node
   linkType: hard
 

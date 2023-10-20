@@ -6,8 +6,7 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
 import * as React from "react";
-import { tokenIsValid, updateUserPassword } from "~/models/user.server";
-import { getUserId } from "~/session.server";
+import { tokenIsValid, updateUserPassword } from "#app/models/user.server.ts";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const token = params.token;
@@ -38,21 +37,21 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (typeof password !== "string") {
     return json<ActionData>(
       { errors: { password: "Password is required" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
       { errors: { password: "Password is too short" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   if (password !== confirmPassword) {
     return json<ActionData>(
       { errors: { confirmPassword: "Passwords do not match" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -60,7 +59,7 @@ export const action: ActionFunction = async ({ request, params }) => {
   if (typeof userId !== "string") {
     return json<ActionData>(
       { errors: { password: "User is not valid" } },
-      { status: 400 }
+      { status: 400 },
     );
   }
   await updateUserPassword(userId, password, validToken.id);
