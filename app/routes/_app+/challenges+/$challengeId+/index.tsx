@@ -10,7 +10,7 @@ const isAdmin = (roles: Pick<Role, 'name'>[]) =>
 
 export default function ChallengeIndex() {
   const data = useRouteLoaderData<typeof challengeLoader>(
-    "routes/__app/challenges/$challengeId",
+    "routes/_app+/challenges+/$challengeId",
   );
   if (!data) throw new Error("No data");
   const { challenge, user } = data;

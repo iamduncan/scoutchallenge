@@ -6,6 +6,7 @@ import { ChallengeHero } from "#app/components/ui/index.ts";
 import { getChallenge } from "#app/models/challenge.server.ts";
 import { getUserById } from '#app/models/user.server.ts';
 import { requireUserId } from '#app/utils/auth.server.ts';
+import { redirectWithToast } from '#app/utils/toast.server.ts';
 
 const isAdminRole = (role: Pick<Role, 'name'>) => (role.name === "ADMIN" || role.name === "GROUPADMIN" || role.name === "SECTIONADMIN");
 const isAdmin = (roles: Pick<Role, 'name'>[]) => roles.some(isAdminRole);
@@ -20,13 +21,18 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
     throw new Response("Not Found", { status: 404 });
   }
   const challenge = await getChallenge({ id: challengeId });
+  console.log(challenge);
   if (
     user &&
     !isAdmin(user.roles) &&
     (challenge.status === ChallengeStatus.DRAFT ||
       challenge.status === ChallengeStatus.DELETED)
   ) {
-    throw redirect("../");
+    throw redirectWithToast("/challenges", {
+      title: "You do not have permission to view this challenge.",
+      description: "Please contact an administrator.",
+      type: "error",
+    });
   }
   return json({
     challenge: {

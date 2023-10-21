@@ -1,5 +1,6 @@
 import lexicalHashtag from "@lexical/hashtag";
 import lexicalHeadless from "@lexical/headless";
+import lexicalHtml from "@lexical/html";
 import { JSDOM } from "jsdom";
 import exampleTheme from "#app/components/ui/Editor/themes/ExampleTheme.ts";
 
@@ -27,8 +28,7 @@ export const generateHTML = (editorState?: string | null) => {
 
   editor.setEditorState(editor.parseEditorState(editorState));
 
-  const $generateHtmlFromNodes =
-    require("@lexical/html").$generateHtmlFromNodes;
+  const $generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
   let html = "";
 
   editor.update(() => {

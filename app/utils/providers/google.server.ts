@@ -36,12 +36,12 @@ export class GoogleProvider implements AuthProvider {
           create: {
             email: profile.emails[0].value,
             name: profile.displayName,
-            username: profile.displayName.toLowerCase().replace(/\s/g, "-"),
+            username: profile.displayName.toLowerCase().replace(/\s/g, "_"),
           },
           update: {
             email: profile.emails[0].value,
             name: profile.displayName,
-            username: profile.displayName.toLowerCase().replace(/\s/g, "-"),
+            username: profile.displayName.toLowerCase().replace(/\s/g, "_"),
           },
           where: {
             email: profile.emails[0].value,
@@ -65,33 +65,37 @@ export class GoogleProvider implements AuthProvider {
     providerId: string,
     { timings }: { timings?: Timings } = {},
   ) {
-    const result = await cachified({
-      key: `connection-data:github:${providerId}`,
-      cache,
-      timings,
-      ttl: 1000 * 60,
-      swr: 1000 * 60 * 60 * 24 * 7,
-      async getFreshValue(context) {
-        await new Promise((r) => setTimeout(r, 3000));
-        const response = await fetch(
-          `https://api.github.com/user/${providerId}`,
-          { headers: { Authorization: `token ${process.env.GITHUB_TOKEN}` } },
-        );
-        const rawJson = await response.json();
-        const result = GoogleUserSchema.safeParse(rawJson);
-        if (!result.success) {
-          // if it was unsuccessful, then we should kick it out of the cache
-          // asap and try again.
-          context.metadata.ttl = 0;
-        }
-        return result;
-      },
-      checkValue: GoogleUserParseResult,
-    });
+    // const result = await cachified({
+    //   key: `connection-data:google:${providerId}`,
+    //   cache,
+    //   timings,
+    //   ttl: 1000 * 60,
+    //   swr: 1000 * 60 * 60 * 24 * 7,
+    //   async getFreshValue(context) {
+    //     await new Promise((r) => setTimeout(r, 3000));
+    //     const response = await fetch(
+    //       "https://www.googleapis.com/oauth2/v3/userinfo",
+    //       { headers: { Authorization: `Bearer ${process.env.GOOGLE_TOKEN}` } },
+    //     );
+    //     const rawJson = await response.json();
+    //     const result = GoogleUserSchema.safeParse(rawJson);
+    //     if (!result.success) {
+    //       // if it was unsuccessful, then we should kick it out of the cache
+    //       // asap and try again.
+    //       context.metadata.ttl = 0;
+    //     }
+    //     return result;
+    //   },
+    //   checkValue: GoogleUserParseResult,
+    // });
+    // return {
+    //   displayName: result.success ? result.data.login : "Unknown",
+    //   link: result.success ? `https://google.com/${result.data.login}` : null,
+    // } as const;
     return {
-      displayName: result.success ? result.data.login : "Unknown",
-      link: result.success ? `https://github.com/${result.data.login}` : null,
-    } as const;
+      displayName: "Unknown",
+      link: null,
+    };
   }
 
   async handleMockAction(request: Request) {
@@ -102,9 +106,9 @@ export class GoogleProvider implements AuthProvider {
     );
     const state = cuid();
     connectionSession.set("oauth2:state", state);
-    const code = "MOCK_CODE_GITHUB_KODY";
+    const code = "MOCK_CODE_GOOGLE_KODY";
     const searchParams = new URLSearchParams({ code, state });
-    throw redirect(`/auth/github/callback?${searchParams}`, {
+    throw redirect(`/auth/google/callback?${searchParams}`, {
       headers: {
         "set-cookie":
           await connectionSessionStorage.commitSession(connectionSession),

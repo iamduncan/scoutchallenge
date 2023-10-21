@@ -6,7 +6,7 @@ import { extendTailwindMerge } from "tailwind-merge";
 import { extendedTheme } from "./extended-theme.ts";
 
 export function getUserImgSrc(imageId?: string | null) {
-  return imageId ? `/resources/user-images/${imageId}` : "/img/user.png";
+  return imageId ? `/resources/user-images/${imageId}` : "/images/user.png";
 }
 
 export function getNoteImgSrc(imageId: string) {
@@ -29,14 +29,14 @@ export function getErrorMessage(error: unknown) {
 
 function formatColors() {
   const colors = [];
-  for (const [key, color] of Object.entries(extendedTheme.colors)) {
+  for (const [ key, color ] of Object.entries(extendedTheme.colors)) {
     if (typeof color === "string") {
       colors.push(key);
     } else {
       const colorGroup = Object.keys(color).map((subKey) =>
         subKey === "DEFAULT" ? "" : subKey,
       );
-      colors.push({ [key]: colorGroup });
+      colors.push({ [ key ]: colorGroup });
     }
   }
   return colors;
@@ -93,12 +93,12 @@ export function getReferrerRoute(request: Request) {
  * Merge multiple headers objects into one (uses set so headers are overridden)
  */
 export function mergeHeaders(
-  ...headers: Array<ResponseInit["headers"] | null | undefined>
+  ...headers: Array<ResponseInit[ "headers" ] | null | undefined>
 ) {
   const merged = new Headers();
   for (const header of headers) {
     if (!header) continue;
-    for (const [key, value] of new Headers(header).entries()) {
+    for (const [ key, value ] of new Headers(header).entries()) {
       merged.set(key, value);
     }
   }
@@ -109,12 +109,12 @@ export function mergeHeaders(
  * Combine multiple header objects into one (uses append so headers are not overridden)
  */
 export function combineHeaders(
-  ...headers: Array<ResponseInit["headers"] | null | undefined>
+  ...headers: Array<ResponseInit[ "headers" ] | null | undefined>
 ) {
   const combined = new Headers();
   for (const header of headers) {
     if (!header) continue;
-    for (const [key, value] of new Headers(header).entries()) {
+    for (const [ key, value ] of new Headers(header).entries()) {
       combined.append(key, value);
     }
   }
@@ -235,8 +235,8 @@ export function useDelayedIsPending({
   formMethod,
   delay = 400,
   minDuration = 300,
-}: Parameters<typeof useIsPending>[0] &
-  Parameters<typeof useSpinDelay>[1] = {}) {
+}: Parameters<typeof useIsPending>[ 0 ] &
+  Parameters<typeof useSpinDelay>[ 1 ] = {}) {
   const isPending = useIsPending({ formAction, formMethod });
   const delayedIsPending = useSpinDelay(isPending, {
     delay,
@@ -258,23 +258,23 @@ function callAll<Args extends Array<unknown>>(
  * "are you sure?" experience for the user before doing destructive operations.
  */
 export function useDoubleCheck() {
-  const [doubleCheck, setDoubleCheck] = useState(false);
+  const [ doubleCheck, setDoubleCheck ] = useState(false);
 
   function getButtonProps(
     props?: React.ButtonHTMLAttributes<HTMLButtonElement>,
   ) {
-    const onBlur: React.ButtonHTMLAttributes<HTMLButtonElement>["onBlur"] =
+    const onBlur: React.ButtonHTMLAttributes<HTMLButtonElement>[ "onBlur" ] =
       () => setDoubleCheck(false);
 
-    const onClick: React.ButtonHTMLAttributes<HTMLButtonElement>["onClick"] =
+    const onClick: React.ButtonHTMLAttributes<HTMLButtonElement>[ "onClick" ] =
       doubleCheck
         ? undefined
         : (e) => {
-            e.preventDefault();
-            setDoubleCheck(true);
-          };
+          e.preventDefault();
+          setDoubleCheck(true);
+        };
 
-    const onKeyUp: React.ButtonHTMLAttributes<HTMLButtonElement>["onKeyUp"] = (
+    const onKeyUp: React.ButtonHTMLAttributes<HTMLButtonElement>[ "onKeyUp" ] = (
       e,
     ) => {
       if (e.key === "Escape") {
@@ -325,7 +325,7 @@ export function useDebounce<
         (...args: Parameters<Callback>) => callbackRef.current(...args),
         delay,
       ),
-    [delay],
+    [ delay ],
   );
 }
 

@@ -1,94 +1,241 @@
+import { conform, useForm } from '@conform-to/react';
+import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import {
-  type ActionFunction,
-  type LoaderFunction,
   type MetaFunction,
-  json, redirect
+  json, redirect, type LoaderFunctionArgs, type DataFunctionArgs
 } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import * as React from "react";
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
+import { HoneypotInputs } from "remix-utils/honeypot/react";
+import { safeRedirect } from 'remix-utils/safe-redirect';
+import { z } from 'zod';
+import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx';
+import { CheckboxField, ErrorList, Field } from '#app/components/forms.tsx';
+import { StatusButton } from '#app/components/ui/status-button.tsx';
+import { getUserId, login, requireAnonymous, sessionKey } from '#app/utils/auth.server.ts';
+import { ProviderConnectionForm, providerNames } from '#app/utils/connections.tsx';
+import { validateCSRF } from '#app/utils/csrf.server.ts';
+import { prisma } from '#app/utils/db.server.ts';
+import { checkHoneypot } from '#app/utils/honeypot.server.ts';
+import { combineResponseInits, invariant, useIsPending } from '#app/utils/misc.tsx';
+import { authSessionStorage } from '#app/utils/session.server.ts';
+import { redirectWithToast } from '#app/utils/toast.server.ts';
+import { PasswordSchema, UsernameSchema } from '#app/utils/user-validation.ts';
+import { verifySessionStorage } from '#app/utils/verification.server.ts';
+import { twoFAVerificationType } from '../_app+/settings+/profile.two-factor.tsx';
+import { type VerifyFunctionArgs, getRedirectToUrl } from './verify.tsx';
 
-import { verifyLogin } from "#app/models/user.server.ts";
-import { requireUserId } from '#app/utils/auth.server.ts';
-import { validateEmail } from "#app/utils/utils.ts";
+const verifiedTimeKey = 'verified-time';
+const unverifiedSessionIdKey = 'unverified-session-id';
+const rememberKey = 'remember';
 
-export const loader: LoaderFunction = async ({ request }) => {
-  await requireUserId(request);
+export async function handleNewSession(
+  {
+    request,
+    session,
+    redirectTo,
+    remember,
+  }: {
+    request: Request;
+    session: { userId: string; id: string; expirationDate: Date };
+    redirectTo?: string;
+    remember: boolean;
+  },
+  responseInit?: ResponseInit,
+) {
+  const verification = await prisma.verification.findUnique({
+    select: { id: true },
+    where: {
+      target_type: { target: session.userId, type: twoFAVerificationType },
+    },
+  })
+  const userHasTwoFactor = Boolean(verification);
+
+  if (userHasTwoFactor) {
+    const verifySession = await verifySessionStorage.getSession();
+    verifySession.set(unverifiedSessionIdKey, session.id);
+    verifySession.set(rememberKey, remember);
+    const redirectUrl = getRedirectToUrl({
+      request,
+      type: twoFAVerificationType,
+      target: session.userId,
+      redirectTo,
+    });
+    return redirect(
+      `${redirectUrl}?${redirectUrl.searchParams}`,
+      combineResponseInits(
+        {
+          headers: {
+            'set-cookie': await verifySessionStorage.commitSession(verifySession),
+          },
+        },
+        responseInit,
+      ),
+    );
+  } else {
+    const authSession = await authSessionStorage.getSession(
+      request.headers.get('cookie'),
+    );
+    authSession.set(sessionKey, session.id);
+    return redirect(
+      safeRedirect(redirectTo || '/challenges'),
+      combineResponseInits(
+        {
+          headers: {
+            'set-cookie': await authSessionStorage.commitSession(authSession, {
+              expires: remember ? session.expirationDate : undefined,
+            }),
+          },
+        },
+        responseInit,
+      ),
+    )
+  }
+}
+
+export async function handleVerification({
+  request,
+  submission,
+}: VerifyFunctionArgs) {
+  invariant(submission.value, 'Submission value should have a value');
+  const authSession = await authSessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+  const verifySession = await verifySessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+
+  const remember = verifySession.get(rememberKey);
+  const { redirectTo } = submission.value;
+  const headers = new Headers();
+  authSession.set(verifiedTimeKey, Date.now());
+
+  const unverifiedSessionId = verifySession.get(unverifiedSessionIdKey);
+  if (unverifiedSessionId) {
+    const session = await prisma.session.findUnique({
+      select: { expirationDate: true },
+      where: { id: unverifiedSessionId },
+    });
+    if (!session) {
+      throw await redirectWithToast('/login', {
+        type: 'error',
+        title: 'Invalid session',
+        description: 'Could not find the session to verify. Please try again.',
+      });
+    }
+    authSession.set(sessionKey, unverifiedSessionId);
+
+    headers.append(
+      'set-cookie',
+      await authSessionStorage.commitSession(authSession, {
+        expires: remember ? session.expirationDate : undefined,
+      }),
+    );
+  } else {
+
+    headers.append(
+      'set-cookie',
+      await verifySessionStorage.destroySession(verifySession),
+    );
+
+    return redirect(safeRedirect(redirectTo), { headers });
+  }
+}
+
+export async function shouldRequestTwoFA(request: Request) {
+  const authSession = await authSessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+  const verifySession = await verifySessionStorage.getSession(
+    request.headers.get('cookie'),
+  );
+  if (verifySession.has(unverifiedSessionIdKey)) return true;
+  const userId = await getUserId(request);
+  if (!userId) return false;
+  const userHasTwoFA = await prisma.verification.findUnique({
+    select: { id: true },
+    where: {
+      target_type: { target: userId, type: twoFAVerificationType },
+    },
+  });
+  if (!userHasTwoFA) return false;
+  const verifiedTime = authSession.get(verifiedTimeKey) ?? new Date(0);
+  const twoHours = 2 * 60 * 60 * 1000;
+  return Date.now() - verifiedTime.getTime() > twoHours;
+}
+
+const LoginFormSchema = z.object({
+  username: UsernameSchema,
+  password: PasswordSchema,
+  redirectTo: z.string().optional(),
+  remember: z.boolean().optional(),
+});
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  await requireAnonymous(request);
   return json({});
 };
 
-interface ActionData {
-  errors?: {
-    email?: string;
-    password?: string;
-  };
-}
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
+  await requireAnonymous(request);
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
+  await validateCSRF(formData, request.headers);
+  checkHoneypot(formData);
+  const submission = await parse(formData, {
+    schema: intent => LoginFormSchema.transform(async (data, ctx) => {
+      if (intent !== 'submit') return { ...data, session: null };
 
-  if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400 },
-    );
+      const session = await login(data);
+      if (!session) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid username or password',
+        });
+        return z.NEVER;
+      }
+
+      return { ...data, session };
+    }),
+    async: true,
+  });
+  // remove the password from the payload before we send it to the client
+  delete submission.payload.password;
+
+  if (submission.intent !== 'submit') {
+    // @ts-expect-error
+    delete submission.value?.password;
+    return json({ status: 'idle', submission } as const, { status: 400 });
+  }
+  if (!submission.value?.session) {
+    return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  if (typeof password !== "string") {
-    return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400 },
-    );
-  }
+  const { session, remember, redirectTo } = submission.value;
 
-  if (password.length < 8) {
-    return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400 },
-    );
-  }
-
-  const user = await verifyLogin(email, password);
-
-  if (!user) {
-    return json<ActionData>(
-      { errors: { email: "Invalid email or password" } },
-      { status: 400 },
-    );
-  }
-
-  return redirect("/");
-  // return createUserSession({
-  //   request,
-  //   userId: user.id,
-  //   remember: remember === "on" ? true : false,
-  //   redirectTo: typeof redirectTo === "string" ? redirectTo : "/challenges",
-  // });
-};
-
-export const meta: MetaFunction = () => {
-  return [
-    {
-      title: "Login",
-    },
-  ];
+  return handleNewSession({
+    request,
+    session,
+    remember: remember ?? false,
+    redirectTo,
+  });
 };
 
 export default function LoginPage() {
+  const actionData = useActionData<typeof action>();
+  const isPending = useIsPending();
   const [ searchParams ] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/challenges";
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [ actionData ]);
+  const [ form, fields ] = useForm({
+    id: 'login-form',
+    constraint: getFieldsetConstraint(LoginFormSchema),
+    defaultValue: { redirectTo },
+    lastSubmission: actionData?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: LoginFormSchema })
+    },
+    shouldRevalidate: 'onBlur',
+  });
 
   return (
     <div className="flex min-h-full flex-col justify-center">
@@ -131,84 +278,57 @@ export default function LoginPage() {
             </div>
           </div>
         )}
-        <Form method="post" className="space-y-6" noValidate>
+        <Form method="post" className="space-y-6" {...form.props}>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
             <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
+              <AuthenticityTokenInput />
+              <HoneypotInputs />
+              <Field
+                labelProps={{ children: 'Username' }}
+                inputProps={{
+                  ...conform.input(fields.username),
+                  autoFocus: true,
+                  className: 'lowercase',
+                }}
+                errors={fields.username.errors}
               />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              )}
             </div>
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.password && (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              )}
-            </div>
+            <Field
+              labelProps={{ children: 'Password' }}
+              inputProps={conform.input(fields.password, { type: 'password' })}
+              errors={fields.password.errors}
+            />
           </div>
           <div>
             <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              <CheckboxField
+                labelProps={{
+                  htmlFor: fields.remember.id,
+                  children: 'Remember me',
+                }}
+                buttonProps={conform.input(fields.remember, {
+                  type: 'checkbox',
+                })}
+                errors={fields.remember.errors}
               />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
             </div>
           </div>
 
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+          <input {...conform.input(fields.redirectTo, { type: 'hidden' })} />
+          <ErrorList errors={form.errors} id={form.errorId} />
+
+          <StatusButton
+            className='w-full'
+            status={isPending ? 'pending' : actionData?.status ?? 'idle'}
+            type='submit'
+            disabled={isPending}
           >
             Log in
-          </button>
+          </StatusButton>
+
           <div className="flex items-center justify-between">
             <div className="text-center text-sm text-gray-500">
               <Link
@@ -232,6 +352,17 @@ export default function LoginPage() {
             </div>
           </div>
         </Form>
+        <ul className="mt-5 flex flex-col gap-5 border-b-2 border-t-2 border-border py-3">
+          {providerNames.map(providerName => (
+            <li key={providerName}>
+              <ProviderConnectionForm
+                type="Login"
+                providerName={providerName}
+                redirectTo={redirectTo}
+              />
+            </li>
+          ))}
+        </ul>
       </div>
       <div className="absolute top-4 left-4">
         <Link to="/" className="hover:text-blue-500 hover:underline">
@@ -240,4 +371,12 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+export const meta: MetaFunction = () => {
+  return [ { title: "Login", } ];
+};
+
+export function ErrorBoundary() {
+  return <GeneralErrorBoundary />;
 }

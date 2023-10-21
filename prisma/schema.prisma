@@ -27,7 +27,7 @@ model User {
   tokens            Token[]
   createdChallenges Challenge[]  @relation(name: "createdChallenges")
   updatedChallenges Challenge[]  @relation(name: "updatedChallenges")
-  Session           Session[]
+  sessions          Session[]
   roles             Role[]
   connections       Connection[]
 }
@@ -145,9 +145,9 @@ model Group {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users     User[]
-  Section   Section[]
-  Challenge Challenge[]
+  users      User[]
+  sections   Section[]
+  challenges Challenge[]
 }
 
 model Section {
