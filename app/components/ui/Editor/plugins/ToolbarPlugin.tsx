@@ -1,47 +1,61 @@
-import {
-  $createCodeNode,
-  $isCodeNode,
-  getDefaultCodeLanguage,
-  getCodeLanguages,
-} from "@lexical/code";
-import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
-import {
-  INSERT_ORDERED_LIST_COMMAND,
-  INSERT_UNORDERED_LIST_COMMAND,
-  REMOVE_LIST_COMMAND,
-  $isListNode,
-} from "@lexical/list";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
-import {
-  $createHeadingNode,
-  $createQuoteNode,
-  $isHeadingNode,
-} from "@lexical/rich-text";
-import {
-  $wrapNodes,
-  $isAtNodeEnd,
-} from "@lexical/selection";
-import { mergeRegister } from "@lexical/utils";
-import {
+import lexicalCode from "@lexical/code";
+import lexicalLink from "@lexical/link";
+import lexicalList from "@lexical/list";
+import lexicalComposer from "@lexical/react/LexicalComposerContext.js";
+import lexicalRichText from "@lexical/rich-text";
+import lexicalSelection from "@lexical/selection";
+import lexicalUtils from "@lexical/utils";
+import lexicalLexical, {
   type GridSelection,
   type LexicalEditor,
   type NodeSelection,
   type RangeSelection,
-
-  CAN_REDO_COMMAND,
-  CAN_UNDO_COMMAND,
-  REDO_COMMAND,
-  UNDO_COMMAND,
-  SELECTION_CHANGE_COMMAND,
-  FORMAT_TEXT_COMMAND,
-  FORMAT_ELEMENT_COMMAND,
-  $getSelection,
-  $isRangeSelection,
-  $createParagraphNode,
-  $getNodeByKey
 } from "lexical";
-import { type MutableRefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
+
+const $createCodeNode = lexicalCode.$createCodeNode;
+const $isCodeNode = lexicalCode.$isCodeNode;
+const getDefaultCodeLanguage = lexicalCode.getDefaultCodeLanguage;
+const getCodeLanguages = lexicalCode.getCodeLanguages;
+
+const CAN_REDO_COMMAND = lexicalLexical.CAN_REDO_COMMAND;
+const CAN_UNDO_COMMAND = lexicalLexical.CAN_UNDO_COMMAND;
+const REDO_COMMAND = lexicalLexical.REDO_COMMAND;
+const UNDO_COMMAND = lexicalLexical.UNDO_COMMAND;
+const SELECTION_CHANGE_COMMAND = lexicalLexical.SELECTION_CHANGE_COMMAND;
+const FORMAT_TEXT_COMMAND = lexicalLexical.FORMAT_TEXT_COMMAND;
+const FORMAT_ELEMENT_COMMAND = lexicalLexical.FORMAT_ELEMENT_COMMAND;
+const $getSelection = lexicalLexical.$getSelection;
+const $isRangeSelection = lexicalLexical.$isRangeSelection;
+const $createParagraphNode = lexicalLexical.$createParagraphNode;
+const $getNodeByKey = lexicalLexical.$getNodeByKey;
+
+const INSERT_ORDERED_LIST_COMMAND = lexicalList.INSERT_ORDERED_LIST_COMMAND;
+const INSERT_UNORDERED_LIST_COMMAND = lexicalList.INSERT_UNORDERED_LIST_COMMAND;
+const REMOVE_LIST_COMMAND = lexicalList.REMOVE_LIST_COMMAND;
+const $isListNode = lexicalList.$isListNode;
+
+const $createHeadingNode = lexicalRichText.$createHeadingNode;
+const $createQuoteNode = lexicalRichText.$createQuoteNode;
+const $isHeadingNode = lexicalRichText.$isHeadingNode;
+
+const $isLinkNode = lexicalLink.$isLinkNode;
+const TOGGLE_LINK_COMMAND = lexicalLink.TOGGLE_LINK_COMMAND;
+
+const $wrapNodes = lexicalSelection.$wrapNodes;
+const $isAtNodeEnd = lexicalSelection.$isAtNodeEnd;
+
+const useLexicalComposerContext = lexicalComposer.useLexicalComposerContext;
+
+const mergeRegister = lexicalUtils.mergeRegister;
 
 const LowPriority = 1;
 
@@ -88,9 +102,9 @@ export function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
   const editorRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const mouseDownRef = useRef(false);
-  const [ linkUrl, setLinkUrl ] = useState("");
-  const [ isEditMode, setEditMode ] = useState(false);
-  const [ lastSelection, setLastSelection ] = useState<
+  const [linkUrl, setLinkUrl] = useState("");
+  const [isEditMode, setEditMode] = useState(false);
+  const [lastSelection, setLastSelection] = useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
 
@@ -147,7 +161,7 @@ export function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
     }
 
     return true;
-  }, [ editor ]);
+  }, [editor]);
 
   useEffect(() => {
     return mergeRegister(
@@ -163,22 +177,22 @@ export function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
           updateLinkEditor();
           return true;
         },
-        LowPriority
-      )
+        LowPriority,
+      ),
     );
-  }, [ editor, updateLinkEditor ]);
+  }, [editor, updateLinkEditor]);
 
   useEffect(() => {
     editor.getEditorState().read(() => {
       updateLinkEditor();
     });
-  }, [ editor, updateLinkEditor ]);
+  }, [editor, updateLinkEditor]);
 
   useEffect(() => {
     if (isEditMode && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [ isEditMode ]);
+  }, [isEditMode]);
 
   return (
     <div ref={editorRef} className="link-editor">
@@ -278,7 +292,7 @@ function BlockOptionsDropdownList({
       dropDown.style.top = `${top + 8}px`;
       dropDown.style.left = `${left + 50}px`;
     }
-  }, [ dropDownRef, toolbarRef ]);
+  }, [dropDownRef, toolbarRef]);
 
   useEffect(() => {
     const dropDown = dropDownRef.current;
@@ -298,7 +312,7 @@ function BlockOptionsDropdownList({
         document.removeEventListener("click", handle);
       };
     }
-  }, [ dropDownRef, setShowBlockOptionsDropDown, toolbarRef ]);
+  }, [dropDownRef, setShowBlockOptionsDropDown, toolbarRef]);
 
   const formatParagraph = () => {
     if (blockType !== "paragraph") {
@@ -433,24 +447,24 @@ const command = () => {
 };
 
 export default function ToolbarPlugin() {
-  const [ editor ] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
-  const [ canUndo, setCanUndo ] = useState<boolean | unknown>(false);
-  const [ canRedo, setCanRedo ] = useState<boolean | unknown>(false);
-  const [ blockType, setBlockType ] =
+  const [canUndo, setCanUndo] = useState<boolean | unknown>(false);
+  const [canRedo, setCanRedo] = useState<boolean | unknown>(false);
+  const [blockType, setBlockType] =
     useState<keyof typeof blockTypeToBlockName>("paragraph");
-  const [ selectedElementKey, setSelectedElementKey ] = useState<string | null>(
-    null
+  const [selectedElementKey, setSelectedElementKey] = useState<string | null>(
+    null,
   );
-  const [ showBlockOptionsDropDown, setShowBlockOptionsDropDown ] =
+  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] =
     useState(false);
-  const [ codeLanguage, setCodeLanguage ] = useState("");
-  const [ isLink, setIsLink ] = useState(false);
-  const [ isBold, setIsBold ] = useState(false);
-  const [ isItalic, setIsItalic ] = useState(false);
-  const [ isUnderline, setIsUnderline ] = useState(false);
-  const [ isStrikethrough, setIsStrikethrough ] = useState(false);
-  const [ isCode, setIsCode ] = useState(false);
+  const [codeLanguage, setCodeLanguage] = useState("");
+  const [isLink, setIsLink] = useState(false);
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+  const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isCode, setIsCode] = useState(false);
 
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
@@ -495,7 +509,7 @@ export default function ToolbarPlugin() {
         setIsLink(false);
       }
     }
-  }, [ editor ]);
+  }, [editor]);
 
   useEffect(() => {
     return mergeRegister(
@@ -510,7 +524,7 @@ export default function ToolbarPlugin() {
           updateToolbar();
           return false;
         },
-        LowPriority
+        LowPriority,
       ),
       editor.registerCommand(
         CAN_UNDO_COMMAND,
@@ -518,7 +532,7 @@ export default function ToolbarPlugin() {
           setCanUndo(payload);
           return false;
         },
-        LowPriority
+        LowPriority,
       ),
       editor.registerCommand(
         CAN_REDO_COMMAND,
@@ -526,10 +540,10 @@ export default function ToolbarPlugin() {
           setCanRedo(payload);
           return false;
         },
-        LowPriority
-      )
+        LowPriority,
+      ),
     );
-  }, [ editor, updateToolbar ]);
+  }, [editor, updateToolbar]);
 
   const codeLanguges = useMemo(() => getCodeLanguages(), []);
   const onCodeLanguageSelect = useCallback(
@@ -543,7 +557,7 @@ export default function ToolbarPlugin() {
         }
       });
     },
-    [ editor, selectedElementKey ]
+    [editor, selectedElementKey],
   );
 
   const insertLink = useCallback(() => {
@@ -552,7 +566,7 @@ export default function ToolbarPlugin() {
     } else {
       editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
-  }, [ editor, isLink ]);
+  }, [editor, isLink]);
 
   return (
     <div className="toolbar" ref={toolbarRef}>
@@ -590,7 +604,7 @@ export default function ToolbarPlugin() {
             type="button"
           >
             <span className={"icon block-type " + blockType} />
-            <span className="text">{blockTypeToBlockName[ blockType ]}</span>
+            <span className="text">{blockTypeToBlockName[blockType]}</span>
             <i className="chevron-down" />
           </button>
           {showBlockOptionsDropDown &&
@@ -601,7 +615,7 @@ export default function ToolbarPlugin() {
                 toolbarRef={toolbarRef}
                 setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
               />,
-              document.body
+              document.body,
             )}
           <Divider />
         </>
@@ -670,14 +684,16 @@ export default function ToolbarPlugin() {
           >
             <i className="format code" />
           </button>
-          {<button
-            onClick={insertLink}
-            className={"toolbar-item spaced " + (isLink ? "active" : "")}
-            aria-label="Insert Link"
-            type="button"
-          >
-            <i className="format link" />
-          </button>}
+          {
+            <button
+              onClick={insertLink}
+              className={"toolbar-item spaced " + (isLink ? "active" : "")}
+              aria-label="Insert Link"
+              type="button"
+            >
+              <i className="format link" />
+            </button>
+          }
           {isLink &&
             createPortal(<FloatingLinkEditor editor={editor} />, document.body)}
           <Divider />

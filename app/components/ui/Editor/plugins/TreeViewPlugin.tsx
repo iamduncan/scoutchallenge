@@ -1,8 +1,11 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext.js";
-import { TreeView } from "@lexical/react/LexicalTreeView.js";
+import lexicalComposer from "@lexical/react/LexicalComposerContext.js";
+import lexicalTreeView from "@lexical/react/LexicalTreeView.js";
 
 export default function TreeViewPlugin() {
-  const [ editor ] = useLexicalComposerContext();
+  const useLexicalComposerContext = lexicalComposer.useLexicalComposerContext;
+  const [editor] = useLexicalComposerContext();
+  const TreeView = lexicalTreeView.TreeView;
+
   return (
     <TreeView
       viewClassName="tree-view-output rounded-b-md"

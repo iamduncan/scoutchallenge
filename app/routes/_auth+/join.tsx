@@ -2,17 +2,17 @@ import {
   type ActionFunction,
   type LoaderFunction,
   type MetaFunction,
-  json, redirect
+  json,
+  redirect,
 } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
-
+import FleurDeLisPurple from "#app/assets/images/fleur-de-lis-marque-purple.png";
 import { createUser, getUserByEmail } from "#app/models/user.server.ts";
 import { requireAnonymous } from "#app/utils/auth.server.ts";
 
-import { validateEmail } from '#app/utils/utils.ts';
-import FleurDeLisPurple from "~/assets/images/fleur-de-lis-marque-purple.png";
+import { validateEmail } from "#app/utils/utils.ts";
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireAnonymous(request);
@@ -96,14 +96,7 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  await createUser(
-    email,
-    password,
-    first_name,
-    last_name,
-    group,
-    "GROUPADMIN",
-  );
+  await createUser(email, password, first_name, last_name, group, "GROUPADMIN");
 
   return redirect("/login");
   // return createUserSession({
@@ -123,7 +116,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Join() {
-  const [ searchParams ] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData() as ActionData;
   const emailRef = useRef<HTMLInputElement>(null);
@@ -141,7 +134,7 @@ export default function Join() {
     } else if (actionData?.errors?.group) {
       groupRef.current?.focus();
     }
-  }, [ actionData ]);
+  }, [actionData]);
 
   return (
     <div

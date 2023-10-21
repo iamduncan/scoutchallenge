@@ -1,4 +1,6 @@
-import { AutoLinkPlugin as LexicalAutoLinkPlugin } from "@lexical/react/LexicalAutoLinkPlugin.js";
+import lexicalAutoLink from "@lexical/react/LexicalAutoLinkPlugin.js";
+
+const LexicalAutoLinkPlugin = lexicalAutoLink.AutoLinkPlugin;
 
 const URL_MATCHER =
   /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
@@ -12,9 +14,9 @@ const MATCHERS = [
     return (
       match && {
         index: match.index,
-        length: match[ 0 ].length,
-        text: match[ 0 ],
-        url: match[ 0 ],
+        length: match[0].length,
+        text: match[0],
+        url: match[0],
       }
     );
   },
@@ -23,9 +25,9 @@ const MATCHERS = [
     return (
       match && {
         index: match.index,
-        length: match[ 0 ].length,
-        text: match[ 0 ],
-        url: `mailto:${match[ 0 ]}`,
+        length: match[0].length,
+        text: match[0],
+        url: `mailto:${match[0]}`,
       }
     );
   },

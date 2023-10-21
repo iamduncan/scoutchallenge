@@ -1,10 +1,12 @@
-import { HashtagNode } from "@lexical/hashtag";
-import { createHeadlessEditor } from "@lexical/headless";
-import { $generateHtmlFromNodes } from "@lexical/html";
+import lexicalHashtag from "@lexical/hashtag";
+import lexicalHeadless from "@lexical/headless";
 import { JSDOM } from "jsdom";
 import exampleTheme from "#app/components/ui/Editor/themes/ExampleTheme.ts";
 
 export const generateHTML = (editorState?: string | null) => {
+  const HashtagNode = lexicalHashtag.HashtagNode;
+  const createHeadlessEditor = lexicalHeadless.createHeadlessEditor;
+
   if (!editorState) {
     return "";
   }
@@ -15,7 +17,7 @@ export const generateHTML = (editorState?: string | null) => {
   global.DocumentFragment = dom.window.DocumentFragment;
 
   const editor = createHeadlessEditor({
-    onError: (error) => {
+    onError: (error: any) => {
       console.error(error);
     },
     nodes: [HashtagNode],
@@ -25,6 +27,8 @@ export const generateHTML = (editorState?: string | null) => {
 
   editor.setEditorState(editor.parseEditorState(editorState));
 
+  const $generateHtmlFromNodes =
+    require("@lexical/html").$generateHtmlFromNodes;
   let html = "";
 
   editor.update(() => {

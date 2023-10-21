@@ -1,8 +1,8 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { Form, Link, NavLink } from "@remix-run/react";
 import { useState } from "react";
-import { Logo } from "#app/components/icons/index.js";
-import { menuItems } from "#app/config.js";
+import { Logo } from "#app/components/icons/index.ts";
+import { menuItems } from "#app/config.ts";
 
 type Props = {
   user: {
@@ -24,17 +24,18 @@ type Props = {
         access: string;
       }[];
     }[];
-  }
+  };
   admin?: boolean;
 };
 
 export default function Header(props: Props) {
   const { user, admin } = props;
-  const [ isOpen, setIsOpen ] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <header
-      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${!admin && "md:pb-16"
-        }`}
+      className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
+        !admin && "md:pb-16"
+      }`}
     >
       <div className="flex w-full items-center justify-between">
         <Link to="/" className="title-font text-gray-100 md:mb-0">
@@ -51,8 +52,9 @@ export default function Header(props: Props) {
         </div>
       </div>
       <nav
-        className={`${!isOpen && "hidden"
-          } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
+        className={`${
+          !isOpen && "hidden"
+        } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
       >
         <div className="flex- flex items-center justify-between px-3 py-2">
           <Logo className="h-12 w-12 rounded-full bg-purple-600 p-2 text-gray-100" />
@@ -74,7 +76,12 @@ export default function Header(props: Props) {
               if (!item.forAdmin) {
                 return true;
               }
-              return user.roles.some((role) => role.name === "ADMIN" || role.name === "GROUPADMIN" || role.name === "SECTIONADMIN");
+              return user.roles.some(
+                (role) =>
+                  role.name === "ADMIN" ||
+                  role.name === "GROUPADMIN" ||
+                  role.name === "SECTIONADMIN",
+              );
             })
             .map((item) => (
               <li key={item.id} className="w-full">
