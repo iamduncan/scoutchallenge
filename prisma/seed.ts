@@ -138,7 +138,7 @@ async function seed() {
     }),
   });
 
-  const googleUser = await insertGoogleUser('MOCK_CODE_GITHUB_KODY');
+  const googleUser = await insertGoogleUser('MOCK_CODE_GOOGLE_KODY');
 
   await prisma.user.create({
     select: { id: true },
@@ -146,6 +146,7 @@ async function seed() {
       email: 'kody@kcd.dev',
       username: 'kody',
       name: 'Kody',
+      image: { create: kodyImages.kodyUser },
       password: { create: createPassword('kodylovesyou') },
       connections: {
         create: { providerName: 'google', providerId: googleUser.id },
@@ -257,11 +258,12 @@ async function seed() {
   console.timeEnd(`🌱 Database has been seeded`);
 }
 
-seed()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+async function main() {
+  await seed();
+  await prisma.$disconnect();
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

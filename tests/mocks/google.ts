@@ -72,15 +72,15 @@ async function setGitHubUsers(users: Array<GoogleUser>) {
 }
 
 export async function insertGoogleUser(code?: string | null) {
-  const githubUsers = await getGoogleUsers();
-  let user = githubUsers.find((u) => u.id === code);
+  const googleUsers = await getGoogleUsers();
+  let user = googleUsers.find((u) => u.id === code);
   if (user) {
     Object.assign(user, createGoogleUser(code));
   } else {
     user = createGoogleUser(code);
-    githubUsers.push(user);
+    googleUsers.push(user);
   }
-  await setGitHubUsers(githubUsers);
+  await setGitHubUsers(googleUsers);
   return user;
 }
 
@@ -96,7 +96,6 @@ async function getUser(request: Request) {
   const user = googleUsers.find((u) => {
     return u.id === accessToken;
   });
-  // console.log("user", user);
 
   if (!user) {
     return new Response('Not Found', { status: 404 });
