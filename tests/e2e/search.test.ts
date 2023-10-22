@@ -1,8 +1,9 @@
 import { invariant } from '#app/utils/misc.tsx';
 import { expect, test } from '#tests/playwright-utils.ts';
 
-test('Search from home page', async ({ page, insertNewUser }) => {
+test('Search from home page', async ({ page, insertNewUser, login }) => {
   const newUser = await insertNewUser();
+  await login(newUser);
   await page.goto('/');
 
   await page.getByRole('searchbox', { name: /search/i }).fill(newUser.username);
