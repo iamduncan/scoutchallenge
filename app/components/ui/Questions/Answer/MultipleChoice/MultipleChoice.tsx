@@ -1,13 +1,13 @@
-import  { type QuestionData } from "../../types.ts";
+import { type QuestionData } from '../../types.ts';
 
 const MultipleChoice = ({
   questionData,
   name,
   handleUpdate,
 }: {
-  questionData: QuestionData<"MULTIPLECHOICE">;
+  questionData: QuestionData<'MULTIPLECHOICE'>;
   name: string;
-  handleUpdate: (data: QuestionData<"MULTIPLECHOICE">) => void;
+  handleUpdate: (data: QuestionData<'MULTIPLECHOICE'>) => void;
 }) => {
   return (
     <>

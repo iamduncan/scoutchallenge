@@ -1,8 +1,8 @@
-import { Form, useActionData } from "@remix-run/react";
-import  { type ActionFunction , json } from "@remix-run/server-runtime";
-import { useEffect, useRef } from "react";
-import { updateUserPassword } from "#app/models/user.server.ts";
-import { getUserId } from "#app/utils/auth.server.ts";
+import { Form, useActionData } from '@remix-run/react';
+import { type ActionFunction, json } from '@remix-run/server-runtime';
+import { useEffect, useRef } from 'react';
+import { updateUserPassword } from '#app/models/user.server.ts';
+import { getUserId } from '#app/utils/auth.server.ts';
 
 interface ActionData {
   errors: {
@@ -14,48 +14,48 @@ interface ActionData {
     confirmPassword?: string;
   };
   formMessage?: {
-    type: "success" | "error";
+    type: 'success' | 'error';
     message: string;
   };
 }
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const password = formData.get("password");
-  const confirmPassword = formData.get("confirmPassword");
+  const password = formData.get('password');
+  const confirmPassword = formData.get('confirmPassword');
 
-  if (typeof password !== "string") {
+  if (typeof password !== 'string') {
     return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400 }
+      { errors: { password: 'Password is required' } },
+      { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400 }
+      { errors: { password: 'Password is too short' } },
+      { status: 400 },
     );
   }
 
   if (password !== confirmPassword) {
     return json<ActionData>(
-      { errors: { confirmPassword: "Passwords do not match" } },
-      { status: 400 }
+      { errors: { confirmPassword: 'Passwords do not match' } },
+      { status: 400 },
     );
   }
 
   const userId = await getUserId(request);
-  if (typeof userId !== "string") {
+  if (typeof userId !== 'string') {
     return json<ActionData>(
-      { errors: { password: "User is not logged in" } },
-      { status: 400 }
+      { errors: { password: 'User is not logged in' } },
+      { status: 400 },
     );
   }
   await updateUserPassword(userId, password);
   return json({
-    fields: { password: "", confirmPassword: "" },
-    formMessage: { type: "success", message: "Password updated" },
+    fields: { password: '', confirmPassword: '' },
+    formMessage: { type: 'success', message: 'Password updated' },
   });
 };
 
@@ -71,16 +71,16 @@ export default function SettingsSecurityPage() {
       confirmPasswordRef.current?.focus();
     }
 
-    if (actionData?.fields?.password === "" && passwordRef.current) {
-      passwordRef.current.value = "";
+    if (actionData?.fields?.password === '' && passwordRef.current) {
+      passwordRef.current.value = '';
     }
     if (
-      actionData?.fields?.confirmPassword === "" &&
+      actionData?.fields?.confirmPassword === '' &&
       confirmPasswordRef.current
     ) {
-      confirmPasswordRef.current.value = "";
+      confirmPasswordRef.current.value = '';
     }
-  }, [ actionData ]);
+  }, [actionData]);
 
   return (
     <>
@@ -93,10 +93,11 @@ export default function SettingsSecurityPage() {
         <Form method="post">
           {actionData?.formMessage && (
             <div
-              className={`mb-2 w-1/2 ${actionData.formMessage.type === "success"
-                  ? "border-l-4 border-green-500 bg-green-100 px-4 py-2 text-green-700"
-                  : "border-l-4 border-red-500 bg-red-100 px-4 py-2 text-red-700"
-                }`}
+              className={`mb-2 w-1/2 ${
+                actionData.formMessage.type === 'success'
+                  ? 'border-l-4 border-green-500 bg-green-100 px-4 py-2 text-green-700'
+                  : 'border-l-4 border-red-500 bg-red-100 px-4 py-2 text-red-700'
+              }`}
             >
               <p className="font-medium">{actionData.formMessage.message}</p>
             </div>
@@ -149,7 +150,7 @@ export default function SettingsSecurityPage() {
           </div>
           <div className="mt-4 flex items-center gap-6">
             <div className="w-1/2">
-              <button className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400">
+              <button className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400">
                 Change Password
               </button>
             </div>

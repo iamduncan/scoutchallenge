@@ -1,14 +1,21 @@
-
-import { type Prisma, ChallengeType, ChallengeStatus } from "@prisma/client";
-import { type ActionFunction, json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import { type EditorState, type LexicalEditor } from "lexical";
-import { useRef, useState } from "react";
-import Editor from "#app/components/ui/Editor/Editor.tsx";
-import { createChallenge } from "#app/models/challenge.server.ts";
-import { getGroupListItems } from "#app/models/group.server.ts";
-import { getUserById } from '#app/models/user.server.ts';
+import { useForm, conform } from '@conform-to/react';
+import { getFieldsetConstraint, parse } from '@conform-to/zod';
+import { ChallengeType, ChallengeStatus } from '@prisma/client';
+import { json, type DataFunctionArgs } from '@remix-run/node';
+import { Form, useFetcher, useLoaderData } from '@remix-run/react';
+import { type EditorState, type LexicalEditor } from 'lexical';
+import { useState } from 'react';
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react';
+import { z } from 'zod';
+import { ErrorList, Field, SelectField } from '#app/components/forms.tsx';
+import { Button } from '#app/components/ui/button.tsx';
+import Editor from '#app/components/ui/Editor/Editor.tsx';
+import { StatusButton } from '#app/components/ui/status-button.tsx';
+import { getGroupListItems } from '#app/models/group.server.ts';
 import { requireUserId } from '#app/utils/auth.server.ts';
+import { redirectWithConfetti } from '#app/utils/confetti.server.ts';
+import { validateCSRF } from '#app/utils/csrf.server.ts';
+import { prisma } from '#app/utils/db.server.ts';
 import { useUser } from '#app/utils/user.ts';
 
 export const loader = async () => {
@@ -16,94 +23,75 @@ export const loader = async () => {
   return json({ groups });
 };
 
-function validateName(content: string) {
-  if (content.length < 5) {
-    return `That title is too short`;
-  }
-}
+const ChallengeSchema = z.object({
+  name: z.string().min(5),
+  openDate: z.date().optional(),
+  closeDate: z.string().optional(),
+  introduction: z.string().optional(),
+  type: z.nativeEnum(ChallengeType).optional(),
+  status: z.nativeEnum(ChallengeStatus).optional(),
+  group: z.string(),
+});
 
-type ActionData = {
-  errors?: {
-    name?: string;
-    group?: string;
-  };
-  formError?: string;
-  fields?: Prisma.ChallengeCreateInput;
-};
-
-const badRequest = (data: ActionData) => json(data, { status: 400 });
-
-export const action: ActionFunction = async ({ request }) => {
+export const action = async ({ request }: DataFunctionArgs) => {
   const userId = await requireUserId(request);
-  const user = userId ? await getUserById(userId) : null;
-  if (!user) {
-    return badRequest({
-      formError: "You must be logged in to create a challenge",
-    });
-  }
+
   const formData = await request.formData();
-  const name = formData.get("name") as string;
-  const openDate = formData.get("openDate") as string | null;
-  const closeDate = formData.get("closeDate") as string | null;
-  const introduction = formData.get("introduction") as string | null;
-  const type = formData.get("type") as ChallengeType | null;
-  const status = formData.get("status") as ChallengeStatus;
-  let group = formData.get("group") as string | null;
+  await validateCSRF(formData, request.headers);
 
-  if (!group && user.roles.find(
-    (role) => role.name === "ADMIN"
-  )) {
-    return badRequest({
-      formError: "If you are an admin, you must select a group"
-    });
+  const submission = await parse(formData, {
+    schema: ChallengeSchema,
+    async: true,
+  });
+
+  if (submission.intent !== 'submit') {
+    return json({ status: 'idle', submission } as const);
   }
 
-  const errors = {
-    name: validateName(name),
-  };
-
-  if (group === null) {
-    group = user.groups[ 0 ].id;
+  if (!submission.value) {
+    return json({ status: 'error', submission } as const, { status: 400 });
   }
 
-  const fields: Prisma.ChallengeCreateInput = {
-    name,
-    openDate:
-      typeof openDate === "string" && openDate !== "" ? openDate : undefined,
-    closeDate:
-      typeof closeDate === "string" && closeDate !== "" ? closeDate : undefined,
-    introduction: introduction ?? null,
-    type: type ?? "STANDARD",
-    status: status || "OPEN",
-    group: { connect: { id: group } },
-    createdBy: {
-      connect: {
-        id: user.id,
-      },
+  const { name, openDate, closeDate, introduction, type, status, group } =
+    submission.value;
+
+  const challenge = await prisma.challenge.create({
+    data: {
+      name,
+      openDate,
+      closeDate,
+      introduction,
+      type,
+      status,
+      group: { connect: { id: group } },
+      createdBy: { connect: { id: userId } },
+      updatedBy: { connect: { id: userId } },
     },
-    updatedBy: {
-      connect: {
-        id: user.id,
-      },
-    },
-  };
-  if (Object.values(errors).some(Boolean)) {
-    return badRequest({ errors, fields });
-  }
-  const challenge = await createChallenge(fields);
-  return redirect(`/admin/challenges/${challenge.id}`);
+  });
+
+  return redirectWithConfetti(`/admin/challenges/${challenge.id}`);
 };
 
 // When the editor changes, you can get notified via the
 // LexicalOnChangePlugin!
 
 export default function NewChallenge() {
+  const challengeFetcher = useFetcher<typeof action>();
+  const isPending = challengeFetcher.state !== 'idle';
+
+  const [form, fields] = useForm({
+    id: 'new-challenge',
+    constraint: getFieldsetConstraint(ChallengeSchema),
+    lastSubmission: challengeFetcher.data?.submission,
+    onValidate: ({ formData }) => {
+      return parse(formData, { schema: ChallengeSchema });
+    },
+  });
+
   const user = useUser();
   const { groups } = useLoaderData<typeof loader>();
 
-  const nameRef = useRef<HTMLInputElement>(null);
-  const actionData = useActionData<ActionData>();
-  const [ introduction, setIntroduction ] = useState<string>();
+  const [introduction, setIntroduction] = useState<string>();
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
       const editorState = editor.getEditorState();
@@ -113,130 +101,138 @@ export default function NewChallenge() {
   }
 
   return (
-    <Form method="post" className="flex w-full flex-col gap-8">
-      {actionData?.formError && (
-        <div className="text-sm font-bold text-red-600">
-          {actionData.formError}
-        </div>
-      )}
-      <div>
-        <label htmlFor="name" className="flex w-full flex-col gap-1">
-          <span>Name: </span>
-          <input
-            ref={nameRef}
-            type="text"
-            name="name"
-            id="name"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-          />
-        </label>
-      </div>
-
-      <div>
-        <label htmlFor="openDate" className="flex w-full flex-col gap-1">
-          <span>Open Date: </span>
-          <input
-            type="date"
-            name="openDate"
-            id="openDate"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-          />
-        </label>
-      </div>
-
-      <div>
-        <label htmlFor="closeDate" className="flex w-full flex-col gap-1">
-          <span>Close Date: </span>
-          <input
-            type="date"
-            name="closeDate"
-            id="closeDate"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-          />
-        </label>
-      </div>
-
-      <div>
-        <label htmlFor="introduction" className="flex w-full flex-col gap-1">
-          <span>Introduction: </span>
-          <Editor onChange={onChange} />
-          <input
-            type="hidden"
-            name="introduction"
-            defaultValue={introduction}
-          />
-        </label>
-      </div>
-
-      <div>
-        <label htmlFor="type" className="flex w-full flex-col gap-1">
-          <span>Type: </span>
-          <select
-            name="type"
-            id="type"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
-          >
-            <option value={ChallengeType.STANDARD}>Standard</option>
-            <option value={ChallengeType.CONTEST}>Contest</option>
-            <option value={ChallengeType.LIVE}>Live</option>
-            <option value={ChallengeType.TEAM}>Team</option>
-          </select>
-        </label>
-      </div>
-
-      <div>
-        <label htmlFor="status" className="flex w-full flex-col gap-1">
-          <span>Status: </span>
-          <select
-            name="status"
-            id="status"
-            className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
-          >
-            <option value={ChallengeStatus.DRAFT}>Draft</option>
-            <option value={ChallengeStatus.PUBLISHED}>Published</option>
-          </select>
-        </label>
-      </div>
-
-      {user?.roles.find((role) => role.name === "ADMIN") && (
+    <>
+      <Form
+        method="post"
+        className="flex w-full flex-col gap-8"
+        {...form.props}
+      >
+        <AuthenticityTokenInput />
+        {/*
+					This hidden submit button is here to ensure that when the user hits
+					"enter" on an input field, the primary form function is submitted
+					rather than the first button in the form (which is delete/add image).
+				*/}
+        <button type="submit" className="hidden" />
+        {form.error === 'error' && (
+          <div className="text-sm font-bold text-red-600">{form.error}</div>
+        )}
         <div>
-          <label className="flex w-full flex-col gap-1">
-            <span>Group: </span>
+          <Field
+            labelProps={{ children: 'Name' }}
+            inputProps={{
+              autoFocus: true,
+              ...conform.input(fields.name, { ariaAttributes: true }),
+            }}
+            errors={fields.name.errors}
+          />
+        </div>
+
+        <div>
+          <Field
+            labelProps={{ children: 'Open Date' }}
+            inputProps={{
+              ...conform.input(fields.openDate, {
+                ariaAttributes: true,
+                type: 'date',
+              }),
+            }}
+            errors={fields.openDate.errors}
+          />
+        </div>
+
+        <div>
+          <Field
+            labelProps={{ children: 'Close Date' }}
+            inputProps={{
+              ...conform.input(fields.closeDate, {
+                ariaAttributes: true,
+                type: 'date',
+              }),
+            }}
+            errors={fields.closeDate.errors}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="introduction" className="flex w-full flex-col gap-1">
+            <span>Introduction: </span>
+            <Editor onChange={onChange} />
+            <input
+              type="hidden"
+              name="introduction"
+              defaultValue={introduction}
+            />
+          </label>
+        </div>
+
+        <div>
+          <SelectField
+            labelProps={{ children: 'Type' }}
+            inputProps={{
+              ...conform.input(fields.type, { ariaAttributes: true }),
+              placeholder: 'Select a type',
+            }}
+            options={[
+              { label: 'Standard', value: ChallengeType.STANDARD },
+              { label: 'Contest', value: ChallengeType.CONTEST },
+              { label: 'Live', value: ChallengeType.LIVE },
+              { label: 'Team', value: ChallengeType.TEAM },
+            ]}
+            errors={fields.type.errors}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="status" className="flex w-full flex-col gap-1">
+            <span>Status: </span>
             <select
-              name="group"
-              id="group"
+              name="status"
+              id="status"
               className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
             >
-              <option value="">None</option>
-              {groups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
+              <option value={ChallengeStatus.DRAFT}>Draft</option>
+              <option value={ChallengeStatus.PUBLISHED}>Published</option>
             </select>
           </label>
-          {actionData?.errors?.group && (
-            <div className="pt-1 text-red-700" id="group-error">
-              {actionData.errors.group}
-            </div>
-          )}
         </div>
-      )}
 
-      <div className="text-right">
-        <button
+        {user?.roles.find((role) => role.name === 'ADMIN') && (
+          <div>
+            <label className="flex w-full flex-col gap-1">
+              <span>Group: </span>
+              <select
+                name="group"
+                id="group"
+                className="flex-1 rounded-md border-2 border-blue-500 px-3 py-1 text-lg leading-loose"
+              >
+                <option value="">None</option>
+                {groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
+
+        <ErrorList id={form.errorId} errors={form.errors} />
+      </Form>
+      <div className="flex justify-end gap-4">
+        <Button form={form.id} variant="destructive" type="reset">
+          Reset
+        </Button>
+        <StatusButton
+          form={form.id}
           type="submit"
-          className="mb-1 mr-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
+          disabled={isPending}
+          status={isPending ? 'pending' : 'idle'}
+          className="btn btn-green"
         >
           Save
-        </button>
-        <Link
-          to=".."
-          className="mb-1 ml-2 mr-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
-        >
-          Cancel
-        </Link>
+        </StatusButton>
       </div>
-    </Form>
+    </>
   );
 }

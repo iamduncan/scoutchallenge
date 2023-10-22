@@ -1,7 +1,7 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const schema = z.object({
-  NODE_ENV: z.enum(["production", "development", "test"] as const),
+  NODE_ENV: z.enum(['production', 'development', 'test'] as const),
   DATABASE_PATH: z.string(),
   DATABASE_URL: z.string(),
   SESSION_SECRET: z.string(),
@@ -13,12 +13,12 @@ const schema = z.object({
   // If you plan to use Resend, uncomment this line
   // RESEND_API_KEY: z.string(),
   // If you plan to use GitHub auth, remove the default:
-  GITHUB_CLIENT_ID: z.string().default("MOCK_GITHUB_CLIENT_ID"),
-  GITHUB_CLIENT_SECRET: z.string().default("MOCK_GITHUB_CLIENT_SECRET"),
-  GITHUB_TOKEN: z.string().default("MOCK_GITHUB_TOKEN"),
-  GOOGLE_CLIENT_ID: z.string().default("MOCK_GOOGLE_CLIENT_ID"),
-  GOOGLE_CLIENT_SECRET: z.string().default("MOCK_GOOGLE_CLIENT_SECRET"),
-  GOOGLE_TOKEN: z.string().default("MOCK_GOOGLE_TOKEN"),
+  GITHUB_CLIENT_ID: z.string().default('MOCK_GITHUB_CLIENT_ID'),
+  GITHUB_CLIENT_SECRET: z.string().default('MOCK_GITHUB_CLIENT_SECRET'),
+  GITHUB_TOKEN: z.string().default('MOCK_GITHUB_TOKEN'),
+  GOOGLE_CLIENT_ID: z.string().default('MOCK_GOOGLE_CLIENT_ID'),
+  GOOGLE_CLIENT_SECRET: z.string().default('MOCK_GOOGLE_CLIENT_SECRET'),
+  GOOGLE_TOKEN: z.string().default('MOCK_GOOGLE_TOKEN'),
 });
 
 declare global {
@@ -32,11 +32,11 @@ export function init() {
 
   if (parsed.success === false) {
     console.error(
-      "❌ Invalid environment variables:",
+      '❌ Invalid environment variables:',
       parsed.error.flatten().fieldErrors,
     );
 
-    throw new Error("Invalid envirmonment variables");
+    throw new Error('Invalid envirmonment variables');
   }
 }
 

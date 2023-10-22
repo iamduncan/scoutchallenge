@@ -1,8 +1,7 @@
-import { Outlet } from "@remix-run/react";
-import { type LoaderFunction } from "@remix-run/server-runtime";
-import AdminLayout from "#app/layouts/AdminLayout.tsx";
+import { Outlet } from '@remix-run/react';
+import { type LoaderFunction } from '@remix-run/server-runtime';
+// import AdminLayout from "#app/layouts/AdminLayout.tsx";
 import { requireUserWithRole } from '#app/utils/permissions.ts';
-
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserWithRole(request, 'ADMIN');
@@ -10,11 +9,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 const AdminHome = () => {
-  return (
-    <AdminLayout>
-      <Outlet />
-    </AdminLayout>
-  );
+  return <Outlet />;
 };
 
 export default AdminHome;

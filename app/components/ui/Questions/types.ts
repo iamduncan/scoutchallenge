@@ -1,4 +1,4 @@
-import  { type QuestionType } from "@prisma/client";
+import { type QuestionType } from '@prisma/client';
 
 type TextQuestion = {
   answer: string;
@@ -33,8 +33,8 @@ type FileUploadQuestion = {
 };
 
 export enum CipherType {
-  PIGPEN = "PIGPEN",
-  SHIFT = "SHIFT",
+  PIGPEN = 'PIGPEN',
+  SHIFT = 'SHIFT',
 }
 type CipherQuestion = {
   answer: string;
@@ -42,20 +42,20 @@ type CipherQuestion = {
   shiftValue?: number;
 };
 
-export type QuestionData<T extends QuestionType> = T extends "TEXT"
+export type QuestionData<T extends QuestionType> = T extends 'TEXT'
   ? TextQuestion
-  : T extends "MULTIPLECHOICE"
+  : T extends 'MULTIPLECHOICE'
   ? MultipleChoiceQuestion
-  : T extends "TRUEFALSE"
+  : T extends 'TRUEFALSE'
   ? TrueFalseQuestion
-  : T extends "FILLINTHEBLANK"
+  : T extends 'FILLINTHEBLANK'
   ? FillInTheBlankQuestion
-  : T extends "IMAGEUPLOAD"
+  : T extends 'IMAGEUPLOAD'
   ? ImageUploadQuestion
-  : T extends "VIDEOUPLOAD"
+  : T extends 'VIDEOUPLOAD'
   ? VideoUploadQuestion
-  : T extends "FILEUPLOAD"
+  : T extends 'FILEUPLOAD'
   ? FileUploadQuestion
-  : T extends "CIPHER"
+  : T extends 'CIPHER'
   ? CipherQuestion
   : never;

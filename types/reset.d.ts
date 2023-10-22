@@ -1,1 +1,1 @@
-import "@total-typescript/ts-reset/dom";
+import '@total-typescript/ts-reset/dom';

@@ -1,14 +1,14 @@
-import  { type Prisma } from "@prisma/client";
-import { Form, Link } from "@remix-run/react";
-import  { type ActionFunction , json, redirect } from "@remix-run/server-runtime";
-import  { type EditorState, type LexicalEditor } from "lexical";
-import { useRef, useState } from "react";
-import Editor from "#app/components/ui/Editor/Editor.tsx";
-import { createChallengeSection } from "#app/models/challenge.server.ts";
+import { type Prisma } from '@prisma/client';
+import { Form, Link } from '@remix-run/react';
+import { type ActionFunction, json, redirect } from '@remix-run/server-runtime';
+import { type EditorState, type LexicalEditor } from 'lexical';
+import { useRef, useState } from 'react';
+import Editor from '#app/components/ui/Editor/Editor.tsx';
+import { createChallengeSection } from '#app/models/challenge.server.ts';
 
 const AddChallengeSection = () => {
   const titleRef = useRef<HTMLInputElement>(null);
-  const [ description, setDescription ] = useState<string>();
+  const [description, setDescription] = useState<string>();
 
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
@@ -62,13 +62,13 @@ const AddChallengeSection = () => {
             <div className="flex items-center justify-end gap-2">
               <button
                 type="submit"
-                className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
               >
                 Save
               </button>
               <Link
                 to="../"
-                className="rounded bg-red-500 py-2 px-4 text-white hover:bg-red-600 focus:bg-red-400"
+                className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600 focus:bg-red-400"
               >
                 Cancel
               </Link>
@@ -96,21 +96,21 @@ const badRequest = (data: ActionData) => json(data, { status: 400 });
 export const action: ActionFunction = async ({ request, params }) => {
   const challengeId = params.challengeId;
   if (!challengeId) {
-    return json({ status: 404, message: "Challenge not found" });
+    return json({ status: 404, message: 'Challenge not found' });
   }
 
   const formData = await request.formData();
-  const title = formData.get("title");
-  const description = formData.get("description");
+  const title = formData.get('title');
+  const description = formData.get('description');
 
-  if (typeof title !== "string" || title.length === 0) {
+  if (typeof title !== 'string' || title.length === 0) {
     return badRequest({
-      errors: { title: "Title is required" },
+      errors: { title: 'Title is required' },
     });
   }
-  if (typeof description !== "string" || description.length === 0) {
+  if (typeof description !== 'string' || description.length === 0) {
     return badRequest({
-      errors: { description: "Description is required" },
+      errors: { description: 'Description is required' },
     });
   }
 

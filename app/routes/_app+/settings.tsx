@@ -1,84 +1,119 @@
+import { Outlet, useMatches } from '@remix-run/react';
+import { type LoaderFunction } from '@remix-run/server-runtime';
+import { z } from 'zod';
 import {
-  BellIcon,
-  CogIcon,
-  KeyIcon,
-  UserCircleIcon,
-  SquaresPlusIcon,
-} from "@heroicons/react/24/outline";
-import { NavLink, Outlet } from "@remix-run/react";
-import  { type LoaderFunction } from "@remix-run/server-runtime";
-import { AppLayout } from "#app/layouts/index.ts";
-import { requireUserId } from "#app/utils/auth.server.ts";
-import { useUser } from "#app/utils/user.ts";
+  SidebarNav,
+  type SidebarNavProps,
+} from '#app/components/sidebar-nav.tsx';
+import { Separator } from '#app/components/ui/separator.tsx';
+import { requireUserId } from '#app/utils/auth.server.ts';
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireUserId(request);
   return null;
 };
 
-const settingsMenu = [
+const settingsMenu: SidebarNavProps['items'] = [
   {
-    key: "profile",
-    label: "Profile",
-    icon: UserCircleIcon,
-    to: "/settings/profile",
+    key: 'profile',
+    title: 'Profile',
+    to: '/settings/profile',
   },
   {
-    key: "account",
-    label: "Account",
-    icon: CogIcon,
-    to: "/settings/account",
+    key: 'groups',
+    title: 'Groups Settings',
+    to: '/settings/groups',
   },
   {
-    key: "security",
-    label: "Security",
-    icon: KeyIcon,
-    to: "/settings/security",
+    key: 'account',
+    title: 'Account',
+    to: '/settings/account',
   },
   {
-    key: "notifications",
-    label: "Notifications",
-    icon: BellIcon,
-    to: "/settings/notifications",
-    enabled: false,
+    key: 'security',
+    title: 'Security',
+    to: '/settings/security',
   },
   {
-    key: "integrations",
-    label: "Integrations",
-    icon: SquaresPlusIcon,
-    to: "/settings/integrations",
-    enabled: false,
+    key: 'notifications',
+    title: 'Notifications',
+    to: '/settings/notifications',
+  },
+  {
+    key: 'integrations',
+    title: 'Integrations',
+    to: '/settings/integrations',
   },
 ];
 
-export default function SettingsPage() {
-  const user = useUser();
+interface SettingsLayoutProps {
+  children: React.ReactNode;
+}
+
+export function SettingsLayout({ children }: SettingsLayoutProps) {
   return (
-    <AppLayout>
-      <div className="flex h-full">
-        <div className="basis-1/5 border-r">
-          {settingsMenu
-            .filter((item) =>
-              item.enabled !== false ? true : user.roles.find((role) => role.name === "ADMIN")
-            )
-            .map((menuItem) => (
-              <NavLink
-                to={menuItem.to}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 border-l-4 border-transparent py-3 px-2 ${isActive &&
-                  "border-purple-600 bg-purple-200 font-semibold text-purple-700"
-                  }`
-                }
-                key={menuItem.key}
-              >
-                <menuItem.icon className="h-6 w-6" /> {menuItem.label}
-              </NavLink>
-            ))}
+    <div>
+      <div>
+        <h3 className="text-lg font-medium">Group Settings</h3>
+        <p className="text-sm text-muted-foreground">
+          Manage your group settings.
+        </p>
+      </div>
+      <Separator className="my-3" />
+      {children}
+    </div>
+  );
+}
+
+export const SettingsHeaderHandle = z.object({
+  settingHeader: z.any(),
+});
+export type SettingsHeaderHandle = z.infer<typeof SettingsHeaderHandle>;
+
+const SettingsHeaderHandleMatch = z.object({
+  handle: SettingsHeaderHandle,
+});
+
+export default function SettingsPage() {
+  const matches = useMatches();
+  const header = matches
+    .map((m) => {
+      const result = SettingsHeaderHandleMatch.safeParse(m);
+      if (!result.success || !result.data.handle.settingHeader) return null;
+      return (
+        <div key={m.id}>
+          <h3 className="text-lg font-medium">
+            {result.data.handle.settingHeader.title}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {result.data.handle.settingHeader.description}
+          </p>
         </div>
-        <div className="flex-grow p-4">
-          <Outlet />
+      );
+    })
+    .filter(Boolean);
+
+  return (
+    <div className="hidden space-y-6 p-10 pb-16 md:block">
+      <div className="space-y-0.5">
+        <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
+        <p className="text-muted-foreground">
+          Manage your account settings and set e-mail preferences.
+        </p>
+      </div>
+      <Separator className="my-6" />
+      <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+        <aside className="-mx-4 lg:w-1/5">
+          <SidebarNav items={settingsMenu} />
+        </aside>
+        <div className="flex-1 lg:max-w-2xl">
+          <div className="space-y-6">
+            {header}
+            {header.length > 0 && <Separator className="my-6" />}
+            <Outlet />
+          </div>
         </div>
       </div>
-    </AppLayout>
+    </div>
   );
 }

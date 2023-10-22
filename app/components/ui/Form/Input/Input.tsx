@@ -5,12 +5,12 @@ const Input = ({
   value,
   onChange,
   placeholder,
-  type = "text",
+  type = 'text',
 }: {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
-  type?: "text" | "password";
+  type?: 'text' | 'password';
 }) => {
   return (
     <input

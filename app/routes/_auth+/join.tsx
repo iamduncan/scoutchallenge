@@ -4,15 +4,15 @@ import {
   type MetaFunction,
   json,
   redirect,
-} from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useEffect, useRef } from "react";
+} from '@remix-run/node';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
+import { useEffect, useRef } from 'react';
 
-import FleurDeLisPurple from "#app/assets/images/fleur-de-lis-marque-purple.png";
-import { createUser, getUserByEmail } from "#app/models/user.server.ts";
-import { requireAnonymous } from "#app/utils/auth.server.ts";
+import FleurDeLisPurple from '#app/assets/images/fleur-de-lis-marque-purple.png';
+import { createUser, getUserByEmail } from '#app/models/user.server.ts';
+import { requireAnonymous } from '#app/utils/auth.server.ts';
 
-import { validateEmail } from "#app/utils/utils.ts";
+import { validateEmail } from '#app/utils/utils.ts';
 
 export const loader: LoaderFunction = async ({ request }) => {
   await requireAnonymous(request);
@@ -32,37 +32,37 @@ interface ActionData {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const confirmPassword = formData.get("confirmPassword");
-  const first_name = formData.get("first_name");
-  const last_name = formData.get("last_name");
-  const group = formData.get("group");
+  const email = formData.get('email');
+  const password = formData.get('password');
+  const confirmPassword = formData.get('confirmPassword');
+  const first_name = formData.get('first_name');
+  const last_name = formData.get('last_name');
+  const group = formData.get('group');
 
   if (!validateEmail(email)) {
     return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
+      { errors: { email: 'Email is invalid' } },
       { status: 400 },
     );
   }
 
-  if (typeof password !== "string") {
+  if (typeof password !== 'string') {
     return json<ActionData>(
-      { errors: { password: "Password is required" } },
+      { errors: { password: 'Password is required' } },
       { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
-      { errors: { password: "Password is too short" } },
+      { errors: { password: 'Password is too short' } },
       { status: 400 },
     );
   }
 
   if (password !== confirmPassword) {
     return json<ActionData>(
-      { errors: { confirmPassword: "Passwords do not match" } },
+      { errors: { confirmPassword: 'Passwords do not match' } },
       { status: 400 },
     );
   }
@@ -70,35 +70,35 @@ export const action: ActionFunction = async ({ request }) => {
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
     return json<ActionData>(
-      { errors: { email: "A user already exists with this email" } },
+      { errors: { email: 'A user already exists with this email' } },
       { status: 400 },
     );
   }
 
-  if (typeof first_name !== "string") {
+  if (typeof first_name !== 'string') {
     return json<ActionData>(
-      { errors: { first_name: "First name is required" } },
+      { errors: { first_name: 'First name is required' } },
       { status: 400 },
     );
   }
 
-  if (typeof last_name !== "string") {
+  if (typeof last_name !== 'string') {
     return json<ActionData>(
-      { errors: { last_name: "Last name is required" } },
+      { errors: { last_name: 'Last name is required' } },
       { status: 400 },
     );
   }
 
-  if (typeof group !== "string") {
+  if (typeof group !== 'string') {
     return json<ActionData>(
-      { errors: { group: "Group is required" } },
+      { errors: { group: 'Group is required' } },
       { status: 400 },
     );
   }
 
-  await createUser(email, password, first_name, last_name, group, "GROUPADMIN");
+  await createUser(email, password, first_name, last_name, group, 'GROUPADMIN');
 
-  return redirect("/login");
+  return redirect('/login');
   // return createUserSession({
   //   request,
   //   userId: user.id,
@@ -110,14 +110,14 @@ export const action: ActionFunction = async ({ request }) => {
 export const meta: MetaFunction = () => {
   return [
     {
-      title: "Sign Up",
+      title: 'Sign Up',
     },
   ];
 };
 
 export default function Join() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const redirectTo = searchParams.get('redirectTo') ?? undefined;
   const actionData = useActionData() as ActionData;
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
@@ -332,7 +332,7 @@ export default function Join() {
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <button
             type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+            className="w-full rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
           >
             Create Account
           </button>
@@ -340,18 +340,18 @@ export default function Join() {
             <div className="text-center text-sm text-gray-500">
               <p>
                 Scout Challenge is not affiliated with the Scout Association,
-                for more information about Scout Challenge, visit our{" "}
+                for more information about Scout Challenge, visit our{' '}
                 <Link className="text-blue-500 underline" to="/support">
                   support section
                 </Link>
                 .
               </p>
               <p>
-                Already have an account?{" "}
+                Already have an account?{' '}
                 <Link
                   className="text-blue-500 underline"
                   to={{
-                    pathname: "/login",
+                    pathname: '/login',
                     search: searchParams.toString(),
                   }}
                 >
@@ -362,7 +362,7 @@ export default function Join() {
           </div>
         </Form>
       </div>
-      <div className="absolute top-4 left-4">
+      <div className="absolute left-4 top-4">
         <Link to="/" className="hover:text-blue-500 hover:underline">
           &larr; Go Home
         </Link>

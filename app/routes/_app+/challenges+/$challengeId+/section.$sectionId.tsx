@@ -1,28 +1,32 @@
+import { type Question } from '@prisma/client';
+import { type ActionFunctionArgs, json } from '@remix-run/node';
 import {
-  type Question,
-} from "@prisma/client";
-import { type ActionFunctionArgs, json } from "@remix-run/node";
-import { Form, Link, useParams, useRouteLoaderData, useSearchParams } from "@remix-run/react";
+  Form,
+  Link,
+  useParams,
+  useRouteLoaderData,
+  useSearchParams,
+} from '@remix-run/react';
 import {
   AnswerCipher,
   AnswerFillInTheBlank,
   AnswerMultipleChoice,
   AnswerTrueFalse,
   Button,
-} from "#app/components/ui/index.ts";
-import { type QuestionData } from "#app/components/ui/Questions/types.ts";
-import { type loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
+} from '#app/components/ui/index.ts';
+import { type QuestionData } from '#app/components/ui/Questions/types.ts';
+import { type loader as challengeLoader } from '#app/routes/_app+/challenges+/$challengeId.tsx';
 
 export default function ChallengeSectionView() {
   const { sectionId } = useParams();
   const data = useRouteLoaderData<typeof challengeLoader>(
-    "routes/_app+/challenges+/$challengeId"
+    'routes/_app+/challenges+/$challengeId',
   );
-  if (!data) throw new Error("No data");
+  if (!data) throw new Error('No data');
   const { challenge, user } = data;
-  const [ searchParams ] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const section = challenge.challengeSections.find(
-    (section) => section.id === sectionId
+    (section) => section.id === sectionId,
   );
 
   return (
@@ -53,9 +57,10 @@ export default function ChallengeSectionView() {
           Back to Challenge
         </Link>
       </div>
-      {searchParams.get("debug") === "true" && user.roles.find((role) => role.name === 'ADMIN') && (
-        <pre className="text-sm">{JSON.stringify(section, null, 2)}</pre>
-      )}
+      {searchParams.get('debug') === 'true' &&
+        user.roles.find((role) => role.name === 'ADMIN') && (
+          <pre className="text-sm">{JSON.stringify(section, null, 2)}</pre>
+        )}
     </div>
   );
 }
@@ -67,36 +72,40 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return json({ data });
 };
 
-const QuestionComponent = ({ question }: { question: Omit<Question, 'createdAt' | 'updatedAt'> }) => {
+const QuestionComponent = ({
+  question,
+}: {
+  question: Omit<Question, 'createdAt' | 'updatedAt'>;
+}) => {
   switch (question.type) {
-    case "MULTIPLECHOICE":
+    case 'MULTIPLECHOICE':
       return (
         <AnswerMultipleChoice
-          questionData={question.data as QuestionData<"MULTIPLECHOICE">}
-          handleUpdate={() => { }}
+          questionData={question.data as QuestionData<'MULTIPLECHOICE'>}
+          handleUpdate={() => {}}
           name={question.id}
         />
       );
-    case "TRUEFALSE":
+    case 'TRUEFALSE':
       return (
         <AnswerTrueFalse
-          questionData={question.data as QuestionData<"TRUEFALSE">}
-          handleUpdate={() => { }}
+          questionData={question.data as QuestionData<'TRUEFALSE'>}
+          handleUpdate={() => {}}
           name={question.id}
         />
       );
-    case "FILLINTHEBLANK":
+    case 'FILLINTHEBLANK':
       return (
         <AnswerFillInTheBlank
-          questionData={question.data as QuestionData<"FILLINTHEBLANK">}
-          handleUpdate={() => { }}
+          questionData={question.data as QuestionData<'FILLINTHEBLANK'>}
+          handleUpdate={() => {}}
         />
       );
-    case "CIPHER":
+    case 'CIPHER':
       return (
         <AnswerCipher
-          questionData={question.data as QuestionData<"CIPHER">}
-          handleUpdate={() => { }}
+          questionData={question.data as QuestionData<'CIPHER'>}
+          handleUpdate={() => {}}
         />
       );
     default:

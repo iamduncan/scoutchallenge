@@ -1,9 +1,9 @@
-import  { type RefObject , useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from 'react';
 
 export function useEventListener<T extends HTMLElement = HTMLDivElement>(
   eventName: keyof WindowEventMap | string, // string to allow custom event
   handler: (event: Event) => void,
-  element?: RefObject<T>
+  element?: RefObject<T>,
 ) {
   // Create a ref that stores handler
   const savedHandler = useRef<(event: Event) => void>();

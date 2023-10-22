@@ -1,9 +1,9 @@
-import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
-import  { type Section } from "@prisma/client";
-import  { type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, Link, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
-import { getSection } from "#app/models/section.server.ts";
+import { ArrowLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { type Section } from '@prisma/client';
+import { type LoaderFunctionArgs } from '@remix-run/node';
+import { Form, Link, useLoaderData } from '@remix-run/react';
+import { useState } from 'react';
+import { getSection } from '#app/models/section.server.ts';
 
 type LoaderData = {
   section: Section;
@@ -20,7 +20,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export default function ViewSectionPage() {
   const { section } = useLoaderData<LoaderData>();
-  const [ confirmDelete, setConfirmDelete ] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   return (
     <div>
       <div>{section?.name}</div>
@@ -30,7 +30,7 @@ export default function ViewSectionPage() {
       <div className="flex gap-2">
         <Link
           to=".."
-          className="md:hidden mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500"
+          className="mb-1 mr-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 md:hidden"
           type="button"
         >
           <ArrowLeftIcon className="h-6 w-6" /> Back
@@ -44,10 +44,10 @@ export default function ViewSectionPage() {
                 setConfirmDelete(true);
               }
             }}
-            className="flex items-center rounded bg-red-500  py-2 px-4 text-white hover:bg-red-600 focus:bg-red-400"
+            className="flex items-center rounded bg-red-500  px-4 py-2 text-white hover:bg-red-600 focus:bg-red-400"
           >
-            <TrashIcon className="mr-2 h-5 w-5" />{" "}
-            {confirmDelete ? "Confirm" : "Delete"}
+            <TrashIcon className="mr-2 h-5 w-5" />{' '}
+            {confirmDelete ? 'Confirm' : 'Delete'}
           </button>
         </Form>
       </div>

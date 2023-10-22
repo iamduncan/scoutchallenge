@@ -1,19 +1,19 @@
-import { type Connection, type Password, type User } from "@prisma/client";
-import { redirect } from "@remix-run/node";
-import bcrypt from "bcryptjs";
-import { Authenticator } from "remix-auth";
-import { safeRedirect } from "remix-utils/safe-redirect";
-import { connectionSessionStorage, providers } from "./connections.server.ts";
-import { prisma } from "./db.server.ts";
-import { combineHeaders, downloadFile } from "./misc.tsx";
-import { type ProviderUser } from "./providers/provider.ts";
-import { authSessionStorage } from "./session.server.ts";
+import { type Connection, type Password, type User } from '@prisma/client';
+import { redirect } from '@remix-run/node';
+import bcrypt from 'bcryptjs';
+import { Authenticator } from 'remix-auth';
+import { safeRedirect } from 'remix-utils/safe-redirect';
+import { connectionSessionStorage, providers } from './connections.server.ts';
+import { prisma } from './db.server.ts';
+import { combineHeaders, downloadFile } from './misc.tsx';
+import { type ProviderUser } from './providers/provider.ts';
+import { authSessionStorage } from './session.server.ts';
 
 export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30;
 export const getSessionExpirationDate = () =>
   new Date(Date.now() + SESSION_EXPIRATION_TIME);
 
-export const sessionKey = "sessionId";
+export const sessionKey = 'sessionId';
 
 export const authenticator = new Authenticator<ProviderUser>(
   connectionSessionStorage,
@@ -25,7 +25,7 @@ for (const [providerName, provider] of Object.entries(providers)) {
 
 export async function getUserId(request: Request) {
   const authSession = await authSessionStorage.getSession(
-    request.headers.get("cookie"),
+    request.headers.get('cookie'),
   );
   const sessionId = authSession.get(sessionKey);
   if (!sessionId) return null;
@@ -34,9 +34,9 @@ export async function getUserId(request: Request) {
     where: { id: sessionId, expirationDate: { gt: new Date() } },
   });
   if (!session?.user) {
-    throw redirect("/", {
+    throw redirect('/', {
       headers: {
-        "set-cookie": await authSessionStorage.destroySession(authSession),
+        'set-cookie': await authSessionStorage.destroySession(authSession),
       },
     });
   }
@@ -55,9 +55,9 @@ export async function requireUserId(
         ? null
         : redirectTo ?? `${requestUrl.pathname}${requestUrl.search}`;
     const loginParams = redirectTo ? new URLSearchParams({ redirectTo }) : null;
-    const loginRedirect = ["/login", loginParams?.toString()]
+    const loginRedirect = ['/login', loginParams?.toString()]
       .filter(Boolean)
-      .join("?");
+      .join('?');
     throw redirect(loginRedirect);
   }
   return userId;
@@ -66,7 +66,7 @@ export async function requireUserId(
 export async function requireAnonymous(request: Request) {
   const userId = await getUserId(request);
   if (userId) {
-    throw redirect("/");
+    throw redirect('/');
   }
 }
 
@@ -74,7 +74,7 @@ export async function login({
   username,
   password,
 }: {
-  username: User["username"];
+  username: User['username'];
   password: string;
 }) {
   const user = await verifyUserPassword({ username }, password);
@@ -93,7 +93,7 @@ export async function resetUserPassword({
   username,
   password,
 }: {
-  username: User["username"];
+  username: User['username'];
   password: string;
 }) {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -115,9 +115,9 @@ export async function signup({
   password,
   name,
 }: {
-  email: User["email"];
-  username: User["username"];
-  name: User["name"];
+  email: User['email'];
+  username: User['username'];
+  name: User['name'];
   password: string;
 }) {
   const hashedPassword = await getPasswordHash(password);
@@ -130,7 +130,7 @@ export async function signup({
           email: email.toLowerCase(),
           username: username.toLowerCase(),
           name,
-          roles: { connect: { name: "user" } },
+          roles: { connect: { name: 'user' } },
           password: {
             create: {
               hash: hashedPassword,
@@ -153,11 +153,11 @@ export async function signupWithConnection({
   providerName,
   imageUrl,
 }: {
-  email: User["email"];
-  username: User["username"];
-  name: User["name"];
-  providerId: Connection["providerId"];
-  providerName: Connection["providerName"];
+  email: User['email'];
+  username: User['username'];
+  name: User['name'];
+  providerId: Connection['providerId'];
+  providerName: Connection['providerName'];
   imageUrl?: string;
 }) {
   const session = await prisma.session.create({
@@ -168,7 +168,7 @@ export async function signupWithConnection({
           email: email.toLowerCase(),
           username: username.toLowerCase(),
           name,
-          roles: { connect: { name: "user" } },
+          roles: { connect: { name: 'user' } },
           connections: { create: { providerId, providerName } },
           image: imageUrl
             ? { create: await downloadFile(imageUrl) }
@@ -185,7 +185,7 @@ export async function signupWithConnection({
 export async function logout(
   {
     request,
-    redirectTo = "/",
+    redirectTo = '/',
   }: {
     request: Request;
     redirectTo?: string;
@@ -193,7 +193,7 @@ export async function logout(
   responseInit?: ResponseInit,
 ) {
   const authSession = await authSessionStorage.getSession(
-    request.headers.get("cookie"),
+    request.headers.get('cookie'),
   );
   const sessionId = authSession.get(sessionKey);
   // if this fails, we still need to delete the session from the user's browser
@@ -202,7 +202,7 @@ export async function logout(
   throw redirect(safeRedirect(redirectTo), {
     ...responseInit,
     headers: combineHeaders(
-      { "set-cookie": await authSessionStorage.destroySession(authSession) },
+      { 'set-cookie': await authSessionStorage.destroySession(authSession) },
       responseInit?.headers,
     ),
   });
@@ -214,8 +214,8 @@ export async function getPasswordHash(password: string) {
 }
 
 export async function verifyUserPassword(
-  where: Pick<User, "username"> | Pick<User, "id">,
-  password: Password["hash"],
+  where: Pick<User, 'username'> | Pick<User, 'id'>,
+  password: Password['hash'],
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where,

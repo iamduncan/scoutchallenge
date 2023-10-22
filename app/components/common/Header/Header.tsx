@@ -1,8 +1,8 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
-import { Form, Link, NavLink } from "@remix-run/react";
-import { useState } from "react";
-import { Logo } from "#app/components/icons/index.ts";
-import { menuItems } from "#app/config.ts";
+import { Bars3Icon } from '@heroicons/react/24/outline';
+import { Form, Link, NavLink } from '@remix-run/react';
+import { useState } from 'react';
+import { Logo } from '#app/components/icons/index.ts';
+import { menuItems } from '#app/config.ts';
 
 type Props = {
   user: {
@@ -34,7 +34,7 @@ export default function Header(props: Props) {
   return (
     <header
       className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
-        !admin && "md:pb-16"
+        !admin && 'md:pb-16'
       }`}
     >
       <div className="flex w-full items-center justify-between">
@@ -53,8 +53,8 @@ export default function Header(props: Props) {
       </div>
       <nav
         className={`${
-          !isOpen && "hidden"
-        } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
+          !isOpen && 'hidden'
+        } fixed left-0 top-0 z-50 h-screen w-full bg-white p-3`}
       >
         <div className="flex- flex items-center justify-between px-3 py-2">
           <Logo className="h-12 w-12 rounded-full bg-purple-600 p-2 text-gray-100" />
@@ -78,9 +78,9 @@ export default function Header(props: Props) {
               }
               return user.roles.some(
                 (role) =>
-                  role.name === "ADMIN" ||
-                  role.name === "GROUPADMIN" ||
-                  role.name === "SECTIONADMIN",
+                  role.name === 'ADMIN' ||
+                  role.name === 'GROUPADMIN' ||
+                  role.name === 'SECTIONADMIN',
               );
             })
             .map((item) => (

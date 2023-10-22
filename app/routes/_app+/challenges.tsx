@@ -1,10 +1,5 @@
-import { Outlet } from "@remix-run/react";
-import { AppLayout } from "#app/layouts/index.ts";
+import { Outlet } from '@remix-run/react';
 
 export default function ChallengesPage() {
-  return (
-    <AppLayout>
-      <Outlet />
-    </AppLayout>
-  );
+  return <Outlet />;
 }

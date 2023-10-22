@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet } from "@remix-run/react";
+import { Link, NavLink, Outlet } from '@remix-run/react';
 
 export default function ResponsesPage() {
   return (
@@ -15,7 +15,7 @@ export default function ResponsesPage() {
             <li>
               <NavLink
                 className={({ isActive }) =>
-                  `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                  `block border-b p-4 text-xl ${isActive ? 'bg-white' : ''}`
                 }
                 to="."
               >

@@ -1,4 +1,4 @@
-import lexicalAutoLink from "@lexical/react/LexicalAutoLinkPlugin.js";
+import lexicalAutoLink from '@lexical/react/LexicalAutoLinkPlugin.js';
 
 const LexicalAutoLinkPlugin = lexicalAutoLink.AutoLinkPlugin;
 

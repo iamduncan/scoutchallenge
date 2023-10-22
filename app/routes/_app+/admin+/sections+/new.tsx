@@ -1,8 +1,13 @@
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import { type ActionFunction, type LoaderFunctionArgs, redirect, json } from "@remix-run/server-runtime";
-import * as React from "react";
-import { getGroupListItems } from "#app/models/group.server.ts";
-import { createSection } from "#app/models/section.server.ts";
+import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import {
+  type ActionFunction,
+  type LoaderFunctionArgs,
+  redirect,
+  json,
+} from '@remix-run/server-runtime';
+import * as React from 'react';
+import { getGroupListItems } from '#app/models/group.server.ts';
+import { createSection } from '#app/models/section.server.ts';
 import { getUserById } from '#app/models/user.server.ts';
 import { getUserId } from '#app/utils/auth.server.ts';
 import { useUser } from '#app/utils/user.ts';
@@ -34,25 +39,25 @@ const badRequest = (data: ActionData) => json(data, { status: 400 });
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const name = formData.get("name");
-  const group = formData.get("group");
+  const name = formData.get('name');
+  const group = formData.get('group');
   const userId = await getUserId(request);
-  if (typeof name !== "string") {
-    return badRequest({ formError: "Form not submitted correctly" });
+  if (typeof name !== 'string') {
+    return badRequest({ formError: 'Form not submitted correctly' });
   }
 
   if (!userId) {
     return badRequest({
-      formError: "You must be logged in to create a section",
+      formError: 'You must be logged in to create a section',
     });
   }
 
   const errors = {
     name: validateName(name),
-    group: group === "" ? "You must select a group" : undefined,
+    group: group === '' ? 'You must select a group' : undefined,
   };
   const user = await getUserById(userId);
-  const groupId = group !== null ? (group as string) : user?.groups[ 0 ]?.id;
+  const groupId = group !== null ? (group as string) : user?.groups[0]?.id;
   const fields = { name, group: groupId };
   if (Object.values(errors).some(Boolean)) {
     return badRequest({ errors, fields });
@@ -78,16 +83,16 @@ export default function NewSectionPage() {
     if (actionData?.errors?.name) {
       nameRef.current?.focus();
     }
-  }, [ actionData ]);
+  }, [actionData]);
 
   return (
     <Form
       method="post"
       style={{
-        display: "flex",
-        flexDirection: "column",
+        display: 'flex',
+        flexDirection: 'column',
         gap: 8,
-        width: "100%",
+        width: '100%',
       }}
     >
       <div>
@@ -99,7 +104,7 @@ export default function NewSectionPage() {
             className="flex-1 rounded-md border-2 border-blue-500 px-3 text-lg leading-loose"
             aria-invalid={actionData?.errors?.name ? true : undefined}
             aria-errormessage={
-              actionData?.errors?.name ? "name-error" : undefined
+              actionData?.errors?.name ? 'name-error' : undefined
             }
           />
         </label>
@@ -138,13 +143,13 @@ export default function NewSectionPage() {
       <div className="text-right">
         <button
           type="submit"
-          className="mr-1 mb-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
+          className="mb-1 mr-1 rounded bg-blue-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-blue-600"
         >
           Save
         </button>
         <Link
           to=".."
-          className="ml-2 mr-1 mb-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
+          className="mb-1 ml-2 mr-1 rounded bg-red-500 px-6 py-3 text-sm font-bold uppercase text-white shadow outline-none transition-all duration-150 ease-linear hover:shadow-lg focus:outline-none active:bg-red-600"
         >
           Cancel
         </Link>

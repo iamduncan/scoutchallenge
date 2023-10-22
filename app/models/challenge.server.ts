@@ -1,13 +1,14 @@
-import  {
+import {
   type Challenge,
   type ChallengeSection,
   type Group,
   type Prisma,
   type Question,
- ChallengeStatus } from "@prisma/client";
+  ChallengeStatus,
+} from '@prisma/client';
 
-import { prisma } from "#app/utils/db.server.ts";
-import { generateHTML } from "#app/utils/editor.server.ts";
+import { prisma } from '#app/utils/db.server.ts';
+import { generateHTML } from '#app/utils/editor.server.ts';
 
 export async function createChallenge(
   data: Prisma.ChallengeCreateInput,
@@ -51,10 +52,10 @@ export async function getChallengeListItems({
 }: {
   groups?: { id: string; name: string }[];
   published?: boolean;
-}): Promise<Pick<Challenge, "id" | "name">[]> {
+}): Promise<Pick<Challenge, 'id' | 'name'>[]> {
   return prisma.challenge.findMany({
     select: { id: true, name: true },
-    orderBy: { name: "asc" },
+    orderBy: { name: 'asc' },
     where: {
       groupId: groups?.length
         ? { in: groups.map((group) => group.id) }
@@ -68,7 +69,7 @@ export async function getChallenge({
   id,
   groups,
 }: {
-  id: Challenge["id"];
+  id: Challenge['id'];
   groups?: Group[];
 }) {
   const challenge = await prisma.challenge.findFirst({
@@ -85,7 +86,7 @@ export async function getChallenge({
       challengeSections: {
         include: {
           questions: {
-            orderBy: { order: "asc" },
+            orderBy: { order: 'asc' },
             select: {
               id: true,
               title: true,
@@ -96,13 +97,13 @@ export async function getChallenge({
             },
           },
         },
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
       },
     },
   });
 
   if (!challenge) {
-    throw new Response("Not Found", {
+    throw new Response('Not Found', {
       status: 404,
     });
   }
@@ -118,7 +119,7 @@ export async function getChallenge({
       challengeSections.push({
         ...challenge.challengeSections[section],
         descriptionHtml: generateHTML(
-          challenge.challengeSections[section].description || "",
+          challenge.challengeSections[section].description || '',
         ),
       });
 
@@ -135,7 +136,7 @@ export async function getChallenge({
             ...challenge.challengeSections[section].questions[question],
             descriptionHtml: generateHTML(
               challenge.challengeSections[section].questions[question]
-                .description || "",
+                .description || '',
             ),
           });
         }
@@ -186,7 +187,7 @@ export async function removeSectionFromChallenge(
   });
 }
 
-export async function deleteChallenge({ id }: Pick<Challenge, "id">) {
+export async function deleteChallenge({ id }: Pick<Challenge, 'id'>) {
   return prisma.challenge.delete({
     where: { id },
   });
@@ -208,12 +209,12 @@ export async function createChallengeSection(
 
 export async function getChallengeSection({
   id,
-}: Pick<ChallengeSection, "id">) {
+}: Pick<ChallengeSection, 'id'>) {
   return prisma.challengeSection.findFirst({
     where: { id },
     include: {
       questions: {
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
       },
     },
   });
@@ -236,7 +237,7 @@ export async function addQuestion(
   });
 }
 
-export async function deleteQuestion({ id }: Pick<Question, "id">) {
+export async function deleteQuestion({ id }: Pick<Question, 'id'>) {
   return prisma.question.delete({
     where: { id },
   });

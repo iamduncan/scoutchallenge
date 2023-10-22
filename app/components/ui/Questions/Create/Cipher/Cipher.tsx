@@ -1,12 +1,12 @@
-import  { type ChangeEvent } from "react";
-import  { type QuestionData , CipherType } from "../../types.ts";
+import { type ChangeEvent } from 'react';
+import { type QuestionData, CipherType } from '../../types.ts';
 
 export default function Cipher({
   questionData,
   handleUpdate,
 }: {
-  questionData: QuestionData<"CIPHER">;
-  handleUpdate: (data: QuestionData<"CIPHER">) => void;
+  questionData: QuestionData<'CIPHER'>;
+  handleUpdate: (data: QuestionData<'CIPHER'>) => void;
 }) {
   const handleTypeChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = event.currentTarget.value as CipherType;

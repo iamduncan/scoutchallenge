@@ -1,26 +1,31 @@
-import  { type Group, type Password, type Prisma, type User } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import {
+  type Group,
+  type Password,
+  type Prisma,
+  type User,
+} from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
-import { mg } from "#app/libs/email/config.ts";
-import { prisma } from "#app/utils/db.server.ts";
+import { mg } from '#app/libs/email/config.ts';
+import { prisma } from '#app/utils/db.server.ts';
 
-export type { User, Token } from "@prisma/client";
+export type { User, Token } from '@prisma/client';
 
-export async function getUserById(id: User["id"]) {
+export async function getUserById(id: User['id']) {
   return prisma.user.findUnique({
     where: { id },
     include: { groups: true, sections: true, roles: true },
   });
 }
 
-export async function getUserByEmail(email: User["email"]) {
+export async function getUserByEmail(email: User['email']) {
   return prisma.user.findUnique({ where: { email } });
 }
 
 export async function listUsers({
   limit = 10,
   offset = 0,
-  orderBy = { createdAt: "desc" },
+  orderBy = { createdAt: 'desc' },
   where = {},
 }: {
   limit?: number;
@@ -46,11 +51,11 @@ export async function listUsers({
 }
 
 export async function createUser(
-  username: User["username"],
-  email: User["email"],
+  username: User['username'],
+  email: User['email'],
   password: string,
-  name: User["name"],
-  group?: Group["name"],
+  name: User['name'],
+  group?: Group['name'],
   role?: string,
 ) {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -74,7 +79,7 @@ export async function createUser(
 }
 
 export async function updateUser(
-  id: User["id"],
+  id: User['id'],
   data: Prisma.UserUpdateWithoutPasswordInput,
 ) {
   return prisma.user.update({
@@ -84,7 +89,7 @@ export async function updateUser(
 }
 
 export async function updateUserPassword(
-  id: User["id"],
+  id: User['id'],
   password: string,
   tokenId?: string,
 ) {
@@ -108,7 +113,7 @@ export async function updateUserPassword(
   return user;
 }
 
-export async function deleteUserByEmail(email: User["email"]) {
+export async function deleteUserByEmail(email: User['email']) {
   return prisma.user.delete({ where: { email } });
 }
 
@@ -117,8 +122,8 @@ export async function deleteToken(id: string) {
 }
 
 export async function verifyLogin(
-  email: User["email"],
-  password: Password["hash"],
+  email: User['email'],
+  password: Password['hash'],
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
@@ -145,7 +150,7 @@ export async function verifyLogin(
   return userWithoutPassword;
 }
 
-export const sendPasswordReset = async (email: User["email"]) => {
+export const sendPasswordReset = async (email: User['email']) => {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
@@ -164,11 +169,11 @@ export const sendPasswordReset = async (email: User["email"]) => {
   });
 
   try {
-    const mailGunDomain = process.env.MAILGUN_DOMAIN || "";
+    const mailGunDomain = process.env.MAILGUN_DOMAIN || '';
     await mg().messages.create(mailGunDomain, {
-      from: "Scout Challenge Auth <auth@scoutchallenge.app>",
+      from: 'Scout Challenge Auth <auth@scoutchallenge.app>',
       to: email,
-      subject: "Reset your Scout Challenge password",
+      subject: 'Reset your Scout Challenge password',
       text: `You have requested to reset your Scout Challenge password.
 
         Please click the following link to reset your password:
@@ -232,7 +237,7 @@ export const tokenIsValid = async (token: string) => {
 export const addSubscriber = async (name: string, address: string) => {
   const subscriberList = process.env.MAILGUN_SUBSCRIBER_LIST;
   if (!subscriberList) {
-    console.error("MAILGUN_SUBSCRIBER_LIST is not set");
+    console.error('MAILGUN_SUBSCRIBER_LIST is not set');
     return;
   }
   try {
@@ -250,7 +255,7 @@ export const addSubscriber = async (name: string, address: string) => {
 export const removeSubscriber = async (address: string) => {
   const subscriberList = process.env.MAILGUN_SUBSCRIBER_LIST;
   if (!subscriberList) {
-    console.error("MAILGUN_SUBSCRIBER_LIST is not set");
+    console.error('MAILGUN_SUBSCRIBER_LIST is not set');
     return;
   }
   try {

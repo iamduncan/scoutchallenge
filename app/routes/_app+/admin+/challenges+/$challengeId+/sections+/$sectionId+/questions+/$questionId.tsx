@@ -1,20 +1,20 @@
-import { type ActionFunctionArgs, json } from "@remix-run/node";
-import { Link, useParams, useRouteLoaderData } from "@remix-run/react";
-import { deleteQuestion } from "#app/models/challenge.server.ts";
-import { type loader as challengeLoader } from "#app/routes/_app+/challenges+/$challengeId.tsx";
+import { type ActionFunctionArgs, json } from '@remix-run/node';
+import { Link, useParams, useRouteLoaderData } from '@remix-run/react';
+import { deleteQuestion } from '#app/models/challenge.server.ts';
+import { type loader as challengeLoader } from '#app/routes/_app+/challenges+/$challengeId.tsx';
 import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export default function QuestionPage() {
   const params = useParams();
   const data = useRouteLoaderData<typeof challengeLoader>(
-    "routes/_app+/challenges+/$challengeId"
+    'routes/_app+/challenges+/$challengeId',
   );
   const { sectionId, questionId } = params;
   const section = data?.challenge?.challengeSections.find(
-    (section) => section.id === sectionId
+    (section) => section.id === sectionId,
   );
   const question = section?.questions.find(
-    (question) => question.id === questionId
+    (question) => question.id === questionId,
   );
   return (
     <>
@@ -32,8 +32,8 @@ export default function QuestionPage() {
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const { challengeId, sectionId, questionId } = params;
-  if (request.method === "DELETE" && questionId) {
-    await requireUserWithRole(request, "SECTIONADMIN");
+  if (request.method === 'DELETE' && questionId) {
+    await requireUserWithRole(request, 'SECTIONADMIN');
     try {
       await deleteQuestion({ id: questionId });
       return json({ success: true });
@@ -42,10 +42,10 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     }
   }
   const formData = await request.formData();
-  const title = formData.get("title");
-  const description = formData.get("description");
-  const answer = formData.get("answer");
-  const correctAnswer = formData.get("correctAnswer");
+  const title = formData.get('title');
+  const description = formData.get('description');
+  const answer = formData.get('answer');
+  const correctAnswer = formData.get('correctAnswer');
   const questionData = { title, description, answer, correctAnswer };
   console.log(questionData);
   return json({ challengeId, sectionId, questionId, questionData });

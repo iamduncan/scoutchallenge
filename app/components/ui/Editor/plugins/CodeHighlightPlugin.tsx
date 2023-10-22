@@ -1,6 +1,6 @@
-import lexicalCode from "@lexical/code";
-import lexicalReact from "@lexical/react/LexicalComposerContext.js";
-import { useEffect } from "react";
+import lexicalCode from '@lexical/code';
+import lexicalReact from '@lexical/react/LexicalComposerContext.js';
+import { useEffect } from 'react';
 
 export default function CodeHighlightPlugin() {
   const registerCodeHighlighting = lexicalCode.registerCodeHighlighting;

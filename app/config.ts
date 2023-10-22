@@ -7,19 +7,19 @@ export type MenuItem = {
 
 export const menuItems: MenuItem[] = [
   {
-    id: "home",
-    label: "Home",
-    path: "/",
+    id: 'home',
+    label: 'Home',
+    path: '/',
   },
   {
-    id: "challenges",
-    label: "Challenges",
-    path: "/challenges",
+    id: 'challenges',
+    label: 'Challenges',
+    path: '/challenges',
   },
   {
-    id: "admin",
-    label: "Admin",
-    path: "/admin",
+    id: 'admin',
+    label: 'Admin',
+    path: '/admin',
     forAdmin: true,
   },
 ];

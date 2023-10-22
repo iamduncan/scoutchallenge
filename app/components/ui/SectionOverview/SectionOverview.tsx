@@ -5,16 +5,16 @@ import {
   Bars3Icon,
   PencilIcon,
   TrashIcon,
-} from "@heroicons/react/24/outline";
-import { type Question } from "@prisma/client";
-import { Form, Link } from "@remix-run/react";
-import { type MouseEvent, useState } from "react";
+} from '@heroicons/react/24/outline';
+import { type Question } from '@prisma/client';
+import { Form, Link } from '@remix-run/react';
+import { type MouseEvent, useState } from 'react';
 
 type SectionOverviewProps = {
   title: string;
   description?: string;
-  questions: (Pick<Question, "id" | "title"> & {
-    userStatus?: "complete" | "started" | "needsAttention" | "notStarted";
+  questions: (Pick<Question, 'id' | 'title'> & {
+    userStatus?: 'complete' | 'started' | 'needsAttention' | 'notStarted';
   })[];
   challengeId: string;
   sectionId: string;
@@ -25,14 +25,15 @@ const SectionOverview = (props: SectionOverviewProps) => {
   const { title, description, questions, challengeId, sectionId, admin } =
     props;
 
-  const [ expanded, setExpanded ] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div className="flex flex-col items-center justify-center rounded-lg border-2 bg-white">
       <div
         onClick={() => setExpanded(!expanded)}
-        className={`flex w-full cursor-pointer items-center justify-between bg-gray-50 px-3 py-2 ${expanded ? "border-b border-gray-200" : ""
-          }`}
+        className={`flex w-full cursor-pointer items-center justify-between bg-gray-50 px-3 py-2 ${
+          expanded ? 'border-b border-gray-200' : ''
+        }`}
       >
         <h1 className="rounded-lg text-xl font-semibold text-gray-800 md:text-3xl">
           {title}
@@ -47,10 +48,10 @@ const SectionOverview = (props: SectionOverviewProps) => {
           )}
         </div>
       </div>
-      <div className={`${expanded ? "block" : "hidden"} w-full`}>
+      <div className={`${expanded ? 'block' : 'hidden'} w-full`}>
         <div className="flex items-center px-3">
           <div
-            dangerouslySetInnerHTML={{ __html: description || "" }}
+            dangerouslySetInnerHTML={{ __html: description || '' }}
             className="flex-grow py-2 text-xl"
           />
         </div>
@@ -96,24 +97,24 @@ const SectionOverview = (props: SectionOverviewProps) => {
 export default SectionOverview;
 
 const QuestionUserStatus = (props: {
-  status: "complete" | "started" | "needsAttention" | "notStarted";
+  status: 'complete' | 'started' | 'needsAttention' | 'notStarted';
 }) => {
   const { status } = props;
 
   const getStatusClass = (
-    status: "complete" | "started" | "needsAttention" | "notStarted"
+    status: 'complete' | 'started' | 'needsAttention' | 'notStarted',
   ) => {
     switch (status) {
-      case "complete":
-        return "text-green-500";
-      case "started":
-        return "text-orange-500";
-      case "needsAttention":
-        return "text-red-500";
-      case "notStarted":
-        return "text-grey-300";
+      case 'complete':
+        return 'text-green-500';
+      case 'started':
+        return 'text-orange-500';
+      case 'needsAttention':
+        return 'text-red-500';
+      case 'notStarted':
+        return 'text-grey-300';
       default:
-        return "text-grey-300";
+        return 'text-grey-300';
     }
   };
 
@@ -125,7 +126,7 @@ const QuestionUserStatus = (props: {
 };
 
 const AdminMenu = ({ sectionId }: { sectionId: string }) => {
-  const [ menuOpen, setMenuOpen ] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const onClick = (e: MouseEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -136,8 +137,9 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
     <div onClick={onClick} className="relative">
       <Bars3Icon className="h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
       <div
-        className={`absolute right-0 z-50 mt-2 rounded border bg-white ${menuOpen ? "block" : "hidden"
-          }`}
+        className={`absolute right-0 z-50 mt-2 rounded border bg-white ${
+          menuOpen ? 'block' : 'hidden'
+        }`}
       >
         <ul className="flex flex-col">
           <li className="flex items-center hover:bg-gray-100">

@@ -1,1 +1,1 @@
-export { default } from "./ChallengeHero.tsx";
+export { default } from './ChallengeHero.tsx';

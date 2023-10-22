@@ -1,4 +1,4 @@
-import { Honeypot, SpamError } from "remix-utils/honeypot/server";
+import { Honeypot, SpamError } from 'remix-utils/honeypot/server';
 
 export const honeypot = new Honeypot({
   validFromFieldName: process.env.TESTING ? null : undefined,
@@ -10,7 +10,7 @@ export function checkHoneypot(formData: FormData) {
     honeypot.check(formData);
   } catch (error) {
     if (error instanceof SpamError) {
-      throw new Response("Form not submitted properly", { status: 400 });
+      throw new Response('Form not submitted properly', { status: 400 });
     }
     throw error;
   }

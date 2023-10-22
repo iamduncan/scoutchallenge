@@ -1,7 +1,7 @@
-import formData from "form-data";
-import Mailgun from "mailgun.js";
+import formData from 'form-data';
+import Mailgun from 'mailgun.js';
 export const config = {
-  baseURL: "https://api.sendinblue.com/v3",
+  baseURL: 'https://api.sendinblue.com/v3',
 };
 
 export const mg = () => {
@@ -11,10 +11,10 @@ export const mg = () => {
     const mg = new Mailgun.default(formData);
     return mg.client({
       key: mailGunKey,
-      username: "api",
-      url: "https://api.eu.mailgun.net",
+      username: 'api',
+      url: 'https://api.eu.mailgun.net',
     });
   } else {
-    throw new Error("MAILGUN_API_KEY or MAILGUN_DOMAIN is not defined");
+    throw new Error('MAILGUN_API_KEY or MAILGUN_DOMAIN is not defined');
   }
 };

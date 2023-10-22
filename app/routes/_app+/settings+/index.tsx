@@ -1,5 +1,5 @@
-import  { type LoaderFunctionArgs , redirect } from "@remix-run/node";
+import { type LoaderFunctionArgs, redirect } from '@remix-run/node';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return redirect("/settings/profile");
+  return redirect('/settings/profile');
 };

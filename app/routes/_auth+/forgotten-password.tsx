@@ -1,156 +1,191 @@
-import  { type ActionFunction , json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import * as React from "react";
-import { sendPasswordReset } from "#app/models/user.server.ts";
-import { validateEmail } from "#app/utils/utils.ts";
+import { conform, useForm } from '@conform-to/react'
+import { getFieldsetConstraint, parse } from '@conform-to/zod'
+import * as E from '@react-email/components'
+import {
+  json,
+  redirect,
+  type DataFunctionArgs,
+  type MetaFunction,
+} from '@remix-run/node'
+import { Link, useFetcher } from '@remix-run/react'
+import { AuthenticityTokenInput } from 'remix-utils/csrf/react'
+import { HoneypotInputs } from 'remix-utils/honeypot/react'
+import { z } from 'zod'
+import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx'
+import { ErrorList, Field } from '#app/components/forms.tsx'
+import { StatusButton } from '#app/components/ui/status-button.tsx'
+import { validateCSRF } from '#app/utils/csrf.server.ts'
+import { prisma } from '#app/utils/db.server.ts'
+import { sendEmail } from '#app/utils/email.server.ts'
+import { checkHoneypot } from '#app/utils/honeypot.server.ts'
+import { EmailSchema, UsernameSchema } from '#app/utils/user-validation.ts'
+import { prepareVerification } from './verify.tsx'
 
-interface ActionData {
-  errors?: {
-    email?: string;
-    password?: string;
-  };
+const ForgotPasswordSchema = z.object({
+  usernameOrEmail: z.union([ EmailSchema, UsernameSchema ]),
+})
+
+export async function action({ request }: DataFunctionArgs) {
+  const formData = await request.formData()
+  await validateCSRF(formData, request.headers)
+  checkHoneypot(formData)
+  const submission = await parse(formData, {
+    schema: ForgotPasswordSchema.superRefine(async (data, ctx) => {
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email: data.usernameOrEmail },
+            { username: data.usernameOrEmail },
+          ],
+        },
+        select: { id: true },
+      })
+      if (!user) {
+        ctx.addIssue({
+          path: [ 'usernameOrEmail' ],
+          code: z.ZodIssueCode.custom,
+          message: 'No user exists with this username or email',
+        })
+        return
+      }
+    }),
+    async: true,
+  })
+  if (submission.intent !== 'submit') {
+    return json({ status: 'idle', submission } as const)
+  }
+  if (!submission.value) {
+    return json({ status: 'error', submission } as const, { status: 400 })
+  }
+  const { usernameOrEmail } = submission.value
+
+  const user = await prisma.user.findFirstOrThrow({
+    where: { OR: [ { email: usernameOrEmail }, { username: usernameOrEmail } ] },
+    select: { email: true, username: true },
+  })
+
+  const { verifyUrl, redirectTo, otp } = await prepareVerification({
+    period: 10 * 60,
+    request,
+    type: 'reset-password',
+    target: usernameOrEmail,
+  })
+
+  const response = await sendEmail({
+    to: user.email,
+    subject: `Epic Notes Password Reset`,
+    react: (
+      <ForgotPasswordEmail onboardingUrl={verifyUrl.toString()} otp={otp} />
+    ),
+  })
+
+  if (response.status === 'success') {
+    return redirect(redirectTo.toString())
+  } else {
+    submission.error[ '' ] = [ response.error.message ]
+    return json({ status: 'error', submission } as const, { status: 500 })
+  }
 }
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get("email");
+function ForgotPasswordEmail({
+  onboardingUrl,
+  otp,
+}: {
+  onboardingUrl: string
+  otp: string
+}) {
+  return (
+    <E.Html lang="en" dir="ltr">
+      <E.Container>
+        <h1>
+          <E.Text>Epic Notes Password Reset</E.Text>
+        </h1>
+        <p>
+          <E.Text>
+            Here's your verification code: <strong>{otp}</strong>
+          </E.Text>
+        </p>
+        <p>
+          <E.Text>Or click the link:</E.Text>
+        </p>
+        <E.Link href={onboardingUrl}>{onboardingUrl}</E.Link>
+      </E.Container>
+    </E.Html>
+  )
+}
 
-  if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400 },
-    );
-  }
+export const meta: MetaFunction = () => {
+  return [ { title: 'Password Recovery for Epic Notes' } ]
+}
 
-  const user = await sendPasswordReset(email);
+export default function ForgotPasswordRoute() {
+  const forgotPassword = useFetcher<typeof action>()
 
-  if (!user) {
-    return json<ActionData>(
-      { errors: { email: "Invalid email" } },
-      { status: 400 },
-    );
-  }
-
-  return redirect("/login?success=password-reset");
-};
-
-export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/notes";
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    }
-  }, [actionData]);
+  const [ form, fields ] = useForm({
+    id: 'forgot-password-form',
+    constraint: getFieldsetConstraint(ForgotPasswordSchema),
+    lastSubmission: forgotPassword.data?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: ForgotPasswordSchema })
+    },
+    shouldRevalidate: 'onBlur',
+  })
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <div className="mb-8 w-full text-center">
-          <p>
-            If have forgotten your password, enter your email and we will get
-            you back on in no time.
+    <div className="container pb-32 pt-20">
+      <div className="flex flex-col justify-center">
+        <div className="text-center">
+          <h1 className="text-h1">Forgot Password</h1>
+          <p className="mt-3 text-body-md text-muted-foreground">
+            No worries, we'll send you reset instructions.
           </p>
-          {searchParams.get("error") && (
-            <div
-              className="mt-6 flex items-center justify-between gap-4 rounded border border-red-900/10 bg-red-50 p-4 text-red-700"
-              role="alert"
-            >
-              <div className="flex w-full items-center gap-4">
-                <span className="rounded-full bg-red-600 p-2 text-white">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01"
-                    />
-                  </svg>
-                </span>
-
-                <p className="flex-grow">
-                  <strong className="text-sm font-medium"> Uh-oh! </strong>
-
-                  <span className="block text-xs opacity-90">
-                    {searchParams.get("error") === "invalid-token" &&
-                      "Invalid token, please try again."}
-                  </span>
-                </p>
-              </div>
-            </div>
-          )}
         </div>
-        <Form method="post" className="space-y-6" noValidate>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
-            <div className="mt-1">
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Reset password
-          </button>
-          <div className="flex items-center justify-between">
-            <div className="text-center text-sm text-gray-500">
-              <Link className="text-blue-500 underline" to="/login">
-                Login
-              </Link>
-            </div>
-            <div className="text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/join",
-                  search: searchParams.toString(),
+        <div className="mx-auto mt-16 min-w-[368px] max-w-sm">
+          <forgotPassword.Form method="POST" {...form.props}>
+            <AuthenticityTokenInput />
+            <HoneypotInputs />
+            <div>
+              <Field
+                labelProps={{
+                  htmlFor: fields.usernameOrEmail.id,
+                  children: 'Username or Email',
                 }}
-              >
-                Sign up
-              </Link>
+                inputProps={{
+                  autoFocus: true,
+                  ...conform.input(fields.usernameOrEmail),
+                }}
+                errors={fields.usernameOrEmail.errors}
+              />
             </div>
-          </div>
-        </Form>
-      </div>
-      <div className="absolute top-4 left-4">
-        <Link to="/" className="hover:text-blue-500 hover:underline">
-          &larr; Go Home
-        </Link>
+            <ErrorList errors={form.errors} id={form.errorId} />
+
+            <div className="mt-6">
+              <StatusButton
+                className="w-full"
+                status={
+                  forgotPassword.state === 'submitting'
+                    ? 'pending'
+                    : forgotPassword.data?.status ?? 'idle'
+                }
+                type="submit"
+                disabled={forgotPassword.state !== 'idle'}
+              >
+                Recover password
+              </StatusButton>
+            </div>
+          </forgotPassword.Form>
+          <Link
+            to="/login"
+            className="mt-11 text-center text-body-sm font-bold"
+          >
+            Back to Login
+          </Link>
+        </div>
       </div>
     </div>
-  );
+  )
+}
+
+export function ErrorBoundary() {
+  return <GeneralErrorBoundary />
 }

@@ -1,19 +1,19 @@
-self.addEventListener("fetch", (event) => {
+self.addEventListener('fetch', (event) => {
   let url = new URL(event.request.url);
   let method = event.request.method;
 
   // any non GET request is ignored
-  if (method.toLowerCase() !== "get") return;
+  if (method.toLowerCase() !== 'get') return;
 
   // If the request is for the favicons, fonts, or the built files (which are hashed in the name)
   if (
-    url.pathname.startsWith("/icons/") ||
-    url.pathname.startsWith("/images/") ||
-    url.pathname.startsWith("/build/")
+    url.pathname.startsWith('/icons/') ||
+    url.pathname.startsWith('/images/') ||
+    url.pathname.startsWith('/build/')
   ) {
     event.respondWith(
       // we will open the assets cache
-      caches.open("assets").then(async (cache) => {
+      caches.open('assets').then(async (cache) => {
         // if the request is cached we will use the cache
         let cacheResponse = await cache.match(event.request);
         if (cacheResponse) return cacheResponse;
@@ -24,7 +24,7 @@ self.addEventListener("fetch", (event) => {
         cache.put(event.request, fetchResponse.clone());
 
         return fetchResponse;
-      })
+      }),
     );
   }
 
@@ -32,10 +32,10 @@ self.addEventListener("fetch", (event) => {
 });
 
 // Serve assets from cache
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function (event) {
   event.respondWith(
-    caches.match(event.request).then(function(response) {
+    caches.match(event.request).then(function (response) {
       return response || fetch(event.request);
-    })
+    }),
   );
 });

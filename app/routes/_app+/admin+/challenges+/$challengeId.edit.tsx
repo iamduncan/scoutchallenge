@@ -1,16 +1,21 @@
-import { type Prisma, ChallengeStatus } from "@prisma/client";
-import { Form, Link, useActionData, useLoaderData } from "@remix-run/react";
-import { type ActionFunction, type LoaderFunctionArgs, redirect, json } from "@remix-run/server-runtime";
-import { type EditorState, type LexicalEditor } from "lexical";
-import { useRef, useState } from "react";
-import Editor from "#app/components/ui/Editor/Editor.tsx";
-import { getChallenge, updateChallenge } from "#app/models/challenge.server.ts";
+import { type Prisma, ChallengeStatus } from '@prisma/client';
+import { Form, Link, useActionData, useLoaderData } from '@remix-run/react';
+import {
+  type ActionFunction,
+  type LoaderFunctionArgs,
+  redirect,
+  json,
+} from '@remix-run/server-runtime';
+import { type EditorState, type LexicalEditor } from 'lexical';
+import { useRef, useState } from 'react';
+import Editor from '#app/components/ui/Editor/Editor.tsx';
+import { getChallenge, updateChallenge } from '#app/models/challenge.server.ts';
 import { getUserId } from '#app/utils/auth.server.ts';
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const challengeId = params.challengeId;
   if (!challengeId) {
-    return redirect("/admin/challenges");
+    return redirect('/admin/challenges');
   }
   const challenge = await getChallenge({ id: challengeId });
   return json({ challenge });
@@ -37,15 +42,15 @@ export const action: ActionFunction = async ({ request, params }) => {
   const userId = await getUserId(request);
   if (!userId || !challengeId) {
     return badRequest({
-      formError: "You must be logged in to update a challenge",
+      formError: 'You must be logged in to update a challenge',
     });
   }
   const formData = await request.formData();
-  const name = formData.get("name") as string;
-  const openDate = formData.get("openDate") as string | null;
-  const closeDate = formData.get("closeDate") as string | null;
-  const introduction = formData.get("introduction") as string | null;
-  const status = formData.get("status") as ChallengeStatus;
+  const name = formData.get('name') as string;
+  const openDate = formData.get('openDate') as string | null;
+  const closeDate = formData.get('closeDate') as string | null;
+  const introduction = formData.get('introduction') as string | null;
+  const status = formData.get('status') as ChallengeStatus;
 
   const errors = {
     name: validateName(name),
@@ -54,15 +59,15 @@ export const action: ActionFunction = async ({ request, params }) => {
   const fields: Prisma.ChallengeUpdateInput = {
     name,
     openDate:
-      typeof openDate === "string" && openDate !== ""
+      typeof openDate === 'string' && openDate !== ''
         ? new Date(openDate)
         : undefined,
     closeDate:
-      typeof closeDate === "string" && closeDate !== ""
+      typeof closeDate === 'string' && closeDate !== ''
         ? new Date(closeDate)
         : undefined,
     introduction: introduction ?? null,
-    status: status || "OPEN",
+    status: status || 'OPEN',
     createdBy: {
       connect: {
         id: userId,
@@ -85,7 +90,7 @@ export default function ViewChallengePage() {
   const { challenge } = useLoaderData<typeof loader>();
   const nameRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<ActionData>();
-  const [ introduction, setIntroduction ] = useState<string>();
+  const [introduction, setIntroduction] = useState<string>();
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
       const editorState = editor.getEditorState();
@@ -95,13 +100,13 @@ export default function ViewChallengePage() {
   }
 
   const openDate =
-    typeof challenge?.openDate === "string"
-      ? new Date(challenge?.openDate).toISOString().split("T")[ 0 ]
+    typeof challenge?.openDate === 'string'
+      ? new Date(challenge?.openDate).toISOString().split('T')[0]
       : undefined;
 
   const closeDate =
-    typeof challenge?.closeDate === "string"
-      ? new Date(challenge?.closeDate).toISOString().split("T")[ 0 ]
+    typeof challenge?.closeDate === 'string'
+      ? new Date(challenge?.closeDate).toISOString().split('T')[0]
       : undefined;
 
   return (
@@ -114,7 +119,7 @@ export default function ViewChallengePage() {
               <div className="flex flex-col text-center">
                 <span className="text-sm font-bold">from</span>
                 <span>
-                  {new Date(challenge.openDate).toLocaleDateString("en-GB")}
+                  {new Date(challenge.openDate).toLocaleDateString('en-GB')}
                 </span>
               </div>
               <span className="px-2"> &rarr; </span>
@@ -124,7 +129,7 @@ export default function ViewChallengePage() {
             <div className="flex flex-col text-center">
               <span className="text-sm font-bold">to</span>
               <span>
-                {new Date(challenge.closeDate).toLocaleDateString("en-GB")}
+                {new Date(challenge.closeDate).toLocaleDateString('en-GB')}
               </span>
             </div>
           )}
@@ -180,13 +185,15 @@ export default function ViewChallengePage() {
           <label htmlFor="introduction" className="flex w-full flex-col gap-1">
             <span>Introduction: </span>
             <Editor
-              initialContent={challenge.introduction || introduction || undefined}
+              initialContent={
+                challenge.introduction || introduction || undefined
+              }
               onChange={onChange}
             />
             <input
               type="hidden"
               name="introduction"
-              defaultValue={challenge.introduction || ""}
+              defaultValue={challenge.introduction || ''}
             />
           </label>
         </div>

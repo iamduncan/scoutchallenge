@@ -3,48 +3,53 @@ import {
   PuzzlePieceIcon,
   UserGroupIcon,
   UserIcon,
-} from "@heroicons/react/24/outline";
-import { Form, useLoaderData, useSearchParams } from "@remix-run/react";
-import { json, redirect, type ActionFunction, type LoaderFunctionArgs } from "@remix-run/server-runtime";
-import avatarPlaceholder from "#app/assets/images/avatar-placeholder.gif";
-import { AppLayout } from "#app/layouts/index.ts";
-import { getUserById, updateUser } from "#app/models/user.server.ts";
-import { getUserId, requireUserId } from "#app/utils/auth.server.ts";
+} from '@heroicons/react/24/outline';
+import { Form, useLoaderData, useSearchParams } from '@remix-run/react';
+import {
+  json,
+  redirect,
+  type ActionFunction,
+  type LoaderFunctionArgs,
+} from '@remix-run/server-runtime';
+import avatarPlaceholder from '#app/assets/images/avatar-placeholder.gif';
+import { AppLayout } from '#app/layouts/index.ts';
+import { getUserById, updateUser } from '#app/models/user.server.ts';
+import { getUserId, requireUserId } from '#app/utils/auth.server.ts';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
-  const adminSecretQuery = url.searchParams.get("adminSecret");
+  const adminSecretQuery = url.searchParams.get('adminSecret');
   const adminSecret =
     process.env.ADMIN_SECRET !== undefined &&
     adminSecretQuery === process.env.ADMIN_SECRET;
   const userId = await requireUserId(request);
   const user = await getUserById(userId);
   if (!user) {
-    throw redirect("/login");
+    throw redirect('/login');
   }
   return json({ adminSecret, user });
 };
 
 export const action: ActionFunction = async ({ request }) => {
   const url = new URL(request.url);
-  const adminSecretQuery = url.searchParams.get("adminSecret");
+  const adminSecretQuery = url.searchParams.get('adminSecret');
   const adminSecret =
     process.env.ADMIN_SECRET !== undefined &&
     adminSecretQuery === process.env.ADMIN_SECRET;
   if (!adminSecret) {
     return json(
       {
-        status: "error",
-        message: "You are not authorized to view this page.",
+        status: 'error',
+        message: 'You are not authorized to view this page.',
       },
-      403
+      403,
     );
   }
   const formData = await request.formData();
-  const role = formData.get("role") as string;
+  const role = formData.get('role') as string;
   const userId = await getUserId(request);
   if (!userId) {
-    return json({ status: "error", message: "No user id" }, 400);
+    return json({ status: 'error', message: 'No user id' }, 400);
   }
   await updateUser(userId, {
     roles: {
@@ -52,14 +57,14 @@ export const action: ActionFunction = async ({ request }) => {
         where: { name: role },
         create: { name: role },
       },
-    }
+    },
   });
-  return json({ status: "success" });
+  return json({ status: 'success' });
 };
 
 export default function ProfilePage() {
   const { adminSecret, user } = useLoaderData<typeof loader>();
-  const [ searchParams ] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   return (
     <AppLayout>
@@ -84,11 +89,11 @@ export default function ProfilePage() {
               Reprehenderit, eligendi dolorum sequi illum qui unde aspernatur
               non deserunt
             </p> */}
-            <ul className="mt-3 divide-y rounded bg-gray-100 py-2 px-3 text-gray-600 shadow-sm hover:text-gray-700 hover:shadow">
+            <ul className="mt-3 divide-y rounded bg-gray-100 px-3 py-2 text-gray-600 shadow-sm hover:text-gray-700 hover:shadow">
               <li className="flex items-center py-3">
                 <span>Status</span>
                 <span className="ml-auto">
-                  <span className="rounded bg-green-500 py-1 px-2 text-sm text-white">
+                  <span className="rounded bg-green-500 px-2 py-1 text-sm text-white">
                     Active
                   </span>
                 </span>
@@ -96,20 +101,20 @@ export default function ProfilePage() {
               <li className="flex items-center py-3">
                 <span>Member since</span>
                 <span className="ml-auto">
-                  {new Intl.DateTimeFormat("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
+                  {new Intl.DateTimeFormat('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
                   }).format(new Date(user.createdAt))}
                 </span>
               </li>
             </ul>
-            {adminSecret && searchParams.get("adminSecret") && (
+            {adminSecret && searchParams.get('adminSecret') && (
               <div className="mt-3">
                 <Form
                   // eslint-disable-next-line remix-react-routes/require-valid-paths
                   action={`/profile?adminSecret=${searchParams.get(
-                    "adminSecret"
+                    'adminSecret',
                   )}`}
                   method="post"
                   className="flex flex-col"
@@ -126,7 +131,7 @@ export default function ProfilePage() {
                   <div className="mt-3 flex flex-col">
                     <button
                       type="submit"
-                      className="focus:shadow-outline-purple flex w-full justify-center rounded-md border border-transparent bg-purple-600 py-2 px-4 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-purple-500 focus:border-purple-700 focus:outline-none active:bg-purple-700"
+                      className="focus:shadow-outline-purple flex w-full justify-center rounded-md border border-transparent bg-purple-600 px-4 py-2 text-sm font-medium text-white transition duration-150 ease-in-out hover:bg-purple-500 focus:border-purple-700 focus:outline-none active:bg-purple-700"
                     >
                       Update
                     </button>

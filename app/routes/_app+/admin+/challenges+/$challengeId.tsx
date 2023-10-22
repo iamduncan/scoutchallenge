@@ -1,14 +1,19 @@
-import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
-import  { type ActionFunction, type LoaderFunctionArgs , json, redirect } from "@remix-run/node";
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
-import { SectionOverview } from "#app/components/ui/index.ts";
+import { ArrowLeftIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+  type ActionFunction,
+  type LoaderFunctionArgs,
+  json,
+  redirect,
+} from '@remix-run/node';
+import { Form, Link, Outlet, useLoaderData } from '@remix-run/react';
+import { useState } from 'react';
+import { SectionOverview } from '#app/components/ui/index.ts';
 import {
   addSectionToChallenge,
   deleteChallenge,
   getChallenge,
-} from "#app/models/challenge.server.ts";
-import { getSectionListItems } from "#app/models/section.server.ts";
+} from '#app/models/challenge.server.ts';
+import { getSectionListItems } from '#app/models/section.server.ts';
 import { getUserById } from '#app/models/user.server.ts';
 import { getUserId } from '#app/utils/auth.server.ts';
 
@@ -17,18 +22,18 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
   const user = userId ? await getUserById(userId) : null;
   if (!challengeId) {
-    return redirect("/admin/challenges");
+    return redirect('/admin/challenges');
   }
-  const [ challenge, sections ] = await Promise.all([
+  const [challenge, sections] = await Promise.all([
     getChallenge({ id: challengeId, groups: user?.groups }),
-    getSectionListItems({ groupId: user?.groups[ 0 ]?.id }),
+    getSectionListItems({ groupId: user?.groups[0]?.id }),
   ]);
   return json({ challenge, sections });
 };
 
 export default function ViewChallengePage() {
   const { challenge, sections } = useLoaderData<typeof loader>();
-  const [ confirmDelete, setConfirmDelete ] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   return (
     <div>
       <div className="flex flex-col justify-between gap-2 md:flex-row md:items-center">
@@ -37,7 +42,7 @@ export default function ViewChallengePage() {
           <div className="flex">
             <Link
               to={`/challenges/${challenge.id}`}
-              className="mr-4 rounded border border-blue-500 py-1 px-3 text-sm font-semibold"
+              className="mr-4 rounded border border-blue-500 px-3 py-1 text-sm font-semibold"
             >
               Preview
             </Link>
@@ -55,7 +60,7 @@ export default function ViewChallengePage() {
                 <div className="flex flex-col text-center">
                   <span className="text-sm font-bold">from</span>
                   <span>
-                    {new Date(challenge.openDate).toLocaleDateString("en-GB")}
+                    {new Date(challenge.openDate).toLocaleDateString('en-GB')}
                   </span>
                 </div>
                 <span className="px-2"> &rarr; </span>
@@ -65,7 +70,7 @@ export default function ViewChallengePage() {
               <div className="flex flex-col text-center">
                 <span className="text-sm font-bold">to</span>
                 <span>
-                  {new Date(challenge.closeDate).toLocaleDateString("en-GB")}
+                  {new Date(challenge.closeDate).toLocaleDateString('en-GB')}
                 </span>
               </div>
             )}
@@ -95,7 +100,7 @@ export default function ViewChallengePage() {
         <div className="text-right">
           <button
             type="submit"
-            className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+            className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
           >
             Add
           </button>
@@ -119,20 +124,20 @@ export default function ViewChallengePage() {
       <div className="flex gap-2">
         <Link
           to=".."
-          className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 lg:hidden"
+          className="mb-1 mr-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 lg:hidden"
           type="button"
         >
           <ArrowLeftIcon className="h-6 w-6" /> Back
         </Link>
         <Link
           to="./sections/add"
-          className="rounded bg-green-500  py-2 px-4 text-white hover:bg-green-600 focus:bg-green-400"
+          className="rounded bg-green-500  px-4 py-2 text-white hover:bg-green-600 focus:bg-green-400"
         >
           Add Section
         </Link>
         <Link
           to={`./edit`}
-          className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+          className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
         >
           Edit
         </Link>
@@ -145,10 +150,10 @@ export default function ViewChallengePage() {
                 setConfirmDelete(true);
               }
             }}
-            className="flex items-center rounded bg-red-500  py-2 px-4 text-white hover:bg-red-600 focus:bg-red-400"
+            className="flex items-center rounded bg-red-500  px-4 py-2 text-white hover:bg-red-600 focus:bg-red-400"
           >
-            <TrashIcon className="mr-2 h-5 w-5" />{" "}
-            {confirmDelete ? "Confirm" : "Delete"}
+            <TrashIcon className="mr-2 h-5 w-5" />{' '}
+            {confirmDelete ? 'Confirm' : 'Delete'}
           </button>
         </Form>
       </div>
@@ -160,13 +165,13 @@ export default function ViewChallengePage() {
 export const action: ActionFunction = async ({ request, params }) => {
   const challengeId = params.challengeId;
   const formData = await request.formData();
-  const sectionId = formData.get("section");
-  if (request.method === "DELETE") {
+  const sectionId = formData.get('section');
+  if (request.method === 'DELETE') {
     await deleteChallenge({ id: challengeId as string });
     return redirect(`/admin/challenges`);
   }
 
-  if (typeof sectionId !== "string" || !challengeId) {
+  if (typeof sectionId !== 'string' || !challengeId) {
     return {};
   }
 
@@ -179,7 +184,7 @@ export function CatchBoundary() {
   return (
     <div>
       <h2>We couldn't find that challenge!</h2>
-      <Link to={'/admin/challenges/new'} className='btn btn-primary'>
+      <Link to={'/admin/challenges/new'} className="btn btn-primary">
         Create a new challenge
       </Link>
     </div>

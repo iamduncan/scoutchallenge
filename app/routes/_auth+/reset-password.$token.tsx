@@ -1,17 +1,18 @@
 import {
   type ActionFunction,
   type LoaderFunction,
-  json, redirect
-} from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
-import * as React from "react";
-import { tokenIsValid, updateUserPassword } from "#app/models/user.server.ts";
+  json,
+  redirect,
+} from '@remix-run/node';
+import { Form, Link, useActionData } from '@remix-run/react';
+import * as React from 'react';
+import { tokenIsValid, updateUserPassword } from '#app/models/user.server.ts';
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   const token = params.token;
   const validToken = await tokenIsValid(token as string);
   if (!validToken) {
-    return redirect("/forgotten-password?error=invalid-token");
+    return redirect('/forgotten-password?error=invalid-token');
   }
   return json({});
 };
@@ -27,42 +28,42 @@ export const action: ActionFunction = async ({ request, params }) => {
   const token = params.token;
   const validToken = await tokenIsValid(token as string);
   if (!validToken) {
-    return redirect("/forgotten-password?error=invalid-token");
+    return redirect('/forgotten-password?error=invalid-token');
   }
   const formData = await request.formData();
-  const password = formData.get("password");
-  const confirmPassword = formData.get("confirmPassword");
+  const password = formData.get('password');
+  const confirmPassword = formData.get('confirmPassword');
 
-  if (typeof password !== "string") {
+  if (typeof password !== 'string') {
     return json<ActionData>(
-      { errors: { password: "Password is required" } },
+      { errors: { password: 'Password is required' } },
       { status: 400 },
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
-      { errors: { password: "Password is too short" } },
+      { errors: { password: 'Password is too short' } },
       { status: 400 },
     );
   }
 
   if (password !== confirmPassword) {
     return json<ActionData>(
-      { errors: { confirmPassword: "Passwords do not match" } },
+      { errors: { confirmPassword: 'Passwords do not match' } },
       { status: 400 },
     );
   }
 
   const userId = validToken.userId;
-  if (typeof userId !== "string") {
+  if (typeof userId !== 'string') {
     return json<ActionData>(
-      { errors: { password: "User is not valid" } },
+      { errors: { password: 'User is not valid' } },
       { status: 400 },
     );
   }
   await updateUserPassword(userId, password, validToken.id);
-  return redirect("/login?success=password-updated");
+  return redirect('/login?success=password-updated');
 };
 
 export default function ResetPassword() {
@@ -76,7 +77,7 @@ export default function ResetPassword() {
     } else if (actionData?.errors?.confirmPassword) {
       confirmPasswordRef.current?.focus();
     }
-  }, [ actionData ]);
+  }, [actionData]);
 
   return (
     <div className="flex min-h-full flex-col justify-center">
@@ -150,7 +151,7 @@ export default function ResetPassword() {
           <div className="flex w-full justify-center">
             <button
               type="submit"
-              className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"
+              className="rounded bg-blue-500  px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
             >
               Reset Password
             </button>
@@ -159,7 +160,7 @@ export default function ResetPassword() {
             <div className="text-center text-sm text-gray-500">
               <p>
                 Scout Challenge is not affiliated with the Scout Association,
-                for more information about Scout Challenge, visit our{" "}
+                for more information about Scout Challenge, visit our{' '}
                 <Link className="text-blue-500 underline" to="/support">
                   support section
                 </Link>
@@ -169,7 +170,7 @@ export default function ResetPassword() {
                 <Link
                   className="text-blue-500 underline"
                   to={{
-                    pathname: "/login",
+                    pathname: '/login',
                   }}
                 >
                   Log in
@@ -179,7 +180,7 @@ export default function ResetPassword() {
           </div>
         </Form>
       </div>
-      <div className="absolute top-4 left-4">
+      <div className="absolute left-4 top-4">
         <Link to="/" className="hover:text-blue-500 hover:underline">
           &larr; Go Home
         </Link>

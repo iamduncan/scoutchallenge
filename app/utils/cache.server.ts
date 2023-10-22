@@ -1,6 +1,6 @@
-import fs from "fs";
-import { remember } from "@epic-web/remember";
-import Database from "better-sqlite3";
+import fs from 'fs';
+import { remember } from '@epic-web/remember';
+import Database from 'better-sqlite3';
 import {
   cachified as baseCachified,
   lruCacheAdapter,
@@ -9,16 +9,16 @@ import {
   type CacheEntry,
   type Cache as CachifiedCache,
   type CachifiedOptions,
-} from "cachified";
-import { LRUCache } from "lru-cache";
-import { z } from "zod";
-import { updatePrimaryCacheValue } from "#app/routes/admin+/cache_.sqlite.tsx";
-import { getInstanceInfo, getInstanceInfoSync } from "./litefs.server.ts";
-import { cachifiedTimingReporter, type Timings } from "./timing.server.ts";
+} from 'cachified';
+import { LRUCache } from 'lru-cache';
+import { z } from 'zod';
+import { updatePrimaryCacheValue } from '#app/routes/admin+/cache_.sqlite.tsx';
+import { getInstanceInfo, getInstanceInfoSync } from './litefs.server.ts';
+import { cachifiedTimingReporter, type Timings } from './timing.server.ts';
 
 const CACHE_DATABASE_PATH = process.env.CACHE_DATABASE_PATH;
 
-const cacheDb = remember("cacheDb", createDatabase);
+const cacheDb = remember('cacheDb', createDatabase);
 
 function createDatabase(tryAgain = true): Database.Database {
   const db = new Database(CACHE_DATABASE_PATH);
@@ -48,7 +48,7 @@ function createDatabase(tryAgain = true): Database.Database {
 }
 
 const lru = remember(
-  "lru-cache",
+  'lru-cache',
   () => new LRUCache<string, CacheEntry<unknown>>({ max: 5000 }),
 );
 
@@ -68,10 +68,10 @@ const cacheQueryResultSchema = z.object({
 });
 
 export const cache: CachifiedCache = {
-  name: "SQLite cache",
+  name: 'SQLite cache',
   get(key) {
     const result = cacheDb
-      .prepare("SELECT value, metadata FROM cache WHERE key = ?")
+      .prepare('SELECT value, metadata FROM cache WHERE key = ?')
       .get(key);
     const parseResult = cacheQueryResultSchema.safeParse(result);
     if (!parseResult.success) return null;
@@ -91,7 +91,7 @@ export const cache: CachifiedCache = {
     if (currentIsPrimary) {
       cacheDb
         .prepare(
-          "INSERT OR REPLACE INTO cache (key, value, metadata) VALUES (@key, @value, @metadata)",
+          'INSERT OR REPLACE INTO cache (key, value, metadata) VALUES (@key, @value, @metadata)',
         )
         .run({
           key,
@@ -116,7 +116,7 @@ export const cache: CachifiedCache = {
   async delete(key) {
     const { currentIsPrimary, primaryInstance } = await getInstanceInfo();
     if (currentIsPrimary) {
-      cacheDb.prepare("DELETE FROM cache WHERE key = ?").run(key);
+      cacheDb.prepare('DELETE FROM cache WHERE key = ?').run(key);
     } else {
       // fire-and-forget cache update
       void updatePrimaryCacheValue({
@@ -136,7 +136,7 @@ export const cache: CachifiedCache = {
 export async function getAllCacheKeys(limit: number) {
   return {
     sqlite: cacheDb
-      .prepare("SELECT key FROM cache LIMIT ?")
+      .prepare('SELECT key FROM cache LIMIT ?')
       .all(limit)
       .map((row) => (row as { key: string }).key),
     lru: [...lru.keys()],
@@ -146,7 +146,7 @@ export async function getAllCacheKeys(limit: number) {
 export async function searchCacheKeys(search: string, limit: number) {
   return {
     sqlite: cacheDb
-      .prepare("SELECT key FROM cache WHERE key LIKE ? LIMIT ?")
+      .prepare('SELECT key FROM cache WHERE key LIKE ? LIMIT ?')
       .all(`%${search}%`, limit)
       .map((row) => (row as { key: string }).key),
     lru: [...lru.keys()].filter((key) => key.includes(search)),

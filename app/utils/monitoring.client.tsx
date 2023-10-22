@@ -1,6 +1,6 @@
-import { useLocation, useMatches } from "@remix-run/react";
-import * as Sentry from "@sentry/remix";
-import { useEffect } from "react";
+import { useLocation, useMatches } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
+import { useEffect } from 'react';
 
 export function init() {
   Sentry.init({

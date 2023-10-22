@@ -1,14 +1,14 @@
-import { type LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
+import { type LoaderFunctionArgs, json } from '@remix-run/node';
+import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
 
-import { Header } from "#app/components/common/index.ts";
-import { getNoteListItems } from "#app/models/note.server.ts";
-import { requireUserId } from "#app/utils/auth.server.ts";
-import { useUser } from "#app/utils/user.ts";
+import { Header } from '#app/components/common/index.ts';
+import { getNoteListItems } from '#app/models/note.server.ts';
+import { requireUserId } from '#app/utils/auth.server.ts';
+import { useUser } from '#app/utils/user.ts';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
-  const noteListItems = await getNoteListItems({ userId });
+  const noteListItems = await getNoteListItems({ ownerId: userId });
   return json({ noteListItems });
 };
 
@@ -36,7 +36,7 @@ export default function NotesPage() {
                 <li key={note.id}>
                   <NavLink
                     className={({ isActive }) =>
-                      `block border-b p-4 text-xl ${isActive ? "bg-white" : ""}`
+                      `block border-b p-4 text-xl ${isActive ? 'bg-white' : ''}`
                     }
                     to={note.id}
                   >

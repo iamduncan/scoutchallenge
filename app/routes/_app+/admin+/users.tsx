@@ -1,8 +1,8 @@
-import { type LoaderFunction } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
-import { AdminList } from "#app/components/ui/index.ts";
-import { type Group } from "#app/models/group.server.ts";
-import { type User, listUsers } from "#app/models/user.server.ts";
+import { type LoaderFunction } from '@remix-run/node';
+import { Outlet, useLoaderData } from '@remix-run/react';
+import { AdminList } from '#app/components/ui/index.ts';
+import { type Group } from '#app/models/group.server.ts';
+import { type User, listUsers } from '#app/models/user.server.ts';
 import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -21,7 +21,7 @@ export default function AdminUsers() {
       route="users"
       listItems={users.map((user) => ({
         name: user.name ?? user.username,
-        subName: user.groups.length > 0 ? user.groups[ 0 ]?.name : undefined,
+        subName: user.groups.length > 0 ? user.groups[0]?.name : undefined,
         id: user.id,
       }))}
       hideDelete

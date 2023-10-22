@@ -1,13 +1,13 @@
-import  { type QuestionData } from "../../types.ts";
+import { type QuestionData } from '../../types.ts';
 
 const TrueFalse = ({
   questionData,
   name,
   handleUpdate,
 }: {
-  questionData: QuestionData<"TRUEFALSE">;
+  questionData: QuestionData<'TRUEFALSE'>;
   name: string;
-  handleUpdate: (data: QuestionData<"TRUEFALSE">) => void;
+  handleUpdate: (data: QuestionData<'TRUEFALSE'>) => void;
 }) => {
   return (
     <>

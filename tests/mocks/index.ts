@@ -1,9 +1,9 @@
-import closeWithGrace from "close-with-grace";
-import { passthrough, http } from "msw";
-import { setupServer } from "msw/node";
+import closeWithGrace from 'close-with-grace';
+import { passthrough, http } from 'msw';
+import { setupServer } from 'msw/node';
 // import { handlers as githubHandlers } from './github.ts'
-import { handlers as googleHandlers } from "./google.ts";
-import { handlers as resendHandlers } from "./resend.ts";
+import { handlers as googleHandlers } from './google.ts';
+import { handlers as resendHandlers } from './resend.ts';
 
 const miscHandlers = [
   process.env.REMIX_DEV_ORIGIN
@@ -18,10 +18,10 @@ export const server = setupServer(
   ...googleHandlers,
 );
 
-server.listen({ onUnhandledRequest: "warn" });
+server.listen({ onUnhandledRequest: 'warn' });
 
-if (process.env.NODE_ENV !== "test") {
-  console.info("🔶 Mock server installed");
+if (process.env.NODE_ENV !== 'test') {
+  console.info('🔶 Mock server installed');
 
   closeWithGrace(() => {
     server.close();

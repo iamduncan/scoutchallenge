@@ -1,127 +1,133 @@
-import { faker } from "@faker-js/faker";
-import { http } from "msw";
-import { afterEach, expect, test } from "vitest";
-import { twoFAVerificationType } from "#app/routes/_app+/settings+/profile.two-factor.tsx";
+import { faker } from '@faker-js/faker';
+import { http } from 'msw';
+import { afterEach, expect, test } from 'vitest';
+import { twoFAVerificationType } from '#app/routes/_app+/settings+/profile.two-factor.tsx';
 import {
   getSessionExpirationDate,
   sessionKey,
-} from "#app/utils/auth.server.ts";
-import { connectionSessionStorage } from "#app/utils/connections.server.ts";
-import { GOOGLE_PROVIDER_NAME } from "#app/utils/connections.tsx";
-import { prisma } from "#app/utils/db.server.ts";
-import { invariant } from "#app/utils/misc.tsx";
-import { authSessionStorage } from "#app/utils/session.server.ts";
-import { generateTOTP } from "#app/utils/totp.server.ts";
-import { createUser } from "#tests/db-utils.ts";
-import { insertGitHubUser, deleteGitHubUsers } from "#tests/mocks/github.ts";
-import { server } from "#tests/mocks/index.ts";
-import { consoleError } from "#tests/setup/setup-test-env.ts";
-import { BASE_URL, convertSetCookieToCookie } from "#tests/utils.ts";
-import { loader } from "./auth.$provider.callback.ts";
+} from '#app/utils/auth.server.ts';
+import { connectionSessionStorage } from '#app/utils/connections.server.ts';
+import { GOOGLE_PROVIDER_NAME } from '#app/utils/connections.tsx';
+import { prisma } from '#app/utils/db.server.ts';
+import { invariant } from '#app/utils/misc.tsx';
+import { authSessionStorage } from '#app/utils/session.server.ts';
+import { generateTOTP } from '#app/utils/totp.server.ts';
+import { createUser } from '#tests/db-utils.ts';
+import { deleteGoogleUsers, insertGoogleUser } from '#tests/mocks/google.ts';
+import { server } from '#tests/mocks/index.ts';
+import { consoleError } from '#tests/setup/setup-test-env.ts';
+import { BASE_URL, convertSetCookieToCookie } from '#tests/utils.ts';
+import { loader } from './auth.$provider.callback.ts';
 
-const ROUTE_PATH = "/auth/google/callback";
-const PARAMS = { provider: "google" };
+const ROUTE_PATH = '/auth/google/callback';
+const PARAMS = { provider: 'google' };
 
 afterEach(async () => {
-  await deleteGitHubUsers();
+  await deleteGoogleUsers();
 });
 
-test("a new user goes to onboarding", async () => {
+test('a new user goes to onboarding', async () => {
   const request = await setupRequest();
   const response = await loader({ request, params: PARAMS, context: {} }).catch(
     (e) => e,
   );
-  expect(response).toHaveRedirect("/onboarding/github");
+  expect(response).toHaveRedirect('/onboarding/google');
 });
 
-test("when auth fails, send the user to login with a toast", async () => {
+test('when auth fails, send the user to login with a toast', async () => {
   consoleError.mockImplementation(() => {});
   server.use(
-    http.post("https://github.com/login/oauth/access_token", async () => {
-      return new Response("error", { status: 400 });
+    http.post('https://oauth2.googleapis.com/token', async () => {
+      return new Response('error', { status: 400 });
     }),
   );
   const request = await setupRequest();
   const response = await loader({ request, params: PARAMS, context: {} }).catch(
     (e) => e,
   );
-  invariant(response instanceof Response, "response should be a Response");
-  expect(response).toHaveRedirect("/login");
+  invariant(response instanceof Response, 'response should be a Response');
+  expect(response).toHaveRedirect('/login');
   await expect(response).toSendToast(
     expect.objectContaining({
-      title: "Auth Failed",
-      type: "error",
+      title: 'Auth Failed',
+      type: 'error',
     }),
   );
   expect(consoleError).toHaveBeenCalledTimes(1);
 });
 
-test("when a user is logged in, it creates the connection", async () => {
-  const githubUser = await insertGitHubUser();
+test('when a user is logged in, it creates the connection', async () => {
+  const googleUser = await insertGoogleUser();
   const session = await setupUser();
   const request = await setupRequest({
     sessionId: session.id,
-    code: githubUser.code,
+    code: googleUser.id,
   });
   const response = await loader({ request, params: PARAMS, context: {} });
-  expect(response).toHaveRedirect("/settings/profile/connections");
+  expect(response).toHaveRedirect('/settings/profile/connections');
   await expect(response).toSendToast(
     expect.objectContaining({
-      title: "Connected",
-      type: "success",
-      description: expect.stringContaining(githubUser.profile.login),
+      title: 'Connected',
+      type: 'success',
+      description: expect.stringContaining(
+        googleUser._json.name.toLowerCase().replace(/\s/g, '_'),
+      ),
     }),
   );
   const connection = await prisma.connection.findFirst({
     select: { id: true },
     where: {
       userId: session.userId,
-      providerId: githubUser.profile.id.toString(),
+      providerId: googleUser.id.toString(),
     },
   });
   expect(
     connection,
-    "the connection was not created in the database",
+    'the connection was not created in the database',
   ).toBeTruthy();
 });
 
 test(`when a user is logged in and has already connected, it doesn't do anything and just redirects the user back to the connections page`, async () => {
   const session = await setupUser();
-  const githubUser = await insertGitHubUser();
+  const googleUser = await insertGoogleUser();
   await prisma.connection.create({
     data: {
       providerName: GOOGLE_PROVIDER_NAME,
       userId: session.userId,
-      providerId: githubUser.profile.id.toString(),
+      providerId: googleUser.id.toString(),
     },
   });
   const request = await setupRequest({
     sessionId: session.id,
-    code: githubUser.code,
+    code: googleUser.id,
   });
   const response = await loader({ request, params: PARAMS, context: {} });
-  expect(response).toHaveRedirect("/settings/profile/connections");
+  expect(response).toHaveRedirect('/settings/profile/connections');
   expect(response).toSendToast(
     expect.objectContaining({
-      title: "Already Connected",
-      description: expect.stringContaining(githubUser.profile.login),
+      title: 'Already Connected',
+      description: expect.stringContaining(
+        googleUser._json.name.toLowerCase().replace(/\s/g, '_'),
+      ),
     }),
   );
 });
 
-test("when a user exists with the same email, create connection and make session", async () => {
-  const githubUser = await insertGitHubUser();
-  const email = githubUser.primaryEmail.toLowerCase();
+test('when a user exists with the same email, create connection and make session', async () => {
+  const googleUser = await insertGoogleUser();
+  const email = googleUser._json.email.toLowerCase();
   const { userId } = await setupUser({ ...createUser(), email });
-  const request = await setupRequest({ code: githubUser.code });
+  const request = await setupRequest({ code: googleUser.id });
   const response = await loader({ request, params: PARAMS, context: {} });
 
-  expect(response).toHaveRedirect("/");
+  expect(response).toHaveRedirect('/');
 
   await expect(response).toSendToast(
     expect.objectContaining({
-      type: "message",
-      description: expect.stringContaining(githubUser.profile.login),
+      type: 'message',
+      description: expect.stringContaining(
+        googleUser._json.name.toLowerCase().replace(/\s/g, '_'),
+      ),
     }),
   );
 
@@ -129,26 +135,26 @@ test("when a user exists with the same email, create connection and make session
     select: { id: true },
     where: {
       userId: userId,
-      providerId: githubUser.profile.id.toString(),
+      providerId: googleUser.id.toString(),
     },
   });
   expect(
     connection,
-    "the connection was not created in the database",
+    'the connection was not created in the database',
   ).toBeTruthy();
 
   await expect(response).toHaveSessionForUser(userId);
 });
 
-test("gives an error if the account is already connected to another user", async () => {
-  const githubUser = await insertGitHubUser();
+test('gives an error if the account is already connected to another user', async () => {
+  const googleUser = await insertGoogleUser();
   await prisma.user.create({
     data: {
       ...createUser(),
       connections: {
         create: {
           providerName: GOOGLE_PROVIDER_NAME,
-          providerId: githubUser.profile.id.toString(),
+          providerId: googleUser.id.toString(),
         },
       },
     },
@@ -156,43 +162,43 @@ test("gives an error if the account is already connected to another user", async
   const session = await setupUser();
   const request = await setupRequest({
     sessionId: session.id,
-    code: githubUser.code,
+    code: googleUser.id,
   });
   const response = await loader({ request, params: PARAMS, context: {} });
-  expect(response).toHaveRedirect("/settings/profile/connections");
+  expect(response).toHaveRedirect('/settings/profile/connections');
   await expect(response).toSendToast(
     expect.objectContaining({
-      title: "Already Connected",
+      title: 'Already Connected',
       description: expect.stringContaining(
-        "already connected to another account",
+        'already connected to another account',
       ),
     }),
   );
 });
 
-test("if a user is not logged in, but the connection exists, make a session", async () => {
-  const githubUser = await insertGitHubUser();
+test('if a user is not logged in, but the connection exists, make a session', async () => {
+  const googleUser = await insertGoogleUser();
   const { userId } = await setupUser();
   await prisma.connection.create({
     data: {
       providerName: GOOGLE_PROVIDER_NAME,
-      providerId: githubUser.profile.id.toString(),
+      providerId: googleUser.id.toString(),
       userId,
     },
   });
-  const request = await setupRequest({ code: githubUser.code });
+  const request = await setupRequest({ code: googleUser.id });
   const response = await loader({ request, params: PARAMS, context: {} });
-  expect(response).toHaveRedirect("/");
+  expect(response).toHaveRedirect('/');
   await expect(response).toHaveSessionForUser(userId);
 });
 
-test("if a user is not logged in, but the connection exists and they have enabled 2FA, send them to verify their 2FA and do not make a session", async () => {
-  const githubUser = await insertGitHubUser();
+test('if a user is not logged in, but the connection exists and they have enabled 2FA, send them to verify their 2FA and do not make a session', async () => {
+  const googleUser = await insertGoogleUser();
   const { userId } = await setupUser();
   await prisma.connection.create({
     data: {
       providerName: GOOGLE_PROVIDER_NAME,
-      providerId: githubUser.profile.id.toString(),
+      providerId: googleUser.id.toString(),
       userId,
     },
   });
@@ -204,26 +210,26 @@ test("if a user is not logged in, but the connection exists and they have enable
       ...config,
     },
   });
-  const request = await setupRequest({ code: githubUser.code });
+  const request = await setupRequest({ code: googleUser.id });
   const response = await loader({ request, params: PARAMS, context: {} });
   const searchParams = new URLSearchParams({
     type: twoFAVerificationType,
     target: userId,
-    redirectTo: "/",
+    redirectTo: '/',
   });
   expect(response).toHaveRedirect(`/verify?${searchParams}`);
 });
 
 async function setupRequest({
   sessionId,
-  code = faker.string.uuid(),
+  code = faker.string.numeric(10),
 }: { sessionId?: string; code?: string } = {}) {
   const url = new URL(ROUTE_PATH, BASE_URL);
   const state = faker.string.uuid();
-  url.searchParams.set("state", state);
-  url.searchParams.set("code", code);
+  url.searchParams.set('state', state);
+  url.searchParams.set('code', code);
   const connectionSession = await connectionSessionStorage.getSession();
-  connectionSession.set("oauth2:state", state);
+  connectionSession.set('oauth2:state', state);
   const authSession = await authSessionStorage.getSession();
   if (sessionId) authSession.set(sessionKey, sessionId);
   const setSessionCookieHeader =
@@ -231,12 +237,12 @@ async function setupRequest({
   const setConnectionSessionCookieHeader =
     await connectionSessionStorage.commitSession(connectionSession);
   const request = new Request(url.toString(), {
-    method: "GET",
+    method: 'GET',
     headers: {
       cookie: [
         convertSetCookieToCookie(setConnectionSessionCookieHeader),
         convertSetCookieToCookie(setSessionCookieHeader),
-      ].join("; "),
+      ].join('; '),
     },
   });
   return request;

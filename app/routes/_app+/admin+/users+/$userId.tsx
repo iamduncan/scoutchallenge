@@ -1,16 +1,16 @@
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import  { type LoaderFunctionArgs , json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
-import { getUserById } from "#app/models/user.server.ts";
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { type LoaderFunctionArgs, json } from '@remix-run/node';
+import { Link, useLoaderData } from '@remix-run/react';
+import { getUserById } from '#app/models/user.server.ts';
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const userId = params.userId;
   if (!userId) {
-    throw new Error("No userId provided");
+    throw new Error('No userId provided');
   }
   const user = await getUserById(userId);
   if (!user) {
-    throw new Error("No user found");
+    throw new Error('No user found');
   }
   return json({
     user,
@@ -23,13 +23,11 @@ export default function AdminUser() {
     <div className="flex h-full flex-col">
       <main className="h-full bg-white">
         <div className="h-full bg-gray-50 p-4">
-          <div className="mb-6 block text-xl text-blue-500">
-            {user.name}
-          </div>
+          <div className="mb-6 block text-xl text-blue-500">{user.name}</div>
           {user.groups.length > 0 && (
             <div className="mb-6">
               <div className="mb-2">
-                <h3>Group{user.groups.length > 1 && "s"}</h3>
+                <h3>Group{user.groups.length > 1 && 's'}</h3>
                 {user.groups.map((group) => (
                   <div key={group.id}>{group.name}</div>
                 ))}
@@ -39,7 +37,7 @@ export default function AdminUser() {
           {user.sections.length > 0 && (
             <div className="mb-6">
               <div className="mb-2">
-                <h3>Section{user.sections.length > 1 && "s"}</h3>
+                <h3>Section{user.sections.length > 1 && 's'}</h3>
                 {user.sections.map((section) => (
                   <div key={section.id}>{section.name}</div>
                 ))}
@@ -50,7 +48,7 @@ export default function AdminUser() {
       </main>
       <Link
         to=".."
-        className="mr-1 mb-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 md:hidden"
+        className="mb-1 mr-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 md:hidden"
         type="button"
       >
         <ArrowLeftIcon className="h-6 w-6" /> Back

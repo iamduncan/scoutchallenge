@@ -1,28 +1,28 @@
-import lexicalCode from "@lexical/code";
-import lexicalHashtag from "@lexical/hashtag";
-import lexicalLink from "@lexical/link";
-import lexicalList from "@lexical/list";
-import lexicalMarkdown from "@lexical/markdown";
-import lexicalComposer from "@lexical/react/LexicalComposer.js";
-import lexicalEditable from "@lexical/react/LexicalContentEditable.js";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary.js";
-import lexicalHashtagPlugin from "@lexical/react/LexicalHashtagPlugin.js";
-import lexicalHistoryPlugin from "@lexical/react/LexicalHistoryPlugin.js";
-import lexicalLinkPlugin from "@lexical/react/LexicalLinkPlugin.js";
-import lexicalListPlugin from "@lexical/react/LexicalListPlugin.js";
-import lexicalMarkdownShortcutPlugin from "@lexical/react/LexicalMarkdownShortcutPlugin.js";
-import lexicalOnChangePlugin from "@lexical/react/LexicalOnChangePlugin.js";
-import lexicalRichTextPlugin from "@lexical/react/LexicalRichTextPlugin.js";
-import lexicalRichText from "@lexical/rich-text";
-import lexicalTable from "@lexical/table";
+import lexicalCode from '@lexical/code';
+import lexicalHashtag from '@lexical/hashtag';
+import lexicalLink from '@lexical/link';
+import lexicalList from '@lexical/list';
+import lexicalMarkdown from '@lexical/markdown';
+import lexicalComposer from '@lexical/react/LexicalComposer.js';
+import lexicalEditable from '@lexical/react/LexicalContentEditable.js';
+import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary.js';
+import lexicalHashtagPlugin from '@lexical/react/LexicalHashtagPlugin.js';
+import lexicalHistoryPlugin from '@lexical/react/LexicalHistoryPlugin.js';
+import lexicalLinkPlugin from '@lexical/react/LexicalLinkPlugin.js';
+import lexicalListPlugin from '@lexical/react/LexicalListPlugin.js';
+import lexicalMarkdownShortcutPlugin from '@lexical/react/LexicalMarkdownShortcutPlugin.js';
+import lexicalOnChangePlugin from '@lexical/react/LexicalOnChangePlugin.js';
+import lexicalRichTextPlugin from '@lexical/react/LexicalRichTextPlugin.js';
+import lexicalRichText from '@lexical/rich-text';
+import lexicalTable from '@lexical/table';
 
-import { type EditorState, type LexicalEditor } from "lexical";
-import AutoLinkPlugin from "./plugins/AutoLinkPlugin.tsx";
-import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin.tsx";
-import ListMaxIndentLevelPlugin from "./plugins/ListMaxIndentLevelPlugin.tsx";
-import ToolbarPlugin from "./plugins/ToolbarPlugin.tsx";
-import TreeViewPlugin from "./plugins/TreeViewPlugin.tsx";
-import ExampleTheme from "./themes/ExampleTheme.ts";
+import { type EditorState, type LexicalEditor } from 'lexical';
+import AutoLinkPlugin from './plugins/AutoLinkPlugin.tsx';
+import CodeHighlightPlugin from './plugins/CodeHighlightPlugin.tsx';
+import ListMaxIndentLevelPlugin from './plugins/ListMaxIndentLevelPlugin.tsx';
+import ToolbarPlugin from './plugins/ToolbarPlugin.tsx';
+import TreeViewPlugin from './plugins/TreeViewPlugin.tsx';
+import ExampleTheme from './themes/ExampleTheme.ts';
 
 const CodeHighlightNode = lexicalCode.CodeHighlightNode;
 const CodeNode = lexicalCode.CodeNode;
@@ -57,7 +57,7 @@ function Placeholder() {
 }
 
 const editorConfig = {
-  namespace: "editor",
+  namespace: 'editor',
   // The editor theme
   theme: ExampleTheme,
   // Handling of errors during update
@@ -87,7 +87,7 @@ type Props = {
 };
 
 export default function Editor({ initialContent, onChange }: Props) {
-  return typeof window !== "undefined" ? (
+  return typeof window !== 'undefined' ? (
     <LexicalComposer
       initialConfig={{ ...editorConfig, editorState: initialContent }}
     >
@@ -102,7 +102,7 @@ export default function Editor({ initialContent, onChange }: Props) {
           />
           <OnChangePlugin onChange={onChange} />
           <HistoryPlugin />
-          {process.env.NODE_ENV !== "production" && <TreeViewPlugin />}
+          {process.env.NODE_ENV !== 'production' && <TreeViewPlugin />}
           <CodeHighlightPlugin />
           <ListPlugin />
           <LinkPlugin />

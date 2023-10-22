@@ -1,7 +1,7 @@
-import { Outlet, useLoaderData } from "@remix-run/react";
-import { json, type LoaderFunctionArgs } from "@remix-run/server-runtime";
-import { AdminList } from "#app/components/ui/index.ts";
-import { listTokens } from "#app/models/user.server.ts";
+import { Outlet, useLoaderData } from '@remix-run/react';
+import { json, type LoaderFunctionArgs } from '@remix-run/server-runtime';
+import { AdminList } from '#app/components/ui/index.ts';
+import { listTokens } from '#app/models/user.server.ts';
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const tokens = await listTokens();

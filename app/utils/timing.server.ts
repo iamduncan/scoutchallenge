@@ -1,4 +1,4 @@
-import { type CreateReporter } from "cachified";
+import { type CreateReporter } from 'cachified';
 
 export type Timings = Record<
   string,
@@ -14,7 +14,7 @@ export function makeTimings(type: string, desc?: string) {
   const timings: Timings = {
     [type]: [{ desc, start: performance.now() }],
   };
-  Object.defineProperty(timings, "toString", {
+  Object.defineProperty(timings, 'toString', {
     value: function () {
       return getServerTimeHeader(timings);
     },
@@ -51,7 +51,7 @@ export async function time<ReturnType>(
   },
 ): Promise<ReturnType> {
   const timer = createTimer(type, desc);
-  const promise = typeof fn === "function" ? fn() : fn;
+  const promise = typeof fn === 'function' ? fn() : fn;
   if (!timings) return promise;
 
   const result = await promise;
@@ -61,7 +61,7 @@ export async function time<ReturnType>(
 }
 
 export function getServerTimeHeader(timings?: Timings) {
-  if (!timings) return "";
+  if (!timings) return '';
   return Object.entries(timings)
     .map(([key, timingInfos]) => {
       const dur = timingInfos
@@ -73,22 +73,22 @@ export function getServerTimeHeader(timings?: Timings) {
       const desc = timingInfos
         .map((t) => t.desc)
         .filter(Boolean)
-        .join(" & ");
+        .join(' & ');
       return [
-        key.replaceAll(/(:| |@|=|;|,|\/|\\)/g, "_"),
+        key.replaceAll(/(:| |@|=|;|,|\/|\\)/g, '_'),
         desc ? `desc=${JSON.stringify(desc)}` : null,
         `dur=${dur}`,
       ]
         .filter(Boolean)
-        .join(";");
+        .join(';');
     })
-    .join(",");
+    .join(',');
 }
 
 export function combineServerTimings(headers1: Headers, headers2: Headers) {
   const newHeaders = new Headers(headers1);
-  newHeaders.append("Server-Timing", headers2.get("Server-Timing") ?? "");
-  return newHeaders.get("Server-Timing") ?? "";
+  newHeaders.append('Server-Timing', headers2.get('Server-Timing') ?? '');
+  return newHeaders.get('Server-Timing') ?? '';
 }
 
 export function cachifiedTimingReporter<Value>(
@@ -104,16 +104,16 @@ export function cachifiedTimingReporter<Value>(
     let getFreshValueTimer: ReturnType<typeof createTimer> | undefined;
     return (event) => {
       switch (event.name) {
-        case "getFreshValueStart":
+        case 'getFreshValueStart':
           getFreshValueTimer = createTimer(
             `getFreshValue:${key}`,
             `request forced to wait for a fresh ${key} value`,
           );
           break;
-        case "getFreshValueSuccess":
+        case 'getFreshValueSuccess':
           getFreshValueTimer?.end(timings);
           break;
-        case "done":
+        case 'done':
           cacheRetrievalTimer.end(timings);
           break;
       }

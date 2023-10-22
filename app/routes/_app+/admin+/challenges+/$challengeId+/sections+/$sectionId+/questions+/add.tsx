@@ -1,16 +1,19 @@
-import { type Prisma, QuestionType } from "@prisma/client";
-import { type ActionFunctionArgs, redirect, json } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
-import  { type EditorState, type LexicalEditor } from "lexical";
-import { useRef, useState } from "react";
-import Editor from "#app/components/ui/Editor/Editor.tsx";
-import { CreateMultipleChoice, CreateTrueFalse } from "#app/components/ui/index.ts";
-import { addQuestion } from "#app/models/challenge.server.ts";
+import { type Prisma, QuestionType } from '@prisma/client';
+import { type ActionFunctionArgs, redirect, json } from '@remix-run/node';
+import { Form, Link, useActionData } from '@remix-run/react';
+import { type EditorState, type LexicalEditor } from 'lexical';
+import { useRef, useState } from 'react';
+import Editor from '#app/components/ui/Editor/Editor.tsx';
+import {
+  CreateMultipleChoice,
+  CreateTrueFalse,
+} from '#app/components/ui/index.ts';
+import { addQuestion } from '#app/models/challenge.server.ts';
 
 export default function NewQuestionPage() {
-  const [ description, setDescription ] = useState<string>();
-  const [ questionType, setQuestionType ] = useState<QuestionType>(
-    QuestionType.MULTIPLECHOICE
+  const [description, setDescription] = useState<string>();
+  const [questionType, setQuestionType] = useState<QuestionType>(
+    QuestionType.MULTIPLECHOICE,
   );
   function onChange(editorState: EditorState, editor: LexicalEditor) {
     editor.update(() => {
@@ -20,7 +23,7 @@ export default function NewQuestionPage() {
     });
   }
   const titleRef = useRef<HTMLInputElement>(null);
-  const [ questionData, setQuestionData ] = useState<{
+  const [questionData, setQuestionData] = useState<{
     question?: any;
     answer?: any;
   }>();
@@ -145,20 +148,20 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const challengeSectionId = params.sectionId;
   const challengeId = params.challengeId;
   if (!challengeSectionId) {
-    throw new Error("challengeSectionId is required");
+    throw new Error('challengeSectionId is required');
   }
   const formData = await request.formData();
-  const title = formData.get("title");
-  const description = formData.get("description");
-  const type = formData.get("question_type") as QuestionType;
-  const questionAnswerData = formData.get("question_data");
-  const errors: ActionData[ "errors" ] = {};
+  const title = formData.get('title');
+  const description = formData.get('description');
+  const type = formData.get('question_type') as QuestionType;
+  const questionAnswerData = formData.get('question_data');
+  const errors: ActionData['errors'] = {};
 
-  if (typeof title !== "string" || title.length === 0) {
-    errors.title = "Title is required";
+  if (typeof title !== 'string' || title.length === 0) {
+    errors.title = 'Title is required';
   }
-  if (typeof description !== "string" || description.length === 0) {
-    errors.description = "Description is required";
+  if (typeof description !== 'string' || description.length === 0) {
+    errors.description = 'Description is required';
   }
   if (Object.keys(errors).length > 0) {
     return badRequest({
@@ -169,7 +172,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const questionData = {
     title: title as string,
     description: description as string,
-    hint: "",
+    hint: '',
     type,
     data: JSON.parse(questionAnswerData as string) as any,
     order: 0,
@@ -178,7 +181,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
   if (!question) {
     return badRequest({
-      formError: "Error adding question",
+      formError: 'Error adding question',
     });
   }
   return redirect(`/admin/challenges/${challengeId}`);

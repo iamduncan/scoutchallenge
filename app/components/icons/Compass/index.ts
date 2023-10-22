@@ -1,1 +1,1 @@
-export { default } from "./Compass.tsx";
+export { default } from './Compass.tsx';

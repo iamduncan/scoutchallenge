@@ -1,20 +1,23 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
-import { Form, useLoaderData } from "@remix-run/react";
-import  { type ActionFunction, type LoaderFunction } from "@remix-run/server-runtime";
-import { mg } from "#app/libs/email/config.ts";
-import { removeSubscriber } from "#app/models/user.server.ts";
+import { XMarkIcon } from '@heroicons/react/24/outline';
+import { Form, useLoaderData } from '@remix-run/react';
+import {
+  type ActionFunction,
+  type LoaderFunction,
+} from '@remix-run/server-runtime';
+import { mg } from '#app/libs/email/config.ts';
+import { removeSubscriber } from '#app/models/user.server.ts';
 
 type Subscriber = {
   address: string;
   name: string;
   subscribed: boolean;
-  vars: { [ key: string ]: string };
+  vars: { [key: string]: string };
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const subscriberList = process.env.MAILGUN_SUBSCRIBER_LIST;
   if (!subscriberList) {
-    console.error("MAILGUN_SUBSCRIBER_LIST is not set");
+    console.error('MAILGUN_SUBSCRIBER_LIST is not set');
     return {};
   }
   try {
@@ -27,9 +30,9 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const address = formData.get("address");
-  if (typeof address !== "string") {
-    throw new Error("No address provided");
+  const address = formData.get('address');
+  if (typeof address !== 'string') {
+    throw new Error('No address provided');
   }
   try {
     await removeSubscriber(address);
@@ -72,14 +75,14 @@ export default function MailingList() {
                 </div>
                 <div>
                   <small>
-                    {subscriber.subscribed ? "Subscribed" : "Not Subscribed"}
+                    {subscriber.subscribed ? 'Subscribed' : 'Not Subscribed'}
                   </small>
                 </div>
                 <div>
                   <small>
                     {Object.keys(subscriber.vars).map((key) => (
                       <div key={key}>
-                        <strong>{key}</strong>: {subscriber.vars[ key ]}
+                        <strong>{key}</strong>: {subscriber.vars[key]}
                       </div>
                     ))}
                   </small>

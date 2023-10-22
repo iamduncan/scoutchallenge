@@ -1,11 +1,11 @@
-import { redirect } from "@remix-run/node";
-import * as cookie from "cookie";
-import { combineHeaders } from "./misc.tsx";
+import { redirect } from '@remix-run/node';
+import * as cookie from 'cookie';
+import { combineHeaders } from './misc.tsx';
 
-const cookieName = "en_confetti";
+const cookieName = 'en_confetti';
 
 export function getConfetti(request: Request) {
-  const cookieHeader = request.headers.get("cookie");
+  const cookieHeader = request.headers.get('cookie');
   const confettiId = cookieHeader
     ? cookie.parse(cookieHeader)[cookieName]
     : null;
@@ -27,8 +27,8 @@ export function createConfettiHeaders(
   value: string | null = String(Date.now()),
 ) {
   return new Headers({
-    "set-cookie": cookie.serialize(cookieName, value ? value : "", {
-      path: "/",
+    'set-cookie': cookie.serialize(cookieName, value ? value : '', {
+      path: '/',
       maxAge: value ? 60 : -1,
     }),
   });

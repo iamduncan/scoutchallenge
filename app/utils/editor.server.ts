@@ -1,15 +1,15 @@
-import lexicalHashtag from "@lexical/hashtag";
-import lexicalHeadless from "@lexical/headless";
-import lexicalHtml from "@lexical/html";
-import { JSDOM } from "jsdom";
-import exampleTheme from "#app/components/ui/Editor/themes/ExampleTheme.ts";
+import lexicalHashtag from '@lexical/hashtag';
+import lexicalHeadless from '@lexical/headless';
+import lexicalHtml from '@lexical/html';
+import { JSDOM } from 'jsdom';
+import exampleTheme from '#app/components/ui/Editor/themes/ExampleTheme.ts';
 
 export const generateHTML = (editorState?: string | null) => {
   const HashtagNode = lexicalHashtag.HashtagNode;
   const createHeadlessEditor = lexicalHeadless.createHeadlessEditor;
 
   if (!editorState) {
-    return "";
+    return '';
   }
   const dom = new JSDOM();
   global.window = dom.window as any;
@@ -22,14 +22,14 @@ export const generateHTML = (editorState?: string | null) => {
       console.error(error);
     },
     nodes: [HashtagNode],
-    namespace: "editor",
+    namespace: 'editor',
     theme: exampleTheme,
   });
 
   editor.setEditorState(editor.parseEditorState(editorState));
 
   const $generateHtmlFromNodes = lexicalHtml.$generateHtmlFromNodes;
-  let html = "";
+  let html = '';
 
   editor.update(() => {
     html = $generateHtmlFromNodes(editor, null);

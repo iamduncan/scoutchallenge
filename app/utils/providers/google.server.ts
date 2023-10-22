@@ -1,26 +1,26 @@
-import { createId as cuid } from "@paralleldrive/cuid2";
-import { redirect } from "@remix-run/node";
-import { GoogleStrategy } from "remix-auth-google";
-import { z } from "zod";
-import { cache, cachified } from "../cache.server.ts";
-import { connectionSessionStorage } from "../connections.server.ts";
-import { prisma } from "../db.server.ts";
-import { type Timings } from "../timing.server.ts";
-import { type AuthProvider } from "./provider.ts";
+import { createId as cuid } from '@paralleldrive/cuid2';
+import { redirect } from '@remix-run/node';
+import { GoogleStrategy } from 'remix-auth-google';
+// import { z } from "zod";
+// import { cache, cachified } from "../cache.server.ts";
+import { connectionSessionStorage } from '../connections.server.ts';
+import { prisma } from '../db.server.ts';
+import { type Timings } from '../timing.server.ts';
+import { type AuthProvider } from './provider.ts';
 
-const GoogleUserSchema = z.object({ login: z.string() });
-const GoogleUserParseResult = z
-  .object({
-    success: z.literal(true),
-    data: GoogleUserSchema,
-  })
-  .or(
-    z.object({
-      success: z.literal(false),
-    }),
-  );
+// const GoogleUserSchema = z.object({ login: z.string() });
+// const GoogleUserParseResult = z
+//   .object({
+//     success: z.literal(true),
+//     data: GoogleUserSchema,
+//   })
+//   .or(
+//     z.object({
+//       success: z.literal(false),
+//     }),
+//   );
 
-const shouldMock = process.env.GOOGLE_CLIENT_ID?.startsWith("MOCK_");
+const shouldMock = process.env.GOOGLE_CLIENT_ID?.startsWith('MOCK_');
 
 export class GoogleProvider implements AuthProvider {
   getAuthStrategy() {
@@ -28,34 +28,37 @@ export class GoogleProvider implements AuthProvider {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: "/auth/google/callback",
+        callbackURL: '/auth/google/callback',
       },
       async ({ accessToken, refreshToken, extraParams, profile }) => {
         // Get the user data from your DB or API using the tokens and profile
+        // console.log("profile", profile);
         const user = await prisma.user.upsert({
           create: {
-            email: profile.emails[0].value,
-            name: profile.displayName,
-            username: profile.displayName.toLowerCase().replace(/\s/g, "_"),
+            email: profile._json.email,
+            name: `${profile._json.given_name} ${profile._json.family_name}`,
+            username: `${profile._json.given_name} ${profile._json.family_name}`
+              .toLowerCase()
+              .replace(/\s/g, '_'),
           },
           update: {
-            email: profile.emails[0].value,
-            name: profile.displayName,
-            username: profile.displayName.toLowerCase().replace(/\s/g, "_"),
+            email: profile._json.email,
+            name: profile._json.name,
+            username: profile._json.name.toLowerCase().replace(/\s/g, '_'),
           },
           where: {
-            email: profile.emails[0].value,
+            email: profile._json.email,
           },
         });
         if (!user) {
-          throw new Error("Unable to create user");
+          throw new Error('Unable to create user');
         }
         return {
           email: user.email,
-          id: profile.id,
+          id: profile._json.sub,
           username: user.username,
-          name: profile.name.givenName,
-          imageUrl: profile.photos[0].value,
+          name: profile._json.name,
+          imageUrl: profile._json.picture,
         };
       },
     );
@@ -93,7 +96,7 @@ export class GoogleProvider implements AuthProvider {
     //   link: result.success ? `https://google.com/${result.data.login}` : null,
     // } as const;
     return {
-      displayName: "Unknown",
+      displayName: 'Unknown',
       link: null,
     };
   }
@@ -102,15 +105,15 @@ export class GoogleProvider implements AuthProvider {
     if (!shouldMock) return;
 
     const connectionSession = await connectionSessionStorage.getSession(
-      request.headers.get("cookie"),
+      request.headers.get('cookie'),
     );
     const state = cuid();
-    connectionSession.set("oauth2:state", state);
-    const code = "MOCK_CODE_GOOGLE_KODY";
+    connectionSession.set('oauth2:state', state);
+    const code = 'MOCK_CODE_GOOGLE_KODY';
     const searchParams = new URLSearchParams({ code, state });
     throw redirect(`/auth/google/callback?${searchParams}`, {
       headers: {
-        "set-cookie":
+        'set-cookie':
           await connectionSessionStorage.commitSession(connectionSession),
       },
     });

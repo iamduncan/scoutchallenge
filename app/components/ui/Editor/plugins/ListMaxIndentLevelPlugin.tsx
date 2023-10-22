@@ -1,11 +1,11 @@
-import lexicalList from "@lexical/list";
-import lexicalComposer from "@lexical/react/LexicalComposerContext.js";
+import lexicalList from '@lexical/list';
+import lexicalComposer from '@lexical/react/LexicalComposerContext.js';
 import lexicalLexical, {
   type RangeSelection,
   type NodeSelection,
   type GridSelection,
-} from "lexical";
-import { useEffect } from "react";
+} from 'lexical';
+import { useEffect } from 'react';
 
 const $getListDepth = lexicalList.$getListDepth;
 const $isListItemNode = lexicalList.$isListItemNode;
@@ -26,8 +26,8 @@ function getElementNodesInSelection(
 
   if (nodesInSelection.length === 0) {
     return new Set([
-      "anchor" in selection && selection.anchor.getNode().getParentOrThrow(),
-      "focus" in selection && selection.focus.getNode().getParentOrThrow(),
+      'anchor' in selection && selection.anchor.getNode().getParentOrThrow(),
+      'focus' in selection && selection.focus.getNode().getParentOrThrow(),
     ]);
   }
 
@@ -56,7 +56,7 @@ function isIndentPermitted(maxDepth: number) {
       const parent = elementNode.getParent();
       if (parent === null || !$isListNode(parent)) {
         throw new Error(
-          "ListMaxIndentLevelPlugin: A ListItemNode must have a ListNode for a parent.",
+          'ListMaxIndentLevelPlugin: A ListItemNode must have a ListNode for a parent.',
         );
       }
 

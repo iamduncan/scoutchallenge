@@ -1,10 +1,10 @@
-import * as React from "react";
-import  { type SVGProps } from "react";
+import * as React from 'react';
+import { type SVGProps } from 'react';
 
 const SvgComponent = (props: SVGProps<SVGSVGElement>) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45.56 55.08" {...props}>
     <defs>
-      <style>{".cls-1{fill:currentColor}"}</style>
+      <style>{'.cls-1{fill:currentColor}'}</style>
     </defs>
     <g id="Layer_2" data-name="Layer 2">
       <g id="obj">

@@ -36,7 +36,7 @@ const ProgressCircular = ({
         fill="transparent"
         strokeDasharray={circumference}
         strokeDashoffset={circumference - progress * circumference}
-        className={className || "text-blue-500"}
+        className={className || 'text-blue-500'}
       />
     </svg>
   );
