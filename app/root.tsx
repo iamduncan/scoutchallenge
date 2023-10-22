@@ -243,7 +243,9 @@ function App() {
   const user = useOptionalUser();
   const theme = useTheme();
   const matches = useMatches();
-  const isOnSearchPage = matches.find((m) => m.id === 'routes/users+/index');
+  const isOnSearchPage = matches.find(
+    (m) => m.id === 'routes/_app+/users+/index',
+  );
   const searchBar = isOnSearchPage ? null : <SearchBar status="idle" />;
 
   return (
