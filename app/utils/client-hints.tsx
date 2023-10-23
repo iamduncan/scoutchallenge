@@ -20,13 +20,18 @@ const clientHints = {
     getValueCode: `Intl.DateTimeFormat().resolvedOptions().timeZone`,
     fallback: 'UTC',
   },
+  locale: {
+    cookieName: 'CH-locale',
+    getValueCode: `navigator.language`,
+    fallback: 'en-GB',
+  },
   // add other hints here
 };
 
 type ClientHintNames = keyof typeof clientHints;
 
 function getCookieValue(cookieString: string, name: ClientHintNames) {
-  const hint = clientHints[name];
+  const hint = clientHints[ name ];
   if (!hint) {
     throw new Error(`Unknown client hint: ${name}`);
   }
@@ -34,7 +39,7 @@ function getCookieValue(cookieString: string, name: ClientHintNames) {
     .split(';')
     .map((c) => c.trim())
     .find((c) => c.startsWith(hint.cookieName + '='))
-    ?.split('=')[1];
+    ?.split('=')[ 1 ];
 
   return value ? decodeURIComponent(value) : null;
 }
@@ -49,28 +54,28 @@ export function getHints(request?: Request) {
     typeof document !== 'undefined'
       ? document.cookie
       : typeof request !== 'undefined'
-      ? request.headers.get('Cookie') ?? ''
-      : '';
+        ? request.headers.get('Cookie') ?? ''
+        : '';
 
   return Object.entries(clientHints).reduce(
-    (acc, [name, hint]) => {
+    (acc, [ name, hint ]) => {
       const hintName = name as ClientHintNames;
       if ('transform' in hint) {
-        acc[hintName] = hint.transform(
+        acc[ hintName ] = hint.transform(
           getCookieValue(cookieString, hintName) ?? hint.fallback,
         );
       } else {
         // @ts-expect-error - this is fine (PRs welcome though)
-        acc[hintName] = getCookieValue(cookieString, hintName) ?? hint.fallback;
+        acc[ hintName ] = getCookieValue(cookieString, hintName) ?? hint.fallback;
       }
       return acc;
     },
     {} as {
-      [name in ClientHintNames]: (typeof clientHints)[name] extends {
+      [ name in ClientHintNames ]: (typeof clientHints)[ name ] extends {
         transform: (value: any) => infer ReturnValue;
       }
-        ? ReturnValue
-        : (typeof clientHints)[name]['fallback'];
+      ? ReturnValue
+      : (typeof clientHints)[ name ][ 'fallback' ];
     },
   );
 }
@@ -93,16 +98,15 @@ export function ClientHintCheck({ nonce }: { nonce: string }) {
   React.useEffect(() => {
     const themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     function handleThemeChange() {
-      document.cookie = `${clientHints.theme.cookieName}=${
-        themeQuery.matches ? 'dark' : 'light'
-      }; Max-Age=31536000; Path=/`;
+      document.cookie = `${clientHints.theme.cookieName}=${themeQuery.matches ? 'dark' : 'light'
+        }; Max-Age=31536000; Path=/`;
       revalidate();
     }
     themeQuery.addEventListener('change', handleThemeChange);
     return () => {
       themeQuery.removeEventListener('change', handleThemeChange);
     };
-  }, [revalidate]);
+  }, [ revalidate ]);
 
   return (
     <script
@@ -117,11 +121,11 @@ const cookies = document.cookie.split(';').map(c => c.trim()).reduce((acc, cur) 
 let cookieChanged = false;
 const hints = [
 ${Object.values(clientHints)
-  .map((hint) => {
-    const cookieName = JSON.stringify(hint.cookieName);
-    return `{ name: ${cookieName}, actual: String(${hint.getValueCode}), cookie: cookies[${cookieName}] }`;
-  })
-  .join(',\n')}
+            .map((hint) => {
+              const cookieName = JSON.stringify(hint.cookieName);
+              return `{ name: ${cookieName}, actual: String(${hint.getValueCode}), cookie: cookies[${cookieName}] }`;
+            })
+            .join(',\n')}
 ];
 for (const hint of hints) {
   if (decodeURIComponent(hint.cookie) !== hint.actual) {

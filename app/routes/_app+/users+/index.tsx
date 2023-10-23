@@ -116,7 +116,7 @@ export default function UsersRoute() {
             <p>No users found</p>
           )
         ) : data.status === 'error' ? (
-          <ErrorList errors={['There was an error parsing the results']} />
+          <ErrorList errors={[ 'There was an error parsing the results' ]} />
         ) : null}
       </main>
     </div>

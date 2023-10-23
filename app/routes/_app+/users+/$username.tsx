@@ -4,6 +4,7 @@ import { GeneralErrorBoundary } from '#app/components/error-boundary.tsx';
 import { Spacer } from '#app/components/spacer.tsx';
 import { Button } from '#app/components/ui/button.tsx';
 import { Icon } from '#app/components/ui/icon.tsx';
+import { useHints } from '#app/utils/client-hints.tsx';
 import { prisma } from '#app/utils/db.server.ts';
 import { getUserImgSrc, invariantResponse } from '#app/utils/misc.tsx';
 import { useOptionalUser } from '#app/utils/user.ts';
@@ -24,7 +25,7 @@ export async function loader({ params }: DataFunctionArgs) {
 
   invariantResponse(user, 'User not found', { status: 404 });
 
-  return json({ user, userJoinedDisplay: user.createdAt.toLocaleDateString() });
+  return json({ user });
 }
 
 export default function ProfileRoute() {
@@ -33,6 +34,7 @@ export default function ProfileRoute() {
   const userDisplayName = user.name ?? user.username;
   const loggedInUser = useOptionalUser();
   const isLoggedInUser = data.user.id === loggedInUser?.id;
+  const { locale } = useHints();
 
   return (
     <div className="container mb-48 mt-36 flex flex-col items-center justify-center">
@@ -58,7 +60,7 @@ export default function ProfileRoute() {
             <h1 className="text-center text-h2">{userDisplayName}</h1>
           </div>
           <p className="mt-2 text-center text-muted-foreground">
-            Joined {data.userJoinedDisplay}
+            Joined {new Date(user.createdAt).toLocaleDateString(locale)}
           </p>
           {isLoggedInUser ? (
             <Form action="/logout" method="POST" className="mt-3">

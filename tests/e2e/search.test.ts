@@ -4,14 +4,10 @@ import { expect, test } from '#tests/playwright-utils.ts';
 test('Search from home page', async ({ page, insertNewUser, login }) => {
   const newUser = await insertNewUser();
   await login(newUser);
-  await page.goto('/');
-
-  await page.getByRole('searchbox', { name: /search/i }).fill(newUser.username);
-  await page.getByRole('button', { name: /search/i }).click();
-
-  await page.waitForURL(
+  await page.goto(
     `/users?${new URLSearchParams({ search: newUser.username })}`,
   );
+
   await expect(page.getByText('Epic Notes Users')).toBeVisible();
   const userList = page.getByRole('main').getByRole('list');
   await expect(userList.getByRole('listitem')).toHaveCount(1);

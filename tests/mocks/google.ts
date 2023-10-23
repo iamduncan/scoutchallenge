@@ -39,7 +39,7 @@ function createGoogleUser(code?: string | null) {
       name: `${firstName} ${lastName}`,
       given_name: firstName,
       family_name: lastName,
-      picture: 'https://github.com/ghost.png',
+      picture: 'https://google.com/ghost.png',
       email: email,
       email_verified: true,
       locale: 'en',
@@ -156,10 +156,10 @@ export const handlers: Array<HttpHandler> = [
 
     return json(user);
   }),
-  http.get('https://github.com/ghost.png', async () => {
+  http.get('https://google.com/ghost.png', async () => {
     if (passthroughGoogle) return passthrough();
 
-    const buffer = await fsExtra.readFile('./tests/fixtures/github/ghost.jpg');
+    const buffer = await fsExtra.readFile('./tests/fixtures/google/ghost.jpg');
     return new Response(buffer, {
       // the .png is not a mistake even though it looks like it... It's really a jpg
       // but the ghost image URL really has a png extension 😅
