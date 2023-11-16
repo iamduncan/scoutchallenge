@@ -1,16 +1,20 @@
 import { NavLink } from '@remix-run/react';
 import { cn } from '#app/utils/misc.tsx';
 import { buttonVariants } from './ui/button.tsx';
+import { userHasRole } from '#app/utils/permissions.ts';
+import { useUser } from '#app/utils/user.ts';
 
 export interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
-  items: {
-    key: string;
-    to: string;
-    title: string;
-  }[];
+  items: (props: { isAdmin?: boolean}) => {
+  key: string;
+  to: string;
+  title: string;
+} [];
 }
 
 export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
+  const user = useUser();
+  const isAdmin = userHasRole(user, 'admin');
   return (
     <nav
       className={cn(
@@ -19,7 +23,9 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
       )}
       {...props}
     >
-      {items.map((item) => (
+      {items({
+        isAdmin
+      }).map((item) => (
         <NavLink
           key={item.key}
           to={item.to}

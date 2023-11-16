@@ -44,6 +44,9 @@ export default function AdminUser() {
               </div>
             </div>
           )}
+          <pre>
+            {JSON.stringify(user, null, 2)}
+          </pre>
         </div>
       </main>
       <Link

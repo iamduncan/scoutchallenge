@@ -13,38 +13,45 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-const settingsMenu: SidebarNavProps['items'] = [
-  {
-    key: 'profile',
-    title: 'Profile',
-    to: '/settings/profile',
-  },
-  {
-    key: 'groups',
-    title: 'Groups Settings',
-    to: '/settings/groups',
-  },
-  {
-    key: 'account',
-    title: 'Account',
-    to: '/settings/account',
-  },
-  {
-    key: 'security',
-    title: 'Security',
-    to: '/settings/security',
-  },
-  {
-    key: 'notifications',
-    title: 'Notifications',
-    to: '/settings/notifications',
-  },
-  {
-    key: 'integrations',
-    title: 'Integrations',
-    to: '/settings/integrations',
-  },
-];
+const settingsMenu: SidebarNavProps[ 'items' ] = ({ isAdmin }: { isAdmin?: boolean }) => {
+  return [
+    {
+      key: 'profile',
+      title: 'Profile',
+      to: '/settings/profile',
+    },
+    {
+      key: 'groups',
+      title: 'Groups Settings',
+      to: '/settings/groups',
+    },
+    {
+      key: 'account',
+      title: 'Account',
+      to: '/settings/account',
+    },
+    {
+      key: 'security',
+      title: 'Security',
+      to: '/settings/security',
+    },
+    {
+      key: 'notifications',
+      title: 'Notifications',
+      to: '/settings/notifications',
+    },
+    isAdmin ? {
+      key: 'integrations',
+      title: 'Integrations',
+      to: '/settings/integrations',
+    } : null,
+    isAdmin ? {
+      key: 'roles',
+      title: 'Roles',
+      to: '/settings/roles',
+    } : null,
+  ].filter(Boolean);
+}
 
 interface SettingsLayoutProps {
   children: React.ReactNode;
@@ -106,7 +113,7 @@ export default function SettingsPage() {
         <aside className="-mx-4 lg:w-1/5">
           <SidebarNav items={settingsMenu} />
         </aside>
-        <div className="flex-1 lg:max-w-2xl">
+        <div className="flex-1">
           <div className="space-y-6">
             {header}
             {header.length > 0 && <Separator className="my-6" />}

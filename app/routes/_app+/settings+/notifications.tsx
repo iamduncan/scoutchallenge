@@ -1,3 +1,12 @@
+import { type SettingsHeaderHandle } from '../settings.tsx';
+
+export const handle: SettingsHeaderHandle = {
+  settingHeader: {
+    title: 'Notification Settings',
+    description: 'Manage which notifications you receive',
+  }
+}
+
 export default function SettingsNotificationsPage() {
   return (
     <>

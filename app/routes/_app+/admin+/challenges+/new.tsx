@@ -197,7 +197,7 @@ export default function NewChallenge() {
           </label>
         </div>
 
-        {user?.roles.find((role) => role.name === 'ADMIN') && (
+        {user?.roles.find((role) => role.name === 'admin') && (
           <div>
             <label className="flex w-full flex-col gap-1">
               <span>Group: </span>

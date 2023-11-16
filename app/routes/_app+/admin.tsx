@@ -4,7 +4,7 @@ import { type LoaderFunction } from '@remix-run/server-runtime';
 import { requireUserWithRole } from '#app/utils/permissions.ts';
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUserWithRole(request, 'ADMIN');
+  await requireUserWithRole(request, 'admin');
   return null;
 };
 
