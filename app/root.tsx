@@ -265,9 +265,10 @@ function App() {
                 <div className="ml-auto flex items-center space-x-4">
                   <div className="ml-auto max-w-sm flex-1">
                     <div className="flex-1">
-                      <button
+                      <Button
+                        variant="secondary"
                         onClick={() => setCommandPaletteOpen(true)}
-                        type="button" className="flex items-center transition-all ease-in-out lg:w-64 text-left text-sm space-x-3 px-4 h-10 bg-white ring-1 ring-slate-900/10 hover:ring-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-sm rounded-lg text-slate-400 dark:bg-slate-800 dark:ring-0 dark:text-slate-300 dark:highlight-white/5 dark:hover:bg-slate-700"
+                        type="button"
                       >
                         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none text-slate-300 dark:text-slate-400" aria-hidden="true">
                           <path d="m19 19-3.5-3.5"></path>
@@ -277,7 +278,7 @@ function App() {
                         <kbd className="font-sans font-semibold hidden lg:block dark:text-slate-500">
                           <abbr title="Control" className="no-underline text-slate-300 dark:text-slate-500">Ctrl </abbr> K
                         </kbd>
-                      </button>
+                      </Button>
                     </div>
                   </div>
                   {user ? (

@@ -21,34 +21,32 @@ export default function AdminUser() {
   const { user } = useLoaderData<typeof loader>();
   return (
     <div className="flex h-full flex-col">
-      <main className="h-full bg-white">
-        <div className="h-full bg-gray-50 p-4">
-          <div className="mb-6 block text-xl text-blue-500">{user.name}</div>
-          {user.groups.length > 0 && (
-            <div className="mb-6">
-              <div className="mb-2">
-                <h3>Group{user.groups.length > 1 && 's'}</h3>
-                {user.groups.map((group) => (
-                  <div key={group.id}>{group.name}</div>
-                ))}
-              </div>
+      <div className="h-full bg-muted rounded-lg p-4">
+        <div className="mb-6 block text-xl text-blue-500">{user.name}</div>
+        {user.groups.length > 0 && (
+          <div className="mb-6">
+            <div className="mb-2">
+              <h3>Group{user.groups.length > 1 && 's'}</h3>
+              {user.groups.map((group) => (
+                <div key={group.id}>{group.name}</div>
+              ))}
             </div>
-          )}
-          {user.sections.length > 0 && (
-            <div className="mb-6">
-              <div className="mb-2">
-                <h3>Section{user.sections.length > 1 && 's'}</h3>
-                {user.sections.map((section) => (
-                  <div key={section.id}>{section.name}</div>
-                ))}
-              </div>
+          </div>
+        )}
+        {user.sections.length > 0 && (
+          <div className="mb-6">
+            <div className="mb-2">
+              <h3>Section{user.sections.length > 1 && 's'}</h3>
+              {user.sections.map((section) => (
+                <div key={section.id}>{section.name}</div>
+              ))}
             </div>
-          )}
-          <pre>
-            {JSON.stringify(user, null, 2)}
-          </pre>
-        </div>
-      </main>
+          </div>
+        )}
+        <pre>
+          {JSON.stringify(user, null, 2)}
+        </pre>
+      </div>
       <Link
         to=".."
         className="mb-1 mr-1 flex items-center gap-2 px-3 py-1 text-xs font-bold uppercase text-blue-500 md:hidden"

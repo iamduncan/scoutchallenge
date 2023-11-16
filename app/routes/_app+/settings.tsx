@@ -19,6 +19,28 @@ const settingsMenu: SidebarNavProps[ 'items' ] = ({ isAdmin }: { isAdmin?: boole
       key: 'profile',
       title: 'Profile',
       to: '/settings/profile',
+      children: [
+        {
+          key: 'email',
+          title: 'Manage Email',
+          to: '/change-email'
+        },
+        {
+          key: 'password',
+          title: 'Change Password',
+          to: '/password'
+        },
+        {
+          key: 'two-factor',
+          title: 'Two Factor Authentication',
+          to: '/two-factor'
+        },
+        {
+          key: 'connections',
+          title: 'Manage Connections',
+          to: '/connections'
+        }
+      ]
     },
     {
       key: 'groups',
