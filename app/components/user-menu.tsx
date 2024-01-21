@@ -9,15 +9,16 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 
 export default function UserMenu() {
   const user = useUser();
+  const userInitials = user.name?.split(' ').map((name) => name[0]).join('') ?? user.username[0];
   // const submit = useSubmit();
   // const formRef = useRef<HTMLFormElement>(null);
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <Button variant="ghost" className="relative space-x-2">
           <Avatar className="h-8 w-8">
             <AvatarImage src={getUserImgSrc(user.image?.id)} alt={user.name ?? user.username} />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarFallback>{userInitials}</AvatarFallback>
           </Avatar>
           <span className="text-body-sm font-bold hidden lg:block">
             {user.name ?? user.username}

@@ -23,11 +23,13 @@ const ChallengesIndexPage = () => {
 
   return (
     <>
-      <div className="px-4">
+      <div className="container">
         <h2 className="mb-4 text-xl font-semibold">Your Challenges</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           <ChallengeCard title="A Scout Hero's Quest" userProgress={0.31} />
           <ChallengeCard title="A Scout Hero's Quest" userProgress={0.76} />
+          <ChallengeCard title="A Scout Hero's Quest" userProgress={0.76} />
+          <ChallengeCard title="A Scout Hero's Quest" />
           <ChallengeCard title="A Scout Hero's Quest" />
           {challenges.map((challenge) => (
             <Link
@@ -40,15 +42,18 @@ const ChallengesIndexPage = () => {
           ))}
         </div>
       </div>
-      <div className="px-4">
+      <div className="container">
         <h2 className="my-4 text-xl font-semibold">Available Challenges</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           <ChallengeCard title="A Scout Hero's Quest" />
           <ChallengeCard title="A Scout Hero's Quest" />
           <ChallengeCard title="A Scout Hero's Quest" />
+          <ChallengeCard title="A Scout Hero's Quest" />
+          <ChallengeCard title="A Scout Hero's Quest" />
+          <ChallengeCard title="A Scout Hero's Quest" />
         </div>
       </div>
-      <div className="px-4">
+      <div className="container">
         <h2 className="my-4 text-xl font-semibold">Finished Challenges</h2>
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           <ChallengeCard title="A Scout Hero's Quest" userProgress={1} />

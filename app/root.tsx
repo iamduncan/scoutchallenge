@@ -132,7 +132,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     // await authenticator.logout(request, { redirectTo: "/" });
   }
   const { toast, headers: toastHeaders } = await getToast(request);
-  const { confettiId, headers: confettiHeaders } = await getConfetti(request);
+  const { confettiId, headers: confettiHeaders } = getConfetti(request);
   const honeyProps = honeypot.getInputProps();
   const [ csrfToken, csrfCookieHeader ] = await csrf.commitToken();
 
@@ -199,12 +199,12 @@ function Document({
   nonce,
   theme = 'light',
   env = {},
-}: {
+}: Readonly<{
   children: React.ReactNode;
   nonce: string;
   theme?: Theme;
   env?: Record<string, string>;
-}) {
+}>) {
   return (
     <html lang="en" className={`${theme} h-full overflow-x-hidden`}>
       <head>
@@ -252,7 +252,7 @@ function App() {
   return (
     <Document nonce={nonce} theme={theme} env={data.ENV}>
       <div className="flex h-screen flex-col justify-between">
-        <header>
+        <header className='sticky top-0 bg-background pb-2'>
           <nav>
             <div className="border-b">
               <div className="flex h-16 items-center px-4">
@@ -260,15 +260,15 @@ function App() {
                   <div className="font-light">Scout</div>
                   <div className="font-bold">Challenge</div>
                 </Link>
-                {user && (<GroupSectionSwitcher className='mx-4' />)}
                 <MainNav className="mx-6" />
                 <div className="ml-auto flex items-center space-x-4">
-                  <div className="ml-auto max-w-sm flex-1">
-                    <div className="flex-1">
+                  {user && user.groups.length > 1 && (<GroupSectionSwitcher className='mx-4' />)}
+                  <div className="ml-auto w-auto flex-1">
                       <Button
                         variant="secondary"
                         onClick={() => setCommandPaletteOpen(true)}
                         type="button"
+                        className='space-x-2'
                       >
                         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-none text-slate-300 dark:text-slate-400" aria-hidden="true">
                           <path d="m19 19-3.5-3.5"></path>
@@ -279,7 +279,6 @@ function App() {
                           <abbr title="Control" className="no-underline text-slate-300 dark:text-slate-500">Ctrl </abbr> K
                         </kbd>
                       </Button>
-                    </div>
                   </div>
                   {user ? (
                     <UserMenu />
@@ -338,7 +337,7 @@ export function useOptimisticThemeMode() {
   const fetchers = useFetchers();
   const themeFetcher = fetchers.find((f) => f.formAction === '/');
 
-  if (themeFetcher && themeFetcher.formData) {
+  if (themeFetcher?.formData) {
     const submission = parse(themeFetcher.formData, {
       schema: ThemeFormSchema,
     });
@@ -346,7 +345,7 @@ export function useOptimisticThemeMode() {
   }
 }
 
-function ThemeSwitch({ userPreference }: { userPreference?: Theme | null }) {
+function ThemeSwitch({ userPreference }: Readonly<{ userPreference?: Theme | null }>) {
   const fetcher = useFetcher<typeof action>();
 
   const [ form ] = useForm({
