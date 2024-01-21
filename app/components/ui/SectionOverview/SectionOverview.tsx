@@ -4,17 +4,17 @@ import {
   ChevronUpIcon,
   Bars3Icon,
   PencilIcon,
-} from "@heroicons/react/24/outline";
-import type { Question } from "@prisma/client";
-import { Link } from "@remix-run/react";
-import type { MouseEvent } from "react";
-import { useState } from "react";
+  TrashIcon,
+} from '@heroicons/react/24/outline';
+import { type Question } from '@prisma/client';
+import { Form, Link } from '@remix-run/react';
+import { type MouseEvent, useState } from 'react';
 
 type SectionOverviewProps = {
   title: string;
   description?: string;
-  questions: (Pick<Question, "id" | "title"> & {
-    userStatus?: "complete" | "started" | "needsAttention" | "notStarted";
+  questions: (Pick<Question, 'id' | 'title'> & {
+    userStatus?: 'complete' | 'started' | 'needsAttention' | 'notStarted';
   })[];
   challengeId: string;
   sectionId: string;
@@ -32,13 +32,14 @@ const SectionOverview = (props: SectionOverviewProps) => {
       <div
         onClick={() => setExpanded(!expanded)}
         className={`flex w-full cursor-pointer items-center justify-between bg-gray-50 px-3 py-2 ${
-          expanded ? "border-b border-gray-200" : ""
+          expanded ? 'border-b border-gray-200' : ''
         }`}
       >
         <h1 className="rounded-lg text-xl font-semibold text-gray-800 md:text-3xl">
           {title}
         </h1>
         <div className="flex items-center gap-2">
+          {!admin && <Link to={`./section/${sectionId}`}>Start</Link>}
           {admin && <AdminMenu sectionId={sectionId} />}
           {expanded ? (
             <ChevronUpIcon className="h-8 w-8 rounded-full border-2 border-gray-400 text-gray-600" />
@@ -47,10 +48,10 @@ const SectionOverview = (props: SectionOverviewProps) => {
           )}
         </div>
       </div>
-      <div className={`${expanded ? "block" : "hidden"} w-full`}>
+      <div className={`${expanded ? 'block' : 'hidden'} w-full`}>
         <div className="flex items-center px-3">
           <div
-            dangerouslySetInnerHTML={{ __html: description || "" }}
+            dangerouslySetInnerHTML={{ __html: description || '' }}
             className="flex-grow py-2 text-xl"
           />
         </div>
@@ -64,11 +65,23 @@ const SectionOverview = (props: SectionOverviewProps) => {
                 {question.title}
               </h3>
               {admin && (
-                <Link
-                  to={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
-                >
-                  <PencilIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
-                </Link>
+                <div className="flex">
+                  <Form
+                    method="delete"
+                    // eslint-disable-next-line remix-react-routes/require-valid-paths
+                    action={`/admin/challenges/${challengeId}/sections+/${sectionId}/questions/${question.id}`}
+                  >
+                    <button type="submit">
+                      <TrashIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
+                    </button>
+                  </Form>
+                  <Link
+                    // eslint-disable-next-line remix-react-routes/require-valid-paths
+                    to={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
+                  >
+                    <PencilIcon className="mr-2 h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
+                  </Link>
+                </div>
               )}
               {question.userStatus && (
                 <QuestionUserStatus status={question.userStatus} />
@@ -84,24 +97,24 @@ const SectionOverview = (props: SectionOverviewProps) => {
 export default SectionOverview;
 
 const QuestionUserStatus = (props: {
-  status: "complete" | "started" | "needsAttention" | "notStarted";
+  status: 'complete' | 'started' | 'needsAttention' | 'notStarted';
 }) => {
   const { status } = props;
 
   const getStatusClass = (
-    status: "complete" | "started" | "needsAttention" | "notStarted"
+    status: 'complete' | 'started' | 'needsAttention' | 'notStarted',
   ) => {
     switch (status) {
-      case "complete":
-        return "text-green-500";
-      case "started":
-        return "text-orange-500";
-      case "needsAttention":
-        return "text-red-500";
-      case "notStarted":
-        return "text-grey-300";
+      case 'complete':
+        return 'text-green-500';
+      case 'started':
+        return 'text-orange-500';
+      case 'needsAttention':
+        return 'text-red-500';
+      case 'notStarted':
+        return 'text-grey-300';
       default:
-        return "text-grey-300";
+        return 'text-grey-300';
     }
   };
 
@@ -125,14 +138,14 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
       <Bars3Icon className="h-8 w-8 rounded-full border-2 border-gray-400 p-1 text-gray-600" />
       <div
         className={`absolute right-0 z-50 mt-2 rounded border bg-white ${
-          menuOpen ? "block" : "hidden"
+          menuOpen ? 'block' : 'hidden'
         }`}
       >
         <ul className="flex flex-col">
           <li className="flex items-center hover:bg-gray-100">
             <Link
               to={`./sections/${sectionId}`}
-              className="m-1 whitespace-nowrap py-2 px-3"
+              className="m-1 whitespace-nowrap px-3 py-2"
             >
               Edit Section
             </Link>
@@ -140,7 +153,7 @@ const AdminMenu = ({ sectionId }: { sectionId: string }) => {
           <li className="flex items-center hover:bg-gray-100">
             <Link
               to={`./sections/${sectionId}/questions/add`}
-              className="m-1 whitespace-nowrap py-2 px-3"
+              className="m-1 whitespace-nowrap px-3 py-2"
             >
               New Question
             </Link>

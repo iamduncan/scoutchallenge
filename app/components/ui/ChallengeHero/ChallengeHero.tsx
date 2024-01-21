@@ -1,5 +1,5 @@
-import CampingAdventure from "~/assets/images/camping-adventure.png";
-import ProgressCircular from "../ProgressCircular";
+import CampingAdventure from '#app/assets/images/camping-adventure.png';
+import ProgressCircular from '../ProgressCircular/index.ts';
 
 type ChallengeHeroProps = {
   title: string;
@@ -14,13 +14,12 @@ const ChallengeHero = ({
   startDate,
   endDate,
 }: ChallengeHeroProps) => {
-  const startDateObj = new Date(startDate || "");
-  const endDateObj = new Date(endDate || "");
+  const endDateObj = new Date(endDate || '');
   const currentDate = new Date();
   const daysLeft = Math.ceil(
-    (endDateObj.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
+    (endDateObj.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24),
   );
-  const daysLeftText = daysLeft === 1 ? "day" : "days";
+  const daysLeftText = daysLeft === 1 ? 'day' : 'days';
 
   return (
     <>

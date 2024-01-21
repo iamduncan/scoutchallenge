@@ -1,13 +1,30 @@
-import { Bars3Icon } from "@heroicons/react/24/outline";
-import type { Group, User } from "@prisma/client";
-import { Form, Link, NavLink } from "@remix-run/react";
-import { useState } from "react";
-import { Logo } from "~/components/icons";
-import { UserMenu } from "~/components/ui";
-import { menuItems } from "~/config";
+import { Bars3Icon } from '@heroicons/react/24/outline';
+import { Form, Link, NavLink } from '@remix-run/react';
+import { useState } from 'react';
+import { Logo } from '#app/components/icons/index.ts';
+import { menuItems } from '#app/config.ts';
 
 type Props = {
-  user: User & { groups: Group[] };
+  user: {
+    id: string;
+    username: string;
+    name: string | null;
+    image: {
+      id: string;
+    } | null;
+    groups: {
+      id: string;
+      name: string;
+    }[];
+    roles: {
+      name: string;
+      permissions: {
+        action: string;
+        entity: string;
+        access: string;
+      }[];
+    }[];
+  };
   admin?: boolean;
 };
 
@@ -17,7 +34,7 @@ export default function Header(props: Props) {
   return (
     <header
       className={`body-font bg-scout-purple px-4 py-2 text-gray-600 ${
-        !admin && "md:pb-16"
+        !admin && 'md:pb-16'
       }`}
     >
       <div className="flex w-full items-center justify-between">
@@ -36,8 +53,8 @@ export default function Header(props: Props) {
       </div>
       <nav
         className={`${
-          !isOpen && "hidden"
-        } fixed top-0 left-0 z-50 h-screen w-full bg-white p-3`}
+          !isOpen && 'hidden'
+        } fixed left-0 top-0 z-50 h-screen w-full bg-white p-3`}
       >
         <div className="flex- flex items-center justify-between px-3 py-2">
           <Logo className="h-12 w-12 rounded-full bg-purple-600 p-2 text-gray-100" />
@@ -59,10 +76,11 @@ export default function Header(props: Props) {
               if (!item.forAdmin) {
                 return true;
               }
-              return (
-                user.role === "ADMIN" ||
-                user.role === "GROUPADMIN" ||
-                user.role === "SECTIONADMIN"
+              return user.roles.some(
+                (role) =>
+                  role.name === 'ADMIN' ||
+                  role.name === 'GROUPADMIN' ||
+                  role.name === 'SECTIONADMIN',
               );
             })
             .map((item) => (
@@ -79,7 +97,7 @@ export default function Header(props: Props) {
           <li className="w-full">
             <Link
               className="block w-full border-t border-gray-200 py-3 text-lg"
-              to="/contact"
+              to="/support"
             >
               Contact
             </Link>
@@ -99,31 +117,3 @@ export default function Header(props: Props) {
     </header>
   );
 }
-
-const old = () => (
-  <div className="container mx-auto flex flex-col flex-wrap items-center p-5 md:flex-row">
-    <Link
-      to="/"
-      className="title-font mb-4 flex items-center text-gray-100 md:mb-0"
-    >
-      <Logo className="h-10 w-10 rounded-full bg-purple-600 p-2" />
-      <span className="ml-3 text-xl font-semibold">Scout Challenge</span>
-    </Link>
-    <nav className="flex flex-wrap items-center justify-center text-base md:mr-auto	md:ml-4 md:border-l md:border-gray-200 md:pl-4">
-      {menuItems.map((item) => (
-        <NavLink
-          key={item.id}
-          to={item.path}
-          className={({ isActive }) =>
-            `mr-5 font-semibold text-gray-50 hover:text-gray-200 md:p-1 ${
-              isActive && "rounded bg-purple-200 !text-gray-800"
-            }`
-          }
-        >
-          {item.label}
-        </NavLink>
-      ))}
-    </nav>
-    <UserMenu />
-  </div>
-);

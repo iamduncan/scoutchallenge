@@ -6,14 +6,19 @@ on:
       - dev
   pull_request: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   lint:
     name: ⬣ ESLint
     runs-on: ubuntu-latest
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
@@ -32,9 +37,6 @@ jobs:
     name: ʦ TypeScript
     runs-on: ubuntu-latest
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
@@ -52,31 +54,19 @@ jobs:
   vitest:
     name: ⚡ Vitest
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v3
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: 📥 Download deps
-        uses: bahmutov/npm-install@v1
-
-      - name: ⚡ Run vitest
-        run: npm run test -- --coverage
-
-  cypress:
-    name: ⚫️ Cypress
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
@@ -86,30 +76,89 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
 
-      - name: 🐳 Docker compose
-        # the sleep is just there to give time for postgres to get started
-        run: docker-compose up -d && sleep 3
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+      # Setup env variables
+      - name: 🌎 Setup env variables
+        run: |
+          echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres" >> $GITHUB_ENV
 
-      - name: 🛠 Setup Database
-        run: npx prisma migrate reset --force
+      # Setup database
+      - name: 💾 Setup database
+        run: npx prisma migrate deploy
+
+      - name: 🌱 Seed Database
+        run: npx prisma db seed
+        env:
+          MINIMAL_SEED: true
+
+      - name: ⚡ Run vitest
+        run: npm run test -- --coverage
+
+  playwright:
+    name: 🎭 Playwright
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: 🏄 Copy test env vars
+        run: cp .env.example .env
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: 📥 Download deps
+        uses: bahmutov/npm-install@v1
+
+      - name: 📥 Install Playwright Browsers
+        run: npm run test:e2e:install
+
+      # Setup env variables
+      - name: 🌎 Setup env variables
+        run: |
+          echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres" >> $GITHUB_ENV
+
+      # Setup database
+      - name: 💾 Setup database
+        run: npx prisma migrate deploy
+
+      - name: 🌱 Seed Database
+        run: npx prisma db seed
+        env:
+          MINIMAL_SEED: true
 
       - name: ⚙️ Build
         run: npm run build
 
-      - name: 🌳 Cypress run
-        uses: cypress-io/github-action@v3
+      - name: 🎭 Playwright tests
+        run: npx playwright test
+
+      - name: 📊 Upload report
+        uses: actions/upload-artifact@v3
+        if: always()
         with:
-          start: npm run start:mocks
-          wait-on: "http://localhost:8811"
-        env:
-          PORT: "8811"
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
   build:
     name: 🐳 Build
@@ -117,9 +166,6 @@ jobs:
     if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
@@ -127,8 +173,8 @@ jobs:
         uses: SebRollen/toml-action@v1.0.2
         id: app_name
         with:
-          file: "fly.toml"
-          field: "app"
+          file: 'fly.toml'
+          field: 'app'
 
       - name: 🐳 Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -173,14 +219,11 @@ jobs:
   deploy:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
-    needs: [lint, typecheck, vitest, cypress, build]
+    needs: [lint, typecheck, vitest, playwright, build]
     # only build/deploy main branch on pushes
     if: ${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push' }}
 
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.11.0
-
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
 
@@ -188,14 +231,14 @@ jobs:
         uses: SebRollen/toml-action@v1.0.2
         id: app_name
         with:
-          file: "fly.toml"
-          field: "app"
+          file: 'fly.toml'
+          field: 'app'
 
       - name: 🚀 Deploy Staging
         if: ${{ github.ref == 'refs/heads/dev' }}
         uses: superfly/flyctl-actions@v1.4
         with:
-          args: "deploy --app ${{ steps.app_name.outputs.value }}-staging --image registry.fly.io/${{ steps.app_name.outputs.value }}:${{ github.ref_name }}-${{ github.sha }}"
+          args: 'deploy --app ${{ steps.app_name.outputs.value }}-staging --image registry.fly.io/${{ steps.app_name.outputs.value }}:${{ github.ref_name }}-${{ github.sha }}'
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
@@ -203,6 +246,6 @@ jobs:
         if: ${{ github.ref == 'refs/heads/main' }}
         uses: superfly/flyctl-actions@v1.4
         with:
-          args: "deploy --image registry.fly.io/${{ steps.app_name.outputs.value }}:${{ github.ref_name }}-${{ github.sha }}"
+          args: 'deploy --image registry.fly.io/${{ steps.app_name.outputs.value }}:${{ github.ref_name }}-${{ github.sha }}'
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

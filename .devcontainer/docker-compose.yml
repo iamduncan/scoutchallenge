@@ -1,15 +1,8 @@
-version: "3.8"
+version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        # Update 'VARIANT' to pick an LTS version of Node.js: 16, 14, 12.
-        # Append -bullseye or -buster to pin to an OS version.
-        # Use -bullseye variants on local arm64/Apple Silicon.
-        VARIANT: "18"
+    image: mcr.microsoft.com/devcontainers/universal:2
 
     volumes:
       - ..:/workspace:cached

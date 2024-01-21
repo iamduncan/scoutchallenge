@@ -1,7 +1,18 @@
+# dependencies
 node_modules
+.pnp
+.pnp.js
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
 
 /build
 /public/build
+/server-build
 .env
 
 /cypress/screenshots
@@ -9,4 +20,20 @@ node_modules
 /postgres-data
 /coverage
 
-/app/styles/tailwind.css
+/prisma/data.db
+/prisma/data.db-journal
+/tests/prisma
+
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/tests/fixtures/email/
+/coverage
+
+/other/cache.db
+
+# Easy way to create temporary files/folders that won't accidentally be added to git
+*.local.*
+
+# generated files
+/app/components/ui/icons

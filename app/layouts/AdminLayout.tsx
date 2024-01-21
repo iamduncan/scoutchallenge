@@ -1,5 +1,3 @@
-import type { FC } from "react";
-import { NavLink } from "@remix-run/react";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
   CogIcon,
@@ -9,66 +7,70 @@ import {
   TicketIcon,
   UserGroupIcon,
   UserIcon,
-} from "@heroicons/react/24/outline";
-import { Header } from "~/components/common";
-import { useUser } from "~/utils";
+} from '@heroicons/react/24/outline';
+import { NavLink } from '@remix-run/react';
+import { type FC } from 'react';
+import { Header } from '#app/components/common/index.ts';
+import { useUser } from '#app/utils/user.ts';
 
 const menuItems: {
-  icon: React.ForwardRefExoticComponent<Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
-    title?: string;
-    titleId?: string;
-} & React.RefAttributes<SVGSVGElement>>;
+  icon: React.ForwardRefExoticComponent<
+    Omit<React.SVGProps<SVGSVGElement>, 'ref'> & {
+      title?: string;
+      titleId?: string;
+    } & React.RefAttributes<SVGSVGElement>
+  >;
   label: string;
   to: string;
-  level?: "super" | "group" | "section";
+  level?: 'super' | 'group' | 'section';
 }[] = [
   {
     icon: UserGroupIcon,
-    label: "Sections",
-    to: "/admin/sections",
-    level: "group",
+    label: 'Sections',
+    to: '/admin/sections',
+    level: 'group',
   },
   {
     icon: PuzzlePieceIcon,
-    label: "Challenges",
-    to: "/admin/challenges",
-    level: "section",
+    label: 'Challenges',
+    to: '/admin/challenges',
+    level: 'section',
   },
   {
     icon: InboxArrowDownIcon,
-    label: "Responses",
-    to: "/admin/responses",
-    level: "section",
+    label: 'Responses',
+    to: '/admin/responses',
+    level: 'section',
   },
   {
     icon: ChatBubbleOvalLeftEllipsisIcon,
-    label: "Messages",
-    to: "/admin/messages",
-    level: "section",
+    label: 'Messages',
+    to: '/admin/messages',
+    level: 'section',
   },
   {
     icon: CogIcon,
-    label: "Settings",
-    to: "/admin/settings",
-    level: "group",
+    label: 'Settings',
+    to: '/admin/settings',
+    level: 'group',
   },
   {
     icon: UserIcon,
-    label: "Users",
-    to: "/admin/users",
-    level: "super",
+    label: 'Users',
+    to: '/admin/users',
+    level: 'super',
   },
   {
     icon: RectangleStackIcon,
-    label: "Mail List",
-    to: "/admin/mailing-list",
-    level: "super",
+    label: 'Mail List',
+    to: '/admin/mailing-list',
+    level: 'super',
   },
   {
     icon: TicketIcon,
-    label: "Tokens",
-    to: "/admin/tokens",
-    level: "super",
+    label: 'Tokens',
+    to: '/admin/tokens',
+    level: 'super',
   },
 ];
 
@@ -82,7 +84,7 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
   return (
     <div className="layout flex flex-col">
       <Header user={user} admin />
-      <main className="layout-main box-content flex-grow overflow-y-auto bg-zinc-100 scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400">
+      <main className="layout-main box-content flex-grow overflow-y-auto scrollbar:!h-1.5 scrollbar:!w-1.5 scrollbar:bg-transparent scrollbar-track:mt-2 scrollbar-track:!rounded scrollbar-track:!bg-slate-100 scrollbar-thumb:!rounded scrollbar-thumb:!bg-slate-400">
         <nav>
           <ul className="flex justify-between overflow-x-auto md:justify-center">
             {menuItems
@@ -90,22 +92,25 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
                 if (!level) {
                   return true;
                 }
-                const userLevel = user?.role;
+                const userRoles = user?.roles;
                 if (
-                  userLevel === "ADMIN" &&
-                  (level === "super" ||
-                    level === "group" ||
-                    level === "section")
+                  userRoles.some((role) => role.name === 'ADMIN') &&
+                  (level === 'super' ||
+                    level === 'group' ||
+                    level === 'section')
                 ) {
                   return true;
                 }
                 if (
-                  userLevel === "GROUPADMIN" &&
-                  (level === "group" || level === "section")
+                  userRoles.some((role) => role.name === 'GROUPADMIN') &&
+                  (level === 'group' || level === 'section')
                 ) {
                   return true;
                 }
-                if (userLevel === "SECTIONADMIN" && level === "section") {
+                if (
+                  userRoles.some((role) => role.name === 'SECTIONADMIN') &&
+                  level === 'section'
+                ) {
                   return true;
                 }
                 return false;
@@ -118,12 +123,12 @@ const AdminLayout: FC<InputProps> = ({ children }) => {
                   <NavLink
                     to={to}
                     className={({ isActive }) =>
-                      `flex flex-col items-center justify-center py-2 px-1 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 md:flex-row md:px-4 md:text-base ${
-                        isActive && "bg-indigo-100"
+                      `flex flex-col items-center justify-center px-1 py-2 text-sm font-semibold text-indigo-700 hover:bg-indigo-100 hover:text-indigo-900 md:flex-row md:px-4 md:text-base ${
+                        isActive && 'bg-indigo-100'
                       }`
                     }
                   >
-                    <Icon className="h-5 w-5 md:mr-3 md:h-6 md:w-6" />{" "}
+                    <Icon className="h-5 w-5 md:mr-3 md:h-6 md:w-6" />{' '}
                     <span className="whitespace-nowrap">{label}</span>
                   </NavLink>
                 </li>

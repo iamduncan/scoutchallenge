@@ -1,17 +1,24 @@
-import { $getListDepth, $isListItemNode, $isListNode } from "@lexical/list";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import type { RangeSelection, NodeSelection, GridSelection } from "lexical";
-import {
-  $getSelection,
-  $isElementNode,
-  $isRangeSelection,
-  INDENT_CONTENT_COMMAND,
-  COMMAND_PRIORITY_HIGH,
-} from "lexical";
-import { useEffect } from "react";
+import lexicalList from '@lexical/list';
+import lexicalComposer from '@lexical/react/LexicalComposerContext.js';
+import lexicalLexical, {
+  type RangeSelection,
+  type NodeSelection,
+  type GridSelection,
+} from 'lexical';
+import { useEffect } from 'react';
+
+const $getListDepth = lexicalList.$getListDepth;
+const $isListItemNode = lexicalList.$isListItemNode;
+const $isListNode = lexicalList.$isListNode;
+const useLexicalComposerContext = lexicalComposer.useLexicalComposerContext;
+const $getSelection = lexicalLexical.$getSelection;
+const $isElementNode = lexicalLexical.$isElementNode;
+const $isRangeSelection = lexicalLexical.$isRangeSelection;
+const INDENT_CONTENT_COMMAND = lexicalLexical.INDENT_CONTENT_COMMAND;
+const COMMAND_PRIORITY_HIGH = lexicalLexical.COMMAND_PRIORITY_HIGH;
 
 function getElementNodesInSelection(
-  selection: RangeSelection | NodeSelection | GridSelection
+  selection: RangeSelection | NodeSelection | GridSelection,
 ) {
   const nodesInSelection = selection.getNodes();
 
@@ -19,15 +26,15 @@ function getElementNodesInSelection(
 
   if (nodesInSelection.length === 0) {
     return new Set([
-      "anchor" in selection && selection.anchor.getNode().getParentOrThrow(),
-      "focus" in selection && selection.focus.getNode().getParentOrThrow(),
+      'anchor' in selection && selection.anchor.getNode().getParentOrThrow(),
+      'focus' in selection && selection.focus.getNode().getParentOrThrow(),
     ]);
   }
 
   return new Set(
     nodesInSelection.map((n: any) =>
-      $isElementNode(n) ? n : n.getParentOrThrow()
-    )
+      $isElementNode(n) ? n : n.getParentOrThrow(),
+    ),
   );
 }
 
@@ -49,7 +56,7 @@ function isIndentPermitted(maxDepth: number) {
       const parent = elementNode.getParent();
       if (parent === null || !$isListNode(parent)) {
         throw new Error(
-          "ListMaxIndentLevelPlugin: A ListItemNode must have a ListNode for a parent."
+          'ListMaxIndentLevelPlugin: A ListItemNode must have a ListNode for a parent.',
         );
       }
 
@@ -67,7 +74,7 @@ export default function ListMaxIndentLevelPlugin({ maxDepth }: any) {
     return editor.registerCommand(
       INDENT_CONTENT_COMMAND,
       () => !isIndentPermitted(maxDepth ?? 7),
-      COMMAND_PRIORITY_HIGH
+      COMMAND_PRIORITY_HIGH,
     );
   }, [editor, maxDepth]);
 

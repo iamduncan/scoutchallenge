@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { type FC } from 'react';
 
 interface InputProps {
   children: string;
@@ -32,7 +32,7 @@ const SuccessAlert: FC<InputProps> = ({ children, title }) => {
 
           <p className="flex-grow">
             <strong className="text-sm font-medium">
-              {title ? title : "Success!"}{" "}
+              {title ? title : 'Success!'}{' '}
             </strong>
 
             <span className="block text-xs opacity-90">{children}</span>

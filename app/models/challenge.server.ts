@@ -1,10 +1,17 @@
-import type { Challenge, ChallengeSection, Prisma } from "@prisma/client";
+import {
+  type Challenge,
+  type ChallengeSection,
+  type Group,
+  type Prisma,
+  type Question,
+  ChallengeStatus,
+} from '@prisma/client';
 
-import { prisma } from "~/db.server";
-import { generateHTML } from "~/utils.server";
+import { prisma } from '#app/utils/db.server.ts';
+import { generateHTML } from '#app/utils/editor.server.ts';
 
 export async function createChallenge(
-  data: Prisma.ChallengeCreateInput
+  data: Prisma.ChallengeCreateInput,
 ): Promise<Challenge> {
   return prisma.challenge.create({
     data,
@@ -13,7 +20,7 @@ export async function createChallenge(
 
 export async function updateChallenge(
   id: string,
-  data: Prisma.ChallengeUpdateInput
+  data: Prisma.ChallengeUpdateInput,
 ): Promise<Challenge> {
   return prisma.challenge.update({
     where: { id },
@@ -21,8 +28,16 @@ export async function updateChallenge(
   });
 }
 
-export async function listChallenges(): Promise<Challenge[]> {
-  return prisma.challenge.findMany();
+export async function listChallenges({
+  groupId,
+  isAdmin,
+}: {
+  groupId: string;
+  isAdmin?: boolean;
+}): Promise<Challenge[]> {
+  return prisma.challenge.findMany({
+    where: isAdmin ? undefined : { groupId },
+  });
 }
 
 /**
@@ -31,19 +46,39 @@ export async function listChallenges(): Promise<Challenge[]> {
  * @param published true to return only published challenges
  * @returns list of challenges
  */
-export async function getChallengeListItems(
-  published?: boolean
-): Promise<Pick<Challenge, "id" | "name">[]> {
+export async function getChallengeListItems({
+  groups,
+  published,
+}: {
+  groups?: { id: string; name: string }[];
+  published?: boolean;
+}): Promise<Pick<Challenge, 'id' | 'name'>[]> {
   return prisma.challenge.findMany({
     select: { id: true, name: true },
-    orderBy: { name: "asc" },
-    where: published ? { status: "PUBLISHED" } : undefined,
+    orderBy: { name: 'asc' },
+    where: {
+      groupId: groups?.length
+        ? { in: groups.map((group) => group.id) }
+        : undefined,
+      status: published ? ChallengeStatus.PUBLISHED : undefined,
+    },
   });
 }
 
-export async function getChallenge({ id }: Pick<Challenge, "id">) {
+export async function getChallenge({
+  id,
+  groups,
+}: {
+  id: Challenge['id'];
+  groups?: Group[];
+}) {
   const challenge = await prisma.challenge.findFirst({
-    where: { id },
+    where: {
+      id,
+      groupId: groups?.length
+        ? { in: groups.map((group) => group.id) }
+        : undefined,
+    },
     include: {
       createdBy: true,
       updatedBy: true,
@@ -51,20 +86,28 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
       challengeSections: {
         include: {
           questions: {
-            orderBy: { order: "asc" },
-            select: { id: true, title: true, description: true },
+            orderBy: { order: 'asc' },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              hint: true,
+              data: true,
+              type: true,
+            },
           },
         },
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
       },
     },
   });
 
   if (!challenge) {
-    throw new Error("Challenge not found");
+    throw new Response('Not Found', {
+      status: 404,
+    });
   }
 
-  console.log("challenge introduction", challenge.introduction);
   const introHtml = generateHTML(challenge.introduction);
 
   // generate HTML for each section description
@@ -76,22 +119,45 @@ export async function getChallenge({ id }: Pick<Challenge, "id">) {
       challengeSections.push({
         ...challenge.challengeSections[section],
         descriptionHtml: generateHTML(
-          challenge.challengeSections[section].description || ""
+          challenge.challengeSections[section].description || '',
         ),
       });
+
+      // generate HTML for each question description
+      let questions = [];
+      for (const question in challenge.challengeSections[section].questions) {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            challenge.challengeSections[section].questions,
+            question,
+          )
+        ) {
+          questions.push({
+            ...challenge.challengeSections[section].questions[question],
+            descriptionHtml: generateHTML(
+              challenge.challengeSections[section].questions[question]
+                .description || '',
+            ),
+          });
+        }
+      }
+      challengeSections[section].questions = questions;
     }
   }
 
   return {
     ...challenge,
-    challengeSections,
+    challengeSections: challengeSections as (ChallengeSection & {
+      descriptionHtml?: string;
+      questions: (Question & { descriptionHtml?: string })[];
+    })[],
     introductionHtml: introHtml,
   };
 }
 
 export async function addSectionToChallenge(
   challengeId: string,
-  sectionId: string
+  sectionId: string,
 ) {
   return prisma.challenge.update({
     where: { id: challengeId },
@@ -107,7 +173,7 @@ export async function addSectionToChallenge(
 
 export async function removeSectionFromChallenge(
   challengeId: string,
-  sectionId: string
+  sectionId: string,
 ) {
   return prisma.challenge.update({
     where: { id: challengeId },
@@ -121,7 +187,7 @@ export async function removeSectionFromChallenge(
   });
 }
 
-export async function deleteChallenge({ id }: Pick<Challenge, "id">) {
+export async function deleteChallenge({ id }: Pick<Challenge, 'id'>) {
   return prisma.challenge.delete({
     where: { id },
   });
@@ -129,7 +195,7 @@ export async function deleteChallenge({ id }: Pick<Challenge, "id">) {
 
 export async function createChallengeSection(
   challengeId: string,
-  data: Prisma.ChallengeSectionCreateWithoutChallengeInput
+  data: Prisma.ChallengeSectionCreateWithoutChallengeInput,
 ): Promise<Challenge> {
   return prisma.challenge.update({
     where: { id: challengeId },
@@ -143,20 +209,21 @@ export async function createChallengeSection(
 
 export async function getChallengeSection({
   id,
-}: Pick<ChallengeSection, "id">) {
+}: Pick<ChallengeSection, 'id'>) {
   return prisma.challengeSection.findFirst({
     where: { id },
     include: {
       questions: {
-        orderBy: { order: "asc" },
+        orderBy: { order: 'asc' },
       },
     },
   });
 }
 
+/* --------------------------- Question Functions --------------------------- */
 export async function addQuestion(
   challengeSectionId: string,
-  questionData: Prisma.QuestionCreateWithoutChallengeSectionInput
+  questionData: Prisma.QuestionCreateWithoutChallengeSectionInput,
 ) {
   return prisma.question.create({
     data: {
@@ -167,5 +234,11 @@ export async function addQuestion(
         },
       },
     },
+  });
+}
+
+export async function deleteQuestion({ id }: Pick<Question, 'id'>) {
+  return prisma.question.delete({
+    where: { id },
   });
 }

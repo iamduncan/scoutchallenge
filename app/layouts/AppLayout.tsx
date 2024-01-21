@@ -1,6 +1,6 @@
-import type { FC } from "react";
-import { Header } from "~/components/common";
-import { useUser } from "~/utils";
+import { type FC } from 'react';
+import { Header } from '#app/components/common/index.ts';
+import { useUser } from '#app/utils/user.ts';
 
 interface InputProps {
   children: React.ReactElement;
@@ -16,11 +16,11 @@ const AppLayout: FC<InputProps> = ({ children }) => {
       </main>
       <footer className="flex-none border-t border-gray-300 bg-white text-center text-xs text-stone-500 shadow-lg">
         <p>
-          Made with{" "}
+          Made with{' '}
           <span role="img" aria-label="heart">
             ❤️
-          </span>{" "}
-          by{" "}
+          </span>{' '}
+          by{' '}
           <a
             href="https://www.wessexdigitalsolutions.co.uk"
             className="text-blue-500 hover:text-blue-700"

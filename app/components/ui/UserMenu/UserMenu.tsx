@@ -1,9 +1,8 @@
-import { useRef, useState } from "react";
-import { Link, Form } from "@remix-run/react";
-import { useClickOutside } from "~/hooks/useClickOutside";
-import { useUser } from "~/utils";
-
-import avatarPlaceholder from "~/assets/images/avatar-placeholder.gif";
+import { Link, Form } from '@remix-run/react';
+import { useRef, useState } from 'react';
+import avatarPlaceholder from '#app/assets/images/avatar-placeholder.gif';
+import { useClickOutside } from '#app/hooks/useClickOutside.ts';
+import { useUser } from '#app/utils/user.ts';
 
 const showUserImg = (picture?: string) => {
   return picture ? (
@@ -20,7 +19,7 @@ const showUserImg = (picture?: string) => {
 const UserMenu = () => {
   const [open, setOpen] = useState(false);
   const userData = useUser();
-  const userRole = userData.role;
+  const userRole = userData.roles[0].name;
   const userMenuRef = useRef<HTMLDivElement>(null);
   useClickOutside(userMenuRef, () => setOpen(false));
   return userData !== null ? (
@@ -32,15 +31,13 @@ const UserMenu = () => {
         <div className="user-menu__avatar px-3">{showUserImg()}</div>
         <div className="user-menu__info hidden flex-col justify-center text-gray-50 md:flex">
           <div className="user-menu__info-name text-base font-semibold">
-            <span>
-              {userData.firstName} {userData.lastName}
-            </span>
+            <span>{userData.name}</span>
           </div>
         </div>
       </button>
       <div
         className={`absolute z-20 mt-2 w-48 rounded-md bg-white py-2 text-left shadow-xl ${
-          open ? "" : "hidden"
+          open ? '' : 'hidden'
         }`}
       >
         <Link
@@ -67,9 +64,9 @@ const UserMenu = () => {
         >
           Settings
         </Link>
-        {(userRole === "ADMIN" ||
-          userRole === "GROUPADMIN" ||
-          userRole === "SECTIONADMIN") && (
+        {(userRole === 'ADMIN' ||
+          userRole === 'GROUPADMIN' ||
+          userRole === 'SECTIONADMIN') && (
           <Link
             to="/admin"
             className="block px-4 py-2 text-sm capitalize text-gray-700 hover:bg-blue-500 hover:text-white"

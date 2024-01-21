@@ -1,4 +1,4 @@
-import { config } from "./config";
+import { config } from './config.ts';
 
 export type TMessage = {
   sender: {
@@ -30,15 +30,15 @@ export type TMessage = {
 export const SendMessage = async (message: TMessage) => {
   const sibApiKey = process.env.SENDINBLUE_API_KEY;
   if (!sibApiKey) {
-    throw new Error("SENDINBLUE_API_KEY is not defined");
+    throw new Error('SENDINBLUE_API_KEY is not defined');
   }
 
   try {
     const messageId = await fetch(`${config.baseURL}/smtp/email`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "api-key": sibApiKey,
+        'Content-Type': 'application/json',
+        'api-key': sibApiKey,
       },
       body: JSON.stringify(message),
     });

@@ -1,10 +1,10 @@
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from 'react';
 
-import { useEventListener } from "./useEventListener";
+import { useEventListener } from './useEventListener.ts';
 
 export function useScreen() {
   const getScreen = () => {
-    if (typeof window !== "undefined" && window.screen) {
+    if (typeof window !== 'undefined' && window.screen) {
       return window.screen;
     }
     return undefined;
@@ -16,7 +16,7 @@ export function useScreen() {
     setScreen(getScreen());
   }
 
-  useEventListener("resize", handleSize);
+  useEventListener('resize', handleSize);
 
   // Set size at the first client-side load
   useLayoutEffect(() => {

@@ -1,7 +1,6 @@
-import { TrashIcon } from "@heroicons/react/24/outline";
-import { Form, NavLink, useLocation } from "@remix-run/react";
-import type { FC } from "react";
-import React, { createContext } from "react";
+import { TrashIcon } from '@heroicons/react/24/outline';
+import { Form, NavLink, useLocation } from '@remix-run/react';
+import React, { type FC, createContext } from 'react';
 
 type AdminListContextType = {
   title: string;
@@ -17,8 +16,8 @@ type AdminListContextType = {
 };
 
 const AdminListContext = createContext<AdminListContextType>({
-  title: "",
-  route: "",
+  title: '',
+  route: '',
   listItems: [],
   hideNewLink: false,
   hideDelete: false,
@@ -45,17 +44,15 @@ const ListItems = ({
     <AdminListContext.Consumer>
       {({ title, listItems }) => (
         <div
-          className={`h-full flex-none border-r bg-gray-50 md:basis-80 ${
-            isRoot ? "w-full flex-grow" : "hidden lg:block"
-          }`}
+          className={`h-full flex-none border-r md:basis-80 ${isRoot ? 'w-full' : 'hidden lg:block'
+            }`}
         >
           {!hideNewLink && (
             <>
               <NavLink
                 to="new"
                 className={({ isActive }) =>
-                  `block p-4 text-xl text-blue-500 ${
-                    isActive ? "bg-white" : ""
+                  `block p-4 text-xl text-blue-500 ${isActive ? 'bg-muted' : ''
                   }`
                 }
               >
@@ -68,11 +65,11 @@ const ListItems = ({
             {listItems.map((item, index) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between border-b p-4 text-xl"
+                className="flex items-center justify-between border-b text-xl"
               >
                 <NavLink
                   className={({ isActive }) =>
-                    `block h-full w-full ${isActive ? "bg-white" : ""}`
+                    `block h-full w-full p-4 hover:bg-muted-foreground hover:text-muted ${isActive ? 'bg-muted' : ''}`
                   }
                   to={item.id}
                 >
@@ -104,20 +101,19 @@ const Content: FC<{ children: React.ReactElement }> = ({ children }) => {
 };
 
 const AdminList = (props: AdminListContextType) => {
-  const paths = useLocation().pathname.split("/");
-  const isSectionRoot = paths[paths.length - 1] === props.route;
+  const paths = useLocation().pathname.split('/');
+  const isSectionRoot = paths[ paths.length - 1 ] === props.route;
   return (
     <AdminListContext.Provider value={props}>
-      <div className="flex h-full min-h-full">
+      <div className="flex h-full min-h-full flex-none">
         <ListItems
           isRoot={isSectionRoot}
           hideNewLink={props.hideNewLink}
           hideDelete={props.hideDelete}
         />
         <div
-          className={`h-full flex-grow p-6 ${
-            isSectionRoot && "hidden lg:block"
-          }`}
+          className={`h-full flex-grow p-6 ${isSectionRoot && 'hidden lg:block'
+            }`}
         >
           {props.children}
         </div>
