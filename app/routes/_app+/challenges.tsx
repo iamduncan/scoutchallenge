@@ -28,7 +28,7 @@ export default function Challenges() {
 			<div className="grid w-full grid-cols-4 bg-muted pl-2 md:container md:rounded-3xl md:pr-0">
 				<div className="relative col-span-1">
 					<div className="absolute inset-0 flex flex-col">
-						<ul className="overflow-y-auto overflow-x-hidden pb-12">
+						<ul className="overflow-y-auto overflow-x-hidden py-12">
               <NavLink
 										to="new"
 										className={({ isActive }) =>
