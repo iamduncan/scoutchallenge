@@ -1,14 +1,26 @@
 import { invariantResponse } from '@epic-web/invariant'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, Outlet, json, useLoaderData } from '@remix-run/react'
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbSeparator,
-} from '#app/components/ui/breadcrumb'
+import { BreadcrumbItem, BreadcrumbLink, BreadcrumbPage } from '#app/components/ui/breadcrumb'
 import { prisma } from '#app/utils/db.server'
+import { type BreadcrumbHandle } from '../challenges'
+
+export const handle: BreadcrumbHandle = {
+	breadcrumb: (match: any, last?: boolean) => {
+		const current = match.data
+		return (
+			<BreadcrumbItem>
+				{last ? (
+					<BreadcrumbPage>{current.challenge.name}</BreadcrumbPage>
+				) : (
+					<BreadcrumbLink asChild>
+						<Link to={`/challenges/${current.challenge.id}`}>{current.challenge.name}</Link>
+					</BreadcrumbLink>
+				)}
+			</BreadcrumbItem>
+		)
+	}
+}
 
 export async function loader({ params }: LoaderFunctionArgs) {
 	const { challengeId } = params
@@ -25,12 +37,13 @@ export async function loader({ params }: LoaderFunctionArgs) {
 					name: true,
 					description: true,
 					order: true,
-					questions: {
+					tasks: {
 						select: {
 							id: true,
 							order: true,
 							title: true,
 							type: true,
+							points: true,
 							data: true,
 						},
 					},
@@ -48,34 +61,9 @@ export default function Challenge() {
 	const data = useLoaderData<typeof loader>()
 
 	return (
-		<div className="absolute inset-0 flex flex-col px-10">
-			<h2 className="mb-2 pt-12 text-h2 lg:mb-6">{data.challenge.name}</h2>
-			<Breadcrumb>
-				<BreadcrumbList>
-					<BreadcrumbItem>
-						<BreadcrumbLink asChild>
-							<Link to="/challenges/">Challenges</Link>
-						</BreadcrumbLink>
-					</BreadcrumbItem>
-					<BreadcrumbSeparator />
-					<BreadcrumbItem>
-						<BreadcrumbLink asChild>
-							<Link to={`/challenges/${data.challenge.id}/`}>
-								{data.challenge.name}
-							</Link>
-						</BreadcrumbLink>
-					</BreadcrumbItem>
-					<BreadcrumbSeparator />
-					<BreadcrumbItem>
-						<BreadcrumbLink asChild>
-							<Link to={`/challenges/${data.challenge.id}/sections/`}>
-								Sections
-							</Link>
-						</BreadcrumbLink>
-					</BreadcrumbItem>
-				</BreadcrumbList>
-			</Breadcrumb>
+		<>
+			<h2 className="mb-2 pt-4 text-h2 lg:mb-6">{data.challenge.name}</h2>
 			<Outlet />
-		</div>
+		</>
 	)
 }

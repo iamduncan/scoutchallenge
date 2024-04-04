@@ -1,13 +1,13 @@
 import { parseWithZod } from '@conform-to/zod'
 import { redirect, type ActionFunctionArgs, json } from '@remix-run/node'
 import { prisma } from '#app/utils/db.server'
-import { QuestionSchema } from './__question-editor'
+import { TaskSchema } from './__task-editor'
 
 export async function action({ request, params }: ActionFunctionArgs) {
 	const formData = await request.formData()
 
 	const submission = await parseWithZod(formData, {
-		schema: QuestionSchema,
+		schema: TaskSchema,
 		async: true,
 	})
 
@@ -18,9 +18,9 @@ export async function action({ request, params }: ActionFunctionArgs) {
 		)
 	}
 
-	const { id: questionId, title, description, hint, type } = submission.value
+	const { id: questionId, title, description, hint, type, points, data } = submission.value
 
-	await prisma.question.upsert({
+	await prisma.task.upsert({
 		select: { id: true },
 		where: { id: questionId ?? '__new_question__' },
 		create: {
@@ -28,6 +28,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			description,
 			hint,
 			type,
+			points,
+			data,
 			challengeSection: {
 				connect: {
 					id: params.sectionId,
@@ -40,6 +42,8 @@ export async function action({ request, params }: ActionFunctionArgs) {
 			description,
 			hint,
 			type,
+			points,
+			data,
 		},
 	})
 

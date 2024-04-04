@@ -1,4 +1,4 @@
-export enum QuestionType {
+export enum TaskType {
 	TEXT = 'TEXT',
 	MULTIPLECHOICE = 'MULTIPLECHOICE',
 	TRUEFALSE = 'TRUEFALSE',
@@ -51,7 +51,7 @@ type CipherQuestion = {
 	shiftValue?: number
 }
 
-export type QuestionData<T extends QuestionType> = T extends 'TEXT'
+export type TaskData<T extends TaskType> = T extends 'TEXT'
 	? TextQuestion
 	: T extends 'MULTIPLECHOICE'
 		? MultipleChoiceQuestion

@@ -3,17 +3,17 @@ import { SelectField } from '../forms'
 import { Button } from '../ui/button'
 import { Icon } from '../ui/icon'
 import { Input } from '../ui/input'
-import { type QuestionType, type QuestionData } from './types'
+import { type TaskType, type TaskData } from './types'
 
 /**
  * Create a Multiple Choice question component
  */
 export function CreateMultipleChoice({
-	questionData,
+	taskData,
 	handleUpdate,
 }: {
-	questionData: QuestionData<QuestionType.MULTIPLECHOICE>
-	handleUpdate: (data: QuestionData<QuestionType.MULTIPLECHOICE>) => void
+	taskData: TaskData<TaskType.MULTIPLECHOICE>
+	handleUpdate: (data: TaskData<TaskType.MULTIPLECHOICE>) => void
 }) {
 	const [options, setOptions] = useState([
 		{ id: '1', option: '' },
@@ -22,20 +22,20 @@ export function CreateMultipleChoice({
 	const [correctAnswer, setCorrectAnswer] = useState('')
 
 	useEffect(() => {
-		handleUpdate({ ...questionData, question: options, answer: correctAnswer })
-	}, [options, correctAnswer, handleUpdate, questionData])
+		handleUpdate({ ...taskData, question: options, answer: correctAnswer })
+	}, [options, correctAnswer, handleUpdate, taskData])
 
 	const handleAddOption = () => {
 		const newId = (parseInt(options[options.length - 1].id) + 1).toString()
 		const newOptions = [...options, { id: newId, option: '' }]
 		setOptions(newOptions)
-		handleUpdate({ ...questionData, question: newOptions })
+		handleUpdate({ ...taskData, question: newOptions })
 	}
 
 	const handleRemoveOption = (id: number) => {
 		const newOptions = options.filter(option => option.id !== id.toString())
 		setOptions(newOptions)
-		handleUpdate({ ...questionData, question: newOptions })
+		handleUpdate({ ...taskData, question: newOptions })
 	}
 
 	const handleOptionChange = (id: number, value: string) => {
@@ -46,13 +46,13 @@ export function CreateMultipleChoice({
 			return option
 		})
 		setOptions(newOptions)
-		handleUpdate({ ...questionData, question: newOptions })
+		handleUpdate({ ...taskData, question: newOptions })
 	}
 
 	const handleSelectCorrectAnswer = (value: string) => {
 		const id = value
 		setCorrectAnswer(id)
-		handleUpdate({ ...questionData, answer: id })
+		handleUpdate({ ...taskData, answer: id })
 	}
 
 	return (

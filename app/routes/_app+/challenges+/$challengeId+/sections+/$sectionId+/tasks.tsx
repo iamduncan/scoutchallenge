@@ -1,7 +1,7 @@
 import { type SerializeFrom, type LoaderFunctionArgs } from '@remix-run/node'
 import { Link, Outlet } from '@remix-run/react'
 import { BreadcrumbItem, BreadcrumbLink, BreadcrumbPage } from '#app/components/ui/breadcrumb'
-import { type BreadcrumbHandle } from '../../challenges'
+import { type BreadcrumbHandle } from '../../../../challenges'
 
 export const handle: BreadcrumbHandle = {
 	breadcrumb: (match: any, last?: boolean) => {
@@ -9,10 +9,10 @@ export const handle: BreadcrumbHandle = {
 		return (
 			<BreadcrumbItem>
 				{last ? (
-					<BreadcrumbPage>Sections</BreadcrumbPage>
+					<BreadcrumbPage>Tasks</BreadcrumbPage>
 				): (
 					<BreadcrumbLink asChild>
-						<Link to={`/challenges/${current.challengeId}/sections`}>Sections</Link>
+						<Link to={`/challenges/${current.challengeId}/sections/${current.sectionId}/tasks`}>Tasks</Link>
 					</BreadcrumbLink>
 				)}
 			</BreadcrumbItem>
@@ -23,13 +23,10 @@ export const handle: BreadcrumbHandle = {
 export function loader({ params }: LoaderFunctionArgs) {
 	return {
 		challengeId: params.challengeId,
+    sectionId: params.sectionId,
 	}
 }
 
-export default function ChallengeSections() {
-	return (
-		<div className="inset-0 flex h-full flex-col overflow-y-auto">
-			<Outlet />
-		</div>
-	)
+export default function Tasks() {
+	return <Outlet />
 }

@@ -1,4 +1,4 @@
-import { type Question } from '@prisma/client'
+import { type Task } from '@prisma/client'
 import { Link } from '@remix-run/react'
 import { type MouseEvent, useState } from 'react'
 import { Icon } from '#app/components/ui/icon'
@@ -6,7 +6,7 @@ import { Icon } from '#app/components/ui/icon'
 type SectionOverviewProps = {
 	name: string
 	description?: string
-	questions: (Pick<Question, 'id' | 'title'> & {
+	tasks: (Pick<Task, 'id' | 'title'> & {
 		userStatus?: 'complete' | 'started' | 'needsAttention' | 'notStarted'
 	})[]
 	challengeId: string
@@ -15,7 +15,7 @@ type SectionOverviewProps = {
 }
 
 export function SectionOverview(props: SectionOverviewProps) {
-	const { name, description, questions, challengeId, sectionId, admin } = props
+	const { name, description, tasks, challengeId, sectionId, admin } = props
 
 	const [expanded, setExpanded] = useState(false)
 
@@ -51,17 +51,17 @@ export function SectionOverview(props: SectionOverviewProps) {
 					/>
 				</div>
 				<ul>
-					{questions.map(question => (
+					{tasks.map(task => (
 						<li
 							className="flex w-full items-center justify-between border-t"
-							key={question.id}
+							key={task.id}
 						>
 							<h3 className="rounded-lg bg-gray-50/60 py-2 pl-3 text-center text-lg font-normal text-gray-800 md:text-2xl">
-								{question.title}
+								{task.title}
 							</h3>
 							{admin && (
 								<Link
-									to={`/admin/challenges/${challengeId}/sections/${sectionId}/questions/${question.id}`}
+									to={`/challenges/${challengeId}/sections/${sectionId}/tasks/${task.id}`}
 								>
 									<Icon
 										name="pencil-1"
@@ -69,8 +69,8 @@ export function SectionOverview(props: SectionOverviewProps) {
 									/>
 								</Link>
 							)}
-							{question.userStatus && (
-								<QuestionUserStatus status={question.userStatus} />
+							{task.userStatus && (
+								<QuestionUserStatus status={task.userStatus} />
 							)}
 						</li>
 					))}
@@ -139,10 +139,10 @@ function AdminMenu({ sectionId }: { sectionId: string }) {
 					</li>
 					<li className="flex items-center hover:bg-muted">
 						<Link
-							to={`./sections/${sectionId}/questions/new`}
+							to={`./sections/${sectionId}/tasks/new`}
 							className="m-1 whitespace-nowrap px-3 py-2"
 						>
-							New Question
+							New Task
 						</Link>
 					</li>
 				</ul>

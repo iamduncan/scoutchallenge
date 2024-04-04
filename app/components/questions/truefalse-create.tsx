@@ -1,25 +1,25 @@
 import { useEffect } from 'react'
 import { SelectField } from '../forms'
-import { type QuestionType, type QuestionData } from './types'
+import { type TaskType, type TaskData } from './types'
 
 /**
  * Create a True or False question component
  */
 export function CreateTrueFalse({
-	questionData,
+	taskData,
 	handleUpdate,
 }: {
-	questionData: QuestionData<QuestionType.TRUEFALSE>
-	handleUpdate: (data: QuestionData<QuestionType.TRUEFALSE>) => void
+	taskData: TaskData<TaskType.TRUEFALSE>
+	handleUpdate: (data: TaskData<TaskType.TRUEFALSE>) => void
 }) {
 	// Set default values for the first render only
 	const setDefaultValues = () => {
-		if (typeof questionData.answer !== 'boolean') {
+		if (typeof taskData.answer !== 'boolean') {
 			handleUpdate({ answer: true })
 		}
 	}
 
-	useEffect(setDefaultValues, [handleUpdate, questionData])
+	useEffect(setDefaultValues, [handleUpdate, taskData])
 
 	return (
 		<div className="true-false">
@@ -28,7 +28,7 @@ export function CreateTrueFalse({
 					labelProps={{ children: 'Answer' }}
 					selectProps={{
 						name: 'answer',
-						value: questionData.answer ? 'true' : 'false',
+						value: taskData.answer ? 'true' : 'false',
 						onValueChange: value => handleUpdate({ answer: value === 'true' }),
 					}}
 					options={[

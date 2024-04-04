@@ -7,7 +7,7 @@ import {
 	useForm,
 } from '@conform-to/react'
 import { getZodConstraint, parseWithZod } from '@conform-to/zod'
-import { type Question } from '@prisma/client'
+import { type Task } from '@prisma/client'
 import { type SerializeFrom } from '@remix-run/node'
 import { Form, useActionData } from '@remix-run/react'
 import { useState } from 'react'
@@ -21,29 +21,31 @@ import {
 } from '#app/components/forms'
 import { CreateMultipleChoice } from '#app/components/questions/multiplechoice-create'
 import { CreateTrueFalse } from '#app/components/questions/truefalse-create'
-import { QuestionType } from '#app/components/questions/types'
+import { type TaskData, TaskType } from '#app/components/questions/types'
 import { Button } from '#app/components/ui/button'
 import { StatusButton } from '#app/components/ui/status-button'
 import { useIsPending } from '#app/utils/misc'
-import { type action } from './__question-editor.server'
+import { type action } from './__task-editor.server'
 
-export const QuestionSchema = z.object({
+export const TaskSchema = z.object({
 	id: z.string().optional(),
 	title: z.string(),
 	description: z.string(),
 	hint: z.string(),
-	type: z.enum(['multiple_choice', 'short_answer', 'code']),
+	type: z.nativeEnum(TaskType),
+	points: z.number().default(1),
+	data: z.string().optional(),
 })
 
-export function QuestionEditor({
-	question,
+export function TaskEditor({
+	task,
 }: {
-	question: SerializeFrom<
-		Pick<Question, 'id' | 'title' | 'description' | 'hint' | 'type'>
+	task: SerializeFrom<
+		Pick<Task, 'id' | 'title' | 'description' | 'hint' | 'type'>
 	>
 }) {
-	const [questionType, setQuestionType] = useState<QuestionType>(
-		QuestionType.TEXT,
+	const [taskType, setTaskType] = useState<TaskType>(
+		TaskType.TEXT,
 	)
 	const [questionData, setQuestionData] = useState<{
 		question?: any
@@ -55,13 +57,13 @@ export function QuestionEditor({
 
 	const [form, fields] = useForm({
 		id: 'question-editor',
-		constraint: getZodConstraint(QuestionSchema),
+		constraint: getZodConstraint(TaskSchema),
 		lastResult: actionData?.result,
 		onValidate({ formData }) {
-			return parseWithZod(formData, { schema: QuestionSchema })
+			return parseWithZod(formData, { schema: TaskSchema })
 		},
 		defaultValue: {
-			...question,
+			...task,
 		},
 		shouldRevalidate: 'onBlur',
 	})
@@ -71,12 +73,12 @@ export function QuestionEditor({
 			<FormProvider context={form.context}>
 				<Form method="POST" {...getFormProps(form)}>
 					<button type="submit" className="hidden" />
-					{question ? (
-						<input type="hidden" name="id" value={question.id} />
+					{task ? (
+						<input type="hidden" name="id" value={task.id} />
 					) : null}
 					<div className="flex flex-col gap-1">
 						<Field
-							labelProps={{ children: 'Question Title' }}
+							labelProps={{ children: 'Task Title' }}
 							inputProps={{
 								...getInputProps(fields.title, { type: 'text' }),
 								placeholder: 'What colour is the sky?',
@@ -85,41 +87,47 @@ export function QuestionEditor({
 						/>
 
 						<TextareaField
-							labelProps={{ children: 'Question Description' }}
+							labelProps={{ children: 'Task Description' }}
 							textareaProps={{ ...getTextareaProps(fields.description) }}
 							errors={fields.description.errors}
 						/>
 
 						<SelectField
-							labelProps={{ children: 'Question Type' }}
+							labelProps={{ children: 'Task Type' }}
 							selectProps={{
 								...getSelectProps(fields.type, { value: false }),
-								value: questionType,
-								onValueChange: value => setQuestionType(value as QuestionType),
+								value: taskType,
+								onValueChange: value => setTaskType(value as TaskType),
 							}}
 							options={[
-								{ value: QuestionType.TEXT, label: 'Text' },
-								{ value: QuestionType.TRUEFALSE, label: 'True/False' },
+								{ value: TaskType.TEXT, label: 'Text' },
+								{ value: TaskType.TRUEFALSE, label: 'True/False' },
 								{
-									value: QuestionType.MULTIPLECHOICE,
+									value: TaskType.MULTIPLECHOICE,
 									label: 'Multiple Choice',
 								},
-								{ value: QuestionType.CIPHER, label: 'Cipher' },
+								{ value: TaskType.CIPHER, label: 'Cipher' },
 							]}
 						/>
 
 						<div>
-							<QuestionTypeContent
-								questionType={questionType}
-								questionData={questionData}
+							<TaskTypeContent
+								taskType={taskType}
+								taskData={questionData}
 								handleUpdate={setQuestionData}
 							/>
 							<input
 								type="hidden"
-								name="question_data"
+								name={fields.data.name}
 								value={JSON.stringify(questionData)}
 							/>
 						</div>
+
+						<Field
+							labelProps={{ children: 'Points' }}
+							inputProps={{ ...getInputProps(fields.points, { type: 'number' }) }}
+							errors={fields.points.errors}
+						/>
 
 						<Field
 							labelProps={{ children: 'Hint' }}
@@ -147,53 +155,68 @@ export function QuestionEditor({
 	)
 }
 
-function QuestionTypeContent({
-	questionType,
+function TaskTypeContent({
+	taskType,
 	handleUpdate,
-	questionData,
+	taskData,
 }: {
-	questionType: QuestionType
-	questionData: any
+	taskType: TaskType
+	taskData: any
 	handleUpdate: (data: { question?: any; answer?: any }) => void
 }) {
-	switch (questionType) {
-		case QuestionType.MULTIPLECHOICE:
+	switch (taskType) {
+		case TaskType.MULTIPLECHOICE:
 			return (
 				<CreateMultipleChoice
-					questionData={questionData}
+					taskData={taskData}
 					handleUpdate={handleUpdate}
 				/>
 			)
-		case QuestionType.TRUEFALSE:
+		case TaskType.TRUEFALSE:
 			return (
 				<CreateTrueFalse
-					questionData={questionData}
+					taskData={taskData}
 					handleUpdate={handleUpdate}
 				/>
 			)
-		case QuestionType.TEXT:
-			return <ShortAnswer />
-		case QuestionType.FILLINTHEBLANK:
+		case TaskType.TEXT:
+			return (
+			<ShortAnswer
+				taskData={taskData}
+				handleUpdate={handleUpdate}
+			/>
+		)
+		case TaskType.FILLINTHEBLANK:
 			return <FillInTheBlank />
-		case QuestionType.IMAGEUPLOAD:
+		case TaskType.IMAGEUPLOAD:
 			return <ImageUpload />
-		case QuestionType.VIDEOUPLOAD:
+		case TaskType.VIDEOUPLOAD:
 			return <VideoUpload />
-		case QuestionType.FILEUPLOAD:
+		case TaskType.FILEUPLOAD:
 			return <FileUpload />
-		case QuestionType.CIPHER:
+		case TaskType.CIPHER:
 			return <Cipher />
 		default:
 			return <>Question title</>
 	}
 }
 
-const ShortAnswer = () => {
+const ShortAnswer = ({
+	taskData,
+	handleUpdate,
+}: {
+	taskData: TaskData<TaskType.TEXT>
+	handleUpdate: (data: TaskData<TaskType.TEXT>) => void
+}) => {
 	return (
 		<>
 			<Field
 				labelProps={{ children: 'Answer' }}
-				inputProps={{ type: 'text' }}
+				inputProps={{
+					type: 'text',
+					value: taskData.answer,
+					onChange: (e) => handleUpdate({ ...taskData, answer: e.target.value })
+				}}
 			/>
 		</>
 	)
