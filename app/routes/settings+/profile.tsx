@@ -8,10 +8,10 @@ import { type SettingsHeaderHandle } from '../settings'
 
 export const handle: SettingsHeaderHandle & SEOHandle = {
 	settingHeader: () => ({
-    title: 'Profile Settings',
-    description:
-      'Keep your account safe by changing your password. You can change your password at any time.',
-  }),
+		title: 'Profile Settings',
+		description:
+			'Keep your account safe by changing your password. You can change your password at any time.',
+	}),
 	getSitemapEntries: () => null,
 }
 
@@ -27,8 +27,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function EditUserProfile() {
 	return (
-			<main className="mx-auto bg-muted px-6 py-8 md:container md:rounded">
-				<Outlet />
-			</main>
+		<main className="mx-auto bg-muted px-6 py-8 md:container md:rounded">
+			<Outlet />
+		</main>
 	)
 }

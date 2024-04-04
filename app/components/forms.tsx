@@ -3,7 +3,14 @@ import React, { useId } from 'react'
 import { Checkbox, type CheckboxProps } from './ui/checkbox.tsx'
 import { Input } from './ui/input.tsx'
 import { Label } from './ui/label.tsx'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from './ui/select.tsx'
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from './ui/select.tsx'
 import { Textarea } from './ui/textarea.tsx'
 
 export type ListOfErrors = Array<string | null | undefined> | null | undefined
@@ -152,57 +159,57 @@ export function CheckboxField({
 }
 
 export function SelectField({
-  labelProps,
-  inputProps,
-  contentProps,
-  placeholder,
-  options,
-  errors,
-  className,
+	labelProps,
+	selectProps,
+	contentProps,
+	placeholder,
+	options,
+	errors,
+	className,
 }: {
-  labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
-  contentProps?: React.HTMLAttributes<HTMLDivElement>;
-  inputProps: {
-    id?: string;
-    name: string;
-    value?: string;
-    onValueChange?: (value: string) => void;
-    defaultValue?: string;
-  };
-  placeholder?: string;
-  options: { label: string; value: any }[];
-  errors?: ListOfErrors;
-  className?: string;
+	labelProps: React.LabelHTMLAttributes<HTMLLabelElement>
+	contentProps?: React.HTMLAttributes<HTMLDivElement>
+	selectProps: {
+		id?: string
+		name: string
+		value?: string
+		onValueChange?: (value: string) => void
+		defaultValue?: string | number | readonly string[]
+	}
+	placeholder?: string
+	options: { label: string; value: any }[]
+	errors?: ListOfErrors
+	className?: string
 }) {
-  const fallbackId = useId();
-  const id = inputProps.id ?? fallbackId;
-  const errorId = errors?.length ? `${id}-error` : undefined;
+	const fallbackId = useId()
+	const id = selectProps.id ?? fallbackId
+	const errorId = errors?.length ? `${id}-error` : undefined
 
-  return (
-    <div className={className}>
-      <Label htmlFor={id} {...labelProps} className="mb-2" />
-      <Select
-        name={inputProps.name}
-        onValueChange={inputProps.onValueChange}
-        value={inputProps.value}
-        defaultValue={inputProps.defaultValue}
-      >
-        <SelectTrigger className="w-full" id={id}>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent {...contentProps} id={id}>
+	return (
+		<div className={className}>
+			<Label htmlFor={id} {...labelProps} className="mb-2" />
+			<Select
+				name={selectProps.name}
+				onValueChange={selectProps.onValueChange}
+				value={selectProps.value}
+				// defaultValue={selectProps.defaultValue}
+			>
+				<SelectTrigger className="w-full" id={id}>
+					<SelectValue placeholder={placeholder} />
+				</SelectTrigger>
+				<SelectContent {...contentProps} id={id}>
 					<SelectGroup>
-						{options.map((option) => (
+						{options.map(option => (
 							<SelectItem key={option.value} value={option.value}>
 								{option.label}
 							</SelectItem>
 						))}
 					</SelectGroup>
-        </SelectContent>
-      </Select>
-      <div className="px-4 pb-3 pt-1">
-        {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
-      </div>
-    </div>
-  );
+				</SelectContent>
+			</Select>
+			<div className="px-4 pb-3 pt-1">
+				{errorId ? <ErrorList id={errorId} errors={errors} /> : null}
+			</div>
+		</div>
+	)
 }

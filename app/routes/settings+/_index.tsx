@@ -1,5 +1,5 @@
-import { redirect } from '@remix-run/node';
+import { redirect } from '@remix-run/node'
 
 export function loader() {
-  return redirect('/settings/profile');
+	return redirect('/settings/profile')
 }
