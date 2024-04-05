@@ -90,4 +90,8 @@ export const extendedTheme = {
 		/** 12px size / 16px high / bold */
 		button: ['0.75rem', { lineHeight: '1rem', fontWeight: '700' }],
 	},
+
+	gridTemplateColumns: {
+		'24': 'repeat(24, minmax(0, 1fr))',
+	},
 } satisfies Config['theme']

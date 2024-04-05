@@ -14,7 +14,12 @@ export default function ChallengeIndex() {
 			<p className="whitespace-break-spaces text-sm md:text-lg">
 				{data?.challenge.description}
 			</p>
-			<h3>Sections</h3>
+			<div className="flex">
+				<h3>Sections</h3>
+				<Link to="sections/new" className="ml-auto">
+					New Section
+				</Link>
+			</div>
 			<div className="flex flex-col gap-3 p-4">
 				{data?.challenge.challengeSections.map(section => (
 					<SectionOverview

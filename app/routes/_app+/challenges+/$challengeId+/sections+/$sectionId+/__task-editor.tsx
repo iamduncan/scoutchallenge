@@ -14,14 +14,16 @@ import { useState } from 'react'
 import { z } from 'zod'
 import { floatingToolbarClassName } from '#app/components/floating-toolbar'
 import {
+	CheckboxField,
 	ErrorList,
 	Field,
 	SelectField,
 	TextareaField,
 } from '#app/components/forms'
-import { CreateMultipleChoice } from '#app/components/questions/multiplechoice-create'
-import { CreateTrueFalse } from '#app/components/questions/truefalse-create'
-import { type TaskData, TaskType } from '#app/components/questions/types'
+import { CreateMultiPart } from '#app/components/tasks/multipart-create'
+import { CreateMultipleChoice } from '#app/components/tasks/multiplechoice-create'
+import { CreateTrueFalse } from '#app/components/tasks/truefalse-create'
+import { type TaskData, TaskType } from '#app/components/tasks/types'
 import { Button } from '#app/components/ui/button'
 import { StatusButton } from '#app/components/ui/status-button'
 import { useIsPending } from '#app/utils/misc'
@@ -34,6 +36,7 @@ export const TaskSchema = z.object({
 	hint: z.string(),
 	type: z.nativeEnum(TaskType),
 	points: z.number().default(1),
+	multiEntry: z.boolean().default(false),
 	data: z.string().optional(),
 })
 
@@ -44,13 +47,9 @@ export function TaskEditor({
 		Pick<Task, 'id' | 'title' | 'description' | 'hint' | 'type'>
 	>
 }) {
-	const [taskType, setTaskType] = useState<TaskType>(
-		TaskType.TEXT,
-	)
-	const [questionData, setQuestionData] = useState<{
-		question?: any
-		answer?: any
-	}>({})
+	const [taskType, setTaskType] = useState<TaskType>(TaskType.TEXT)
+	const [questionData, setQuestionData] = useState<TaskData<TaskType>>()
+	const [multiEntry, setMultiEntry] = useState<Boolean>(false)
 
 	const actionData = useActionData<typeof action>()
 	const isPending = useIsPending()
@@ -73,9 +72,7 @@ export function TaskEditor({
 			<FormProvider context={form.context}>
 				<Form method="POST" {...getFormProps(form)}>
 					<button type="submit" className="hidden" />
-					{task ? (
-						<input type="hidden" name="id" value={task.id} />
-					) : null}
+					{task ? <input type="hidden" name="id" value={task.id} /> : null}
 					<div className="flex flex-col gap-1">
 						<Field
 							labelProps={{ children: 'Task Title' }}
@@ -107,6 +104,7 @@ export function TaskEditor({
 									label: 'Multiple Choice',
 								},
 								{ value: TaskType.CIPHER, label: 'Cipher' },
+								{ value: TaskType.MULTIPART, label: 'Multi-Part' },
 							]}
 						/>
 
@@ -125,7 +123,9 @@ export function TaskEditor({
 
 						<Field
 							labelProps={{ children: 'Points' }}
-							inputProps={{ ...getInputProps(fields.points, { type: 'number' }) }}
+							inputProps={{
+								...getInputProps(fields.points, { type: 'number' }),
+							}}
 							errors={fields.points.errors}
 						/>
 
@@ -133,6 +133,16 @@ export function TaskEditor({
 							labelProps={{ children: 'Hint' }}
 							inputProps={{ ...getInputProps(fields.hint, { type: 'text' }) }}
 							errors={fields.hint.errors}
+						/>
+
+						<CheckboxField
+							labelProps={{ children: 'Allow Multiple Entries' }}
+							buttonProps={{
+								...getInputProps(fields.multiEntry, { type: 'checkbox' }),
+								value: multiEntry ? 'true' : 'false',
+								onChange: () => setMultiEntry(!multiEntry),
+							}}
+							errors={fields.multiEntry.errors}
 						/>
 					</div>
 					<ErrorList id={form.errorId} errors={form.errors} />
@@ -162,30 +172,17 @@ function TaskTypeContent({
 }: {
 	taskType: TaskType
 	taskData: any
-	handleUpdate: (data: { question?: any; answer?: any }) => void
+	handleUpdate: (data: TaskData<TaskType>) => void
 }) {
 	switch (taskType) {
 		case TaskType.MULTIPLECHOICE:
 			return (
-				<CreateMultipleChoice
-					taskData={taskData}
-					handleUpdate={handleUpdate}
-				/>
+				<CreateMultipleChoice taskData={taskData} handleUpdate={handleUpdate} />
 			)
 		case TaskType.TRUEFALSE:
-			return (
-				<CreateTrueFalse
-					taskData={taskData}
-					handleUpdate={handleUpdate}
-				/>
-			)
+			return <CreateTrueFalse taskData={taskData} handleUpdate={handleUpdate} />
 		case TaskType.TEXT:
-			return (
-			<ShortAnswer
-				taskData={taskData}
-				handleUpdate={handleUpdate}
-			/>
-		)
+			return <ShortAnswer taskData={taskData} handleUpdate={handleUpdate} />
 		case TaskType.FILLINTHEBLANK:
 			return <FillInTheBlank />
 		case TaskType.IMAGEUPLOAD:
@@ -196,6 +193,8 @@ function TaskTypeContent({
 			return <FileUpload />
 		case TaskType.CIPHER:
 			return <Cipher />
+		case TaskType.MULTIPART:
+			return <CreateMultiPart taskData={taskData} handleUpdate={handleUpdate} />
 		default:
 			return <>Question title</>
 	}
@@ -214,8 +213,8 @@ const ShortAnswer = ({
 				labelProps={{ children: 'Answer' }}
 				inputProps={{
 					type: 'text',
-					value: taskData.answer,
-					onChange: (e) => handleUpdate({ ...taskData, answer: e.target.value })
+					value: taskData?.answer,
+					onChange: e => handleUpdate({ ...taskData, answer: e.target.value }),
 				}}
 			/>
 		</>

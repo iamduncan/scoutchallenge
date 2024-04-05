@@ -7,6 +7,8 @@ export enum TaskType {
 	VIDEOUPLOAD = 'VIDEOUPLOAD',
 	FILEUPLOAD = 'FILEUPLOAD',
 	CIPHER = 'CIPHER',
+	MULTIPART = 'MULTIPART',
+	MULTIENTRY = 'MULTIENTRY',
 }
 
 type TextQuestion = {
@@ -51,20 +53,38 @@ type CipherQuestion = {
 	shiftValue?: number
 }
 
-export type TaskData<T extends TaskType> = T extends 'TEXT'
+type MultiPartQuestion = {
+	parts: {
+		type: TaskType
+		data: TaskData<TaskType>
+	}[]
+}
+
+type MultiEntryQuestion = {
+	entries: {
+		type: TaskType
+		data: TaskData<TaskType>
+	}[]
+}
+
+export type TaskData<T extends TaskType> = T extends TaskType.TEXT
 	? TextQuestion
-	: T extends 'MULTIPLECHOICE'
+	: T extends TaskType.MULTIPLECHOICE
 		? MultipleChoiceQuestion
-		: T extends 'TRUEFALSE'
+		: T extends TaskType.TRUEFALSE
 			? TrueFalseQuestion
-			: T extends 'FILLINTHEBLANK'
+			: T extends TaskType.FILLINTHEBLANK
 				? FillInTheBlankQuestion
-				: T extends 'IMAGEUPLOAD'
+				: T extends TaskType.IMAGEUPLOAD
 					? ImageUploadQuestion
-					: T extends 'VIDEOUPLOAD'
+					: T extends TaskType.VIDEOUPLOAD
 						? VideoUploadQuestion
-						: T extends 'FILEUPLOAD'
+						: T extends TaskType.FILEUPLOAD
 							? FileUploadQuestion
-							: T extends 'CIPHER'
+							: T extends TaskType.CIPHER
 								? CipherQuestion
-								: never
+								: T extends TaskType.MULTIPART
+									? MultiPartQuestion
+									: T extends TaskType.MULTIENTRY
+										? MultiEntryQuestion
+										: never

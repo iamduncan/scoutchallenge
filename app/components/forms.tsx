@@ -174,7 +174,7 @@ export function SelectField({
 		name: string
 		value?: string
 		onValueChange?: (value: string) => void
-		defaultValue?: string | number | readonly string[]
+		defaultValue?: string
 	}
 	placeholder?: string
 	options: { label: string; value: any }[]
@@ -192,7 +192,7 @@ export function SelectField({
 				name={selectProps.name}
 				onValueChange={selectProps.onValueChange}
 				value={selectProps.value}
-				// defaultValue={selectProps.defaultValue}
+				defaultValue={selectProps.defaultValue}
 			>
 				<SelectTrigger className="w-full" id={id}>
 					<SelectValue placeholder={placeholder} />
