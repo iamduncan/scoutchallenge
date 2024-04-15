@@ -1,0 +1,104 @@
+import {
+	FormProvider,
+	getFormProps,
+	getInputProps,
+	getTextareaProps,
+	useForm,
+} from '@conform-to/react'
+import { getZodConstraint, parseWithZod } from '@conform-to/zod'
+import { type ChallengeSection } from '@prisma/client'
+import { type SerializeFrom } from '@remix-run/node'
+import { Form, useActionData } from '@remix-run/react'
+import { z } from 'zod'
+import { floatingToolbarClassName } from '#app/components/floating-toolbar'
+import { ErrorList, Field, TextareaField } from '#app/components/forms'
+import { Button } from '#app/components/ui/button'
+import { StatusButton } from '#app/components/ui/status-button'
+import { useIsPending } from '#app/utils/misc'
+import { type action } from './__section-editor.server'
+
+export const ChallengeSectionSchema = z.object({
+	id: z.string().optional(),
+	name: z.string(),
+	description: z.string().optional(),
+	order: z.number(),
+})
+
+export function ChallengeSectionEditor({
+	challengeSection,
+}: {
+	challengeSection?: SerializeFrom<
+		Pick<ChallengeSection, 'id' | 'name' | 'description' | 'order'>
+	>
+}) {
+	const actionData = useActionData<typeof action>()
+	const isPending = useIsPending()
+
+	const [form, fields] = useForm({
+		id: 'section-editor',
+		constraint: getZodConstraint(ChallengeSectionSchema),
+		lastResult: actionData?.result,
+		onValidate({ formData }) {
+			return parseWithZod(formData, { schema: ChallengeSectionSchema })
+		},
+		defaultValue: {
+			...challengeSection,
+		},
+		shouldRevalidate: 'onBlur',
+	})
+
+	return (
+		<div className="inset-0">
+			<FormProvider context={form.context}>
+				<Form
+					method="POST"
+					className="flex h-full flex-col gap-y-4 overflow-y-auto overflow-x-hidden px-2 pb-28 pt-12"
+					{...getFormProps(form)}
+				>
+					<button type="submit" className="hidden" />
+					{challengeSection ? (
+						<input type="hidden" name="id" value={challengeSection.id} />
+					) : null}
+					<div className="flex flex-col gap-1">
+						<Field
+							labelProps={{ children: 'Name' }}
+							inputProps={{
+								autoFocus: true,
+								...getInputProps(fields.name, { type: 'text' }),
+							}}
+							errors={fields.name.errors}
+						/>
+						<TextareaField
+							labelProps={{ children: 'Description' }}
+							textareaProps={{
+								...getTextareaProps(fields.description),
+							}}
+							errors={fields.description.errors}
+						/>
+						<Field
+							labelProps={{ children: 'Order' }}
+							inputProps={{
+								...getInputProps(fields.order, { type: 'number' }),
+							}}
+							errors={fields.order.errors}
+						/>
+					</div>
+					<ErrorList id={form.errorId} errors={form.errors} />
+				</Form>
+				<div className={floatingToolbarClassName}>
+					<Button variant="destructive" {...form.reset.getButtonProps()}>
+						Reset
+					</Button>
+					<StatusButton
+						form={form.id}
+						type="submit"
+						disabled={isPending}
+						status={isPending ? 'pending' : 'idle'}
+					>
+						Submit
+					</StatusButton>
+				</div>
+			</FormProvider>
+		</div>
+	)
+}
