@@ -92,7 +92,7 @@ export function TaskEditor({
 						<SelectField
 							labelProps={{ children: 'Task Type' }}
 							selectProps={{
-								...getSelectProps(fields.type, { value: false }),
+								...getSelectProps(fields.type),
 								value: taskType,
 								onValueChange: value => setTaskType(value as TaskType),
 							}}

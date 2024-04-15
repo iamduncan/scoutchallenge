@@ -174,7 +174,7 @@ export function SelectField({
 		name: string
 		value?: string
 		onValueChange?: (value: string) => void
-		defaultValue?: string
+		defaultValue?: string | number | readonly string[]
 	}
 	placeholder?: string
 	options: { label: string; value: any }[]
@@ -184,6 +184,12 @@ export function SelectField({
 	const fallbackId = useId()
 	const id = selectProps.id ?? fallbackId
 	const errorId = errors?.length ? `${id}-error` : undefined
+
+	if (typeof selectProps.defaultValue !== 'string') {
+		throw new Error(
+			`Default value for select field ${selectProps.name} must be a string`,
+		)
+	}
 
 	return (
 		<div className={className}>
